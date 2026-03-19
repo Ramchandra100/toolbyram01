@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Outlook Config Simulator - Level 4</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Segoe+UI:wght@400;600;700&display=swap');
+        body { font-family: 'Segoe UI', sans-serif; }
+        
+        /* Outlook 2016/2019 Style UI */
+        .outlook-header { background-color: #2b579a; color: white; }
+        .outlook-modal { box-shadow: 0 10px 25px rgba(0,0,0,0.2); }
+        .form-input { border: 1px solid #a0a0a0; padding: 4px 8px; font-size: 13px; width: 100%; }
+        .form-input:focus { border-color: #2b579a; outline: 1px solid #2b579a; }
+        .section-title { color: #2b579a; font-weight: 600; margin-bottom: 8px; border-bottom: 1px solid #e0e0e0; padding-bottom: 4px; }
+        
+        /* Test Window Animations */
+        .test-step { display: flex; align-items: center; gap: 8px; padding: 4px 0; opacity: 0.5; }
+        .test-step.active { opacity: 1; font-weight: 600; }
+        .test-step.success { color: green; opacity: 1; }
+        .test-step.error { color: red; opacity: 1; }
+    </style>
+</head>
+<body class="bg-slate-200 h-screen flex flex-col md:flex-row overflow-hidden">
+
+    <!-- LEFT PANEL: The Cheat Sheet (Engineer's Notes) -->
+    <div class="w-full md:w-80 bg-yellow-50 border-r border-yellow-200 p-6 flex flex-col shrink-0 overflow-y-auto">
+        <h2 class="text-xl font-bold text-yellow-900 mb-4 flex items-center gap-2">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+            Server Cheat Sheet
+        </h2>
+        
+        <div class="bg-white p-4 rounded shadow-sm border border-yellow-200 space-y-4 text-sm text-yellow-900">
+            <p class="font-bold">Use these details to configure the client:</p>
+            
+            <div>
+                <div class="text-xs uppercase font-bold text-gray-500 mb-1">User Information</div>
+                <div class="flex justify-between border-b border-gray-100 py-1">
+                    <span>Name:</span> <span class="font-mono font-bold select-all">Vikram Singh</span>
+                </div>
+                <div class="flex justify-between border-b border-gray-100 py-1">
+                    <span>Email:</span> <span class="font-mono font-bold select-all">vikram@iricen.gov.in</span>
+                </div>
+                <div class="flex justify-between border-b border-gray-100 py-1">
+                    <span>Pass:</span> <span class="font-mono font-bold select-all">Train123!</span>
+                </div>
+            </div>
+
+            <div>
+                <div class="text-xs uppercase font-bold text-blue-600 mb-1">Incoming Mail (IMAP)</div>
+                <p class="text-xs mb-1">Retrieves mail from server.</p>
+                <div class="flex justify-between border-b border-gray-100 py-1">
+                    <span>Server:</span> <span class="font-mono font-bold select-all">imap.iricen.gov.in</span>
+                </div>
+                <div class="flex justify-between border-b border-gray-100 py-1">
+                    <span>Port:</span> <span class="font-mono font-bold select-all">993</span>
+                </div>
+                <div class="flex justify-between border-b border-gray-100 py-1">
+                    <span>Encryption:</span> <span class="font-mono font-bold">SSL/TLS</span>
+                </div>
+            </div>
+
+            <div>
+                <div class="text-xs uppercase font-bold text-green-600 mb-1">Outgoing Mail (SMTP)</div>
+                <p class="text-xs mb-1">Sends mail out.</p>
+                <div class="flex justify-between border-b border-gray-100 py-1">
+                    <span>Server:</span> <span class="font-mono font-bold select-all">smtp.iricen.gov.in</span>
+                </div>
+                <div class="flex justify-between border-b border-gray-100 py-1">
+                    <span>Port:</span> <span class="font-mono font-bold select-all">587</span>
+                </div>
+                <div class="flex justify-between border-b border-gray-100 py-1">
+                    <span>Encryption:</span> <span class="font-mono font-bold">STARTTLS</span>
+                </div>
+            </div>
+        </div>
+        
+        <div class="mt-auto pt-4 text-xs text-yellow-800">
+            <strong>Tip:</strong> Copy-paste accurately. If you use the wrong port (e.g., 25 instead of 587), the connection will fail.
+        </div>
+    </div>
+
+    <!-- RIGHT PANEL: The Outlook Simulator -->
+    <div class="flex-1 p-4 md:p-8 flex items-center justify-center relative bg-[url('https://www.transparenttextures.com/patterns/cubes.png')]">
+        
+        <!-- MAIN WINDOW -->
+        <div class="bg-white w-full max-w-2xl rounded shadow-2xl overflow-hidden outlook-modal flex flex-col">
+            <!-- Header -->
+            <div class="outlook-header p-4 flex justify-between items-center">
+                <h1 class="text-lg font-light">Add Account</h1>
+                <button class="text-white/80 hover:text-white">&times;</button>
+            </div>
+            
+            <!-- Body -->
+            <div class="p-6 md:p-8 text-sm text-gray-700 bg-gray-50 flex-1 overflow-y-auto">
+                
+                <h2 class="text-xl mb-4 text-[#2b579a]">POP and IMAP Account Settings</h2>
+                <p class="mb-6 text-gray-500">Enter the mail server settings for your account.</p>
+
+                <div class="grid md:grid-cols-2 gap-8">
+                    <!-- Column 1: User & Server Info -->
+                    <div class="space-y-4">
+                        <div>
+                            <h3 class="section-title">User Information</h3>
+                            <div class="space-y-2">
+                                <div>
+                                    <label class="block mb-1">Your Name:</label>
+                                    <input type="text" id="in-name" class="form-input" placeholder="Vikram Singh">
+                                </div>
+                                <div>
+                                    <label class="block mb-1">Email Address:</label>
+                                    <input type="email" id="in-email" class="form-input" placeholder="user@iricen.gov.in">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div>
+                            <h3 class="section-title">Server Information</h3>
+                            <div class="space-y-2">
+                                <div>
+                                    <label class="block mb-1">Account Type:</label>
+                                    <select class="form-input bg-white">
+                                        <option value="IMAP">IMAP</option>
+                                        <option value="POP3">POP3</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label class="block mb-1">Incoming mail server:</label>
+                                    <input type="text" id="in-incoming" class="form-input" placeholder="imap.domain.com">
+                                </div>
+                                <div>
+                                    <label class="block mb-1">Outgoing mail server (SMTP):</label>
+                                    <input type="text" id="in-outgoing" class="form-input" placeholder="smtp.domain.com">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Column 2: Logon & More Settings -->
+                    <div class="space-y-4">
+                        <div>
+                            <h3 class="section-title">Logon Information</h3>
+                            <div class="space-y-2">
+                                <div>
+                                    <label class="block mb-1">User Name:</label>
+                                    <input type="text" id="in-user" class="form-input" placeholder="vikram@iricen.gov.in">
+                                </div>
+                                <div>
+                                    <label class="block mb-1">Password:</label>
+                                    <input type="password" id="in-pass" class="form-input">
+                                </div>
+                                <div class="flex items-center gap-2 mt-2">
+                                    <input type="checkbox" checked class="text-blue-600">
+                                    <span class="text-xs">Remember password</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Simulated "More Settings" Panel embedded for simplicity in Level 4 -->
+                        <div class="bg-gray-100 p-3 rounded border border-gray-200 mt-4">
+                            <h3 class="font-bold text-xs text-gray-500 mb-2 uppercase">Advanced Server Settings</h3>
+                            <div class="grid grid-cols-2 gap-4">
+                                <div>
+                                    <label class="block text-xs mb-1">Incoming Port (IMAP):</label>
+                                    <input type="text" id="in-port-imap" class="form-input w-16" placeholder="143">
+                                </div>
+                                <div>
+                                    <label class="block text-xs mb-1">Outgoing Port (SMTP):</label>
+                                    <input type="text" id="in-port-smtp" class="form-input w-16" placeholder="25">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- Footer -->
+            <div class="bg-gray-100 p-4 border-t border-gray-200 flex justify-end gap-2">
+                <button class="px-4 py-1 bg-white border border-gray-300 hover:bg-gray-50 rounded shadow-sm text-sm">Back</button>
+                <button onclick="runTest()" class="px-6 py-1 bg-[#2b579a] hover:bg-[#1e3e70] text-white rounded shadow-sm text-sm font-semibold transition">Next > (Test Settings)</button>
+            </div>
+        </div>
+
+        <!-- TEST MODAL (Hidden by default) -->
+        <div id="test-modal" class="hidden absolute inset-0 bg-black/50 flex items-center justify-center z-50">
+            <div class="bg-white w-96 rounded shadow-lg overflow-hidden animate-[scaleIn_0.2s_ease-out]">
+                <div class="bg-[#f0f0f0] p-2 border-b border-gray-300 flex justify-between items-center">
+                    <span class="text-sm font-bold text-gray-700">Test Account Settings</span>
+                    <button onclick="closeTest()" class="text-gray-500 hover:text-red-500">&times;</button>
+                </div>
+                <div class="p-6 space-y-4">
+                    <p class="text-xs text-gray-500 mb-4">Outlook is testing the settings...</p>
+                    
+                    <div id="step-1" class="test-step">
+                        <span id="icon-1" class="w-4 h-4 rounded-full border border-gray-400"></span>
+                        <span class="text-sm">Log onto incoming mail server (IMAP)</span>
+                    </div>
+                    
+                    <div id="step-2" class="test-step">
+                        <span id="icon-2" class="w-4 h-4 rounded-full border border-gray-400"></span>
+                        <span class="text-sm">Send test e-mail message</span>
+                    </div>
+
+                    <div id="test-result" class="mt-4 p-2 bg-gray-50 border border-gray-200 text-xs hidden">
+                        <!-- Result text goes here -->
+                    </div>
+
+                    <div class="flex justify-center mt-4">
+                        <button onclick="closeTest()" class="px-4 py-1 bg-white border border-gray-300 rounded shadow-sm text-xs">Close</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        // --- LOGIC ---
+        
+        function closeTest() {
+            document.getElementById('test-modal').classList.add('hidden');
+        }
+
+        function runTest() {
+            // 1. Get Values
+            const email = document.getElementById('in-email').value.trim();
+            const pass = document.getElementById('in-pass').value.trim();
+            const incoming = document.getElementById('in-incoming').value.trim().toLowerCase();
+            const outgoing = document.getElementById('in-outgoing').value.trim().toLowerCase();
+            const portImap = document.getElementById('in-port-imap').value.trim();
+            const portSmtp = document.getElementById('in-port-smtp').value.trim();
+
+            // 2. Open Modal
+            const modal = document.getElementById('test-modal');
+            const step1 = document.getElementById('step-1');
+            const step2 = document.getElementById('step-2');
+            const result = document.getElementById('test-result');
+            
+            modal.classList.remove('hidden');
+            result.classList.add('hidden');
+            
+            // Reset Icons
+            document.getElementById('icon-1').innerHTML = ''; document.getElementById('icon-1').className = 'w-4 h-4 rounded-full border border-gray-400 block';
+            document.getElementById('icon-2').innerHTML = ''; document.getElementById('icon-2').className = 'w-4 h-4 rounded-full border border-gray-400 block';
+            step1.className = 'test-step active';
+            step2.className = 'test-step';
+
+            // 3. Simulation Sequence
+            
+            // STEP 1: Incoming Check
+            setTimeout(() => {
+                const icon1 = document.getElementById('icon-1');
+                
+                // Validation Logic for Incoming
+                if (incoming === 'imap.iricen.gov.in' && portImap === '993' && pass === 'Train123!') {
+                    icon1.className = 'w-4 h-4 text-green-600';
+                    icon1.innerHTML = '<svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path></svg>';
+                    step1.className = 'test-step success';
+                    
+                    // Proceed to Step 2
+                    step2.className = 'test-step active';
+                    runStep2();
+                } else {
+                    failStep(step1, icon1, "Failed to connect to Incoming Server. Check Server Name, Password, or Port (993).");
+                }
+            }, 1000);
+
+            function runStep2() {
+                setTimeout(() => {
+                    const icon2 = document.getElementById('icon-2');
+                    
+                    // Validation Logic for Outgoing
+                    if (outgoing === 'smtp.iricen.gov.in' && portSmtp === '587') {
+                        icon2.className = 'w-4 h-4 text-green-600';
+                        icon2.innerHTML = '<svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path></svg>';
+                        step2.className = 'test-step success';
+                        
+                        showResult(true, "Congratulations! All tests completed successfully.");
+                    } else {
+                        failStep(step2, icon2, "Failed to send test email. Check Outgoing Server or Port (587).");
+                    }
+                }, 1000);
+            }
+
+            function failStep(stepEl, iconEl, msg) {
+                iconEl.className = 'w-4 h-4 text-red-600';
+                iconEl.innerHTML = '<svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M6 18L18 6M6 6l12 12"></path></svg>';
+                stepEl.className = 'test-step error';
+                showResult(false, msg);
+            }
+
+            function showResult(success, msg) {
+                result.innerHTML = msg;
+                result.className = success 
+                    ? 'mt-4 p-2 bg-green-50 border border-green-200 text-xs text-green-800 block rounded'
+                    : 'mt-4 p-2 bg-red-50 border border-red-200 text-xs text-red-800 block rounded';
+            }
+        }
+    </script>
+</body>
+</html>

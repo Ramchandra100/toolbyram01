@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IT Helpdesk Simulator - Level 6</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+        body { font-family: 'Inter', sans-serif; background-color: #f3f4f6; }
+        
+        .status-badge { padding: 2px 8px; border-radius: 9999px; font-size: 0.75rem; font-weight: 600; }
+        .status-new { background-color: #fee2e2; color: #991b1b; }
+        .status-progress { background-color: #fef08a; color: #854d0e; }
+        .status-resolved { background-color: #dcfce3; color: #166534; }
+        
+        .priority-high { color: #dc2626; font-weight: bold; }
+        .priority-med { color: #d97706; font-weight: bold; }
+        .priority-low { color: #2563eb; font-weight: bold; }
+        
+        .ticket-row { transition: all 0.2s; cursor: pointer; }
+        .ticket-row:hover { background-color: #f8fafc; transform: translateY(-1px); box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
+    </style>
+</head>
+<body class="h-screen flex flex-col overflow-hidden text-sm">
+
+    <!-- Navbar -->
+    <nav class="bg-slate-900 text-white p-3 flex justify-between items-center shadow-md z-10 shrink-0">
+        <div class="flex items-center gap-3">
+            <div class="bg-blue-600 p-1.5 rounded-lg">
+                <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path></svg>
+            </div>
+            <span class="font-bold text-lg tracking-wide">ServiceDesk Plus</span>
+        </div>
+        <div class="flex items-center gap-4">
+            <div class="hidden md:flex items-center gap-2 text-slate-300">
+                <span class="w-2 h-2 rounded-full bg-green-400"></span>
+                System Online
+            </div>
+            <div class="border-l border-slate-700 pl-4 flex items-center gap-2">
+                <div class="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center font-bold">RE</div>
+                <span class="font-medium hidden sm:block">Resident Engineer</span>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Workspace -->
+    <div class="flex-1 flex overflow-hidden">
+        
+        <!-- Sidebar -->
+        <aside class="w-56 bg-white border-r border-slate-200 flex flex-col shrink-0">
+            <div class="p-4 border-b border-slate-100">
+                <button class="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 rounded shadow-sm transition flex items-center justify-center gap-2">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
+                    New Ticket
+                </button>
+            </div>
+            <div class="py-2 flex-1 overflow-y-auto">
+                <div class="px-4 py-2 text-xs font-bold text-slate-400 uppercase tracking-wider mb-1">Views</div>
+                <div class="px-4 py-2 bg-blue-50 text-blue-700 border-r-4 border-blue-600 font-medium cursor-pointer flex justify-between items-center">
+                    <span>Unassigned Tickets</span>
+                    <span class="bg-blue-200 text-blue-800 text-xs px-2 py-0.5 rounded-full" id="count-unassigned">3</span>
+                </div>
+                <div class="px-4 py-2 text-slate-600 hover:bg-slate-50 cursor-pointer flex justify-between items-center transition">
+                    <span>My Open Tickets</span>
+                    <span class="bg-slate-200 text-slate-600 text-xs px-2 py-0.5 rounded-full" id="count-mine">0</span>
+                </div>
+                <div class="px-4 py-2 text-slate-600 hover:bg-slate-50 cursor-pointer flex justify-between items-center transition">
+                    <span>Resolved</span>
+                    <span class="bg-slate-200 text-slate-600 text-xs px-2 py-0.5 rounded-full" id="count-resolved">12</span>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Ticket List View -->
+        <main class="flex-1 bg-slate-50 flex flex-col relative">
+            
+            <div class="p-4 md:p-6 border-b border-slate-200 bg-white shrink-0 flex justify-between items-end">
+                <div>
+                    <h1 class="text-2xl font-bold text-slate-800">Unassigned Tickets</h1>
+                    <p class="text-slate-500 text-sm mt-1">Tickets waiting to be picked up by an engineer.</p>
+                </div>
+                <div class="hidden sm:flex gap-2">
+                    <button class="px-3 py-1 border border-slate-300 rounded text-slate-600 hover:bg-slate-50 flex items-center gap-1">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"></path></svg> Filter
+                    </button>
+                </div>
+            </div>
+
+            <!-- List Table -->
+            <div class="flex-1 overflow-auto p-4 md:p-6">
+                <div class="bg-white rounded-lg shadow-sm border border-slate-200 overflow-hidden min-w-[600px]">
+                    
+                    <div class="grid grid-cols-12 gap-4 p-3 bg-slate-100 border-b border-slate-200 font-bold text-slate-600 text-xs tracking-wider uppercase">
+                        <div class="col-span-1 text-center">ID</div>
+                        <div class="col-span-4">Subject</div>
+                        <div class="col-span-2">Requester</div>
+                        <div class="col-span-2">Priority</div>
+                        <div class="col-span-2">Status</div>
+                        <div class="col-span-1">SLA</div>
+                    </div>
+
+                    <div id="ticket-container">
+                        <!-- TICKET 1042 -->
+                        <div class="grid grid-cols-12 gap-4 p-3 border-b border-slate-100 ticket-row items-center" onclick="openTicket('1042')">
+                            <div class="col-span-1 text-center font-mono text-slate-500">#1042</div>
+                            <div class="col-span-4 font-medium text-slate-800 truncate">Projector color is pink/yellow in Room 2</div>
+                            <div class="col-span-2 text-slate-600">Amit Verma</div>
+                            <div class="col-span-2 priority-low">Low</div>
+                            <div class="col-span-2"><span class="status-badge status-new">New</span></div>
+                            <div class="col-span-1 text-slate-500 text-xs">2d</div>
+                        </div>
+
+                        <!-- TICKET 1045 (THE TARGET) -->
+                        <div id="row-1045" class="grid grid-cols-12 gap-4 p-3 border-b border-slate-100 ticket-row items-center" onclick="openTicket('1045')">
+                            <div class="col-span-1 text-center font-mono text-slate-500">#1045</div>
+                            <div class="col-span-4 font-medium text-slate-800 truncate">Class 3 needs Wi-Fi AP configured immediately</div>
+                            <div class="col-span-2 text-slate-600">Suresh Patil (Admin)</div>
+                            <div class="col-span-2 priority-high">High</div>
+                            <div class="col-span-2"><span id="badge-1045" class="status-badge status-new">New</span></div>
+                            <div class="col-span-1 text-red-500 font-bold text-xs">1h 15m</div>
+                        </div>
+
+                        <!-- TICKET 1048 -->
+                        <div class="grid grid-cols-12 gap-4 p-3 border-b border-slate-100 ticket-row items-center" onclick="openTicket('1048')">
+                            <div class="col-span-1 text-center font-mono text-slate-500">#1048</div>
+                            <div class="col-span-4 font-medium text-slate-800 truncate">Printer showing "Spooler Subsystem App has stopped"</div>
+                            <div class="col-span-2 text-slate-600">Anita Desai</div>
+                            <div class="col-span-2 priority-med">Medium</div>
+                            <div class="col-span-2"><span class="status-badge status-new">New</span></div>
+                            <div class="col-span-1 text-slate-500 text-xs">4h</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TICKET DETAILS MODAL (Slide in from right) -->
+            <div id="ticket-modal" class="absolute inset-y-0 right-0 w-full md:w-2/3 lg:w-1/2 bg-white shadow-[-10px_0_20px_rgba(0,0,0,0.1)] transform translate-x-full transition-transform duration-300 flex flex-col border-l border-slate-200 z-20">
+                
+                <!-- Modal Header -->
+                <div class="p-4 bg-slate-50 border-b border-slate-200 flex justify-between items-start">
+                    <div>
+                        <div class="flex items-center gap-2 mb-1">
+                            <span id="modal-id" class="font-mono text-slate-500 text-sm">#1045</span>
+                            <span id="modal-badge" class="status-badge status-new">New</span>
+                        </div>
+                        <h2 id="modal-title" class="text-xl font-bold text-slate-800">Class 3 needs Wi-Fi AP configured immediately</h2>
+                    </div>
+                    <button onclick="closeTicket()" class="text-slate-400 hover:text-slate-700 bg-white rounded-full p-1 border border-slate-200 shadow-sm">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                    </button>
+                </div>
+
+                <!-- Action Bar -->
+                <div class="px-4 py-2 bg-slate-100 border-b border-slate-200 flex gap-2" id="action-bar">
+                    <button id="btn-assign" onclick="assignToMe()" class="px-4 py-1.5 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded shadow-sm flex items-center gap-2 transition">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"></path></svg>
+                        Assign to Me
+                    </button>
+                    <button id="btn-resolve" onclick="openResolveBox()" class="hidden px-4 py-1.5 bg-green-600 hover:bg-green-700 text-white font-medium rounded shadow-sm flex items-center gap-2 transition">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+                        Resolve Ticket
+                    </button>
+                </div>
+
+                <!-- Modal Body -->
+                <div class="flex-1 overflow-y-auto p-6 flex flex-col gap-6">
+                    
+                    <!-- Ticket Info Card -->
+                    <div class="bg-white border border-slate-200 rounded-lg p-4 shadow-sm">
+                        <div class="grid grid-cols-2 gap-4 text-sm mb-4 border-b border-slate-100 pb-4">
+                            <div><span class="text-slate-500 block text-xs">Requester:</span> <span class="font-medium text-slate-800">Suresh Patil</span></div>
+                            <div><span class="text-slate-500 block text-xs">Priority:</span> <span class="priority-high">High</span></div>
+                            <div><span class="text-slate-500 block text-xs">Category:</span> <span>Network / Wi-Fi</span></div>
+                            <div><span class="text-slate-500 block text-xs">Created:</span> <span>Today, 08:30 AM</span></div>
+                        </div>
+                        <div>
+                            <span class="text-slate-500 block text-xs mb-2">Description:</span>
+                            <p class="text-slate-700 whitespace-pre-wrap font-serif" id="modal-desc">
+Hi IT,
+The new training session starts in Class 3 at 11:00 AM. 
+We need the new Access Point mounted and configured immediately so instructors have internet.
+Please ensure it is secure so students cannot guess the password.
+
+Thanks,
+Suresh
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- Resolution Box (Hidden initially) -->
+                    <div id="resolve-box" class="hidden bg-green-50 border border-green-200 rounded-lg p-4 shadow-sm animate-[fadeIn_0.3s_ease-out]">
+                        <h3 class="font-bold text-green-800 mb-2">Resolution Note</h3>
+                        <p class="text-xs text-green-700 mb-2">Document what you did to fix the issue. This will be emailed to the requester.</p>
+                        <textarea id="res-note" rows="4" class="w-full border border-green-300 rounded p-2 text-sm focus:outline-none focus:ring-2 focus:ring-green-500 bg-white" placeholder="Example: Configured the new Access Point with SSID 'IRICEN_Classroom3' and WPA2 security..."></textarea>
+                        
+                        <div class="flex justify-end gap-2 mt-3">
+                            <button onclick="closeResolveBox()" class="px-3 py-1 bg-white border border-gray-300 text-gray-700 rounded text-sm hover:bg-gray-50 transition">Cancel</button>
+                            <button onclick="submitResolution()" class="px-4 py-1 bg-green-600 text-white rounded font-bold text-sm hover:bg-green-700 transition shadow-sm">Submit Resolution & Close</button>
+                        </div>
+                    </div>
+                    
+                    <!-- Activity Log -->
+                    <div>
+                        <h3 class="text-sm font-bold text-slate-700 mb-3 border-b border-slate-200 pb-1">Activity Log</h3>
+                        <div class="space-y-4" id="activity-log">
+                            <div class="flex gap-3 text-sm">
+                                <div class="w-8 h-8 rounded-full bg-slate-200 flex items-center justify-center shrink-0">SP</div>
+                                <div>
+                                    <p class="text-slate-800 font-medium">Suresh Patil <span class="text-slate-400 font-normal text-xs ml-2">Today, 08:30 AM</span></p>
+                                    <p class="text-slate-600 mt-1">Ticket created.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </main>
+
+    </div>
+
+    <!-- Success Toast -->
+    <div id="toast" class="fixed bottom-6 left-1/2 -translate-x-1/2 bg-slate-800 text-white px-6 py-3 rounded-lg shadow-2xl font-medium opacity-0 transition-opacity duration-300 z-50 pointer-events-none flex items-center gap-2">
+        <svg class="w-5 h-5 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+        Ticket #1045 Resolved Successfully!
+    </div>
+
+    <script>
+        // Data State
+        let currentTicketId = null;
+        let isAssigned = false;
+
+        // UI Functions
+        function openTicket(id) {
+            currentTicketId = id;
+            
+            // For simulator purposes, if it's not 1045, tell them wrong ticket
+            if(id !== '1045') {
+                alert("Mission Alert: Focus on Ticket #1045 first! The Classroom 3 Wi-Fi is critical.");
+                return;
+            }
+
+            const modal = document.getElementById('ticket-modal');
+            modal.classList.remove('translate-x-full');
+            
+            // Reset state if reopened
+            if(!isAssigned) {
+                document.getElementById('btn-assign').classList.remove('hidden');
+                document.getElementById('btn-resolve').classList.add('hidden');
+            }
+        }
+
+        function closeTicket() {
+            const modal = document.getElementById('ticket-modal');
+            modal.classList.add('translate-x-full');
+            closeResolveBox();
+        }
+
+        function assignToMe() {
+            isAssigned = true;
+            
+            // Update UI Buttons
+            document.getElementById('btn-assign').classList.add('hidden');
+            document.getElementById('btn-resolve').classList.remove('hidden');
+            
+            // Update Modal Badge
+            const modalBadge = document.getElementById('modal-badge');
+            modalBadge.className = 'status-badge status-progress';
+            modalBadge.innerText = 'In Progress';
+            
+            // Update List Badge
+            const listBadge = document.getElementById('badge-1045');
+            listBadge.className = 'status-badge status-progress';
+            listBadge.innerText = 'In Progress';
+            
+            // Update Activity Log
+            const log = document.getElementById('activity-log');
+            log.innerHTML += `
+                <div class="flex gap-3 text-sm animate-[fadeIn_0.3s_ease-out]">
+                    <div class="w-8 h-8 rounded-full bg-blue-500 text-white flex items-center justify-center shrink-0">RE</div>
+                    <div>
+                        <p class="text-slate-800 font-medium">Resident Engineer <span class="text-slate-400 font-normal text-xs ml-2">Just now</span></p>
+                        <p class="text-blue-600 font-medium mt-1">Status changed from New to In Progress.</p>
+                    </div>
+                </div>
+            `;
+            
+            // Update Side Counters
+            document.getElementById('count-unassigned').innerText = '2';
+            document.getElementById('count-mine').innerText = '1';
+        }
+
+        function openResolveBox() {
+            document.getElementById('resolve-box').classList.remove('hidden');
+            document.getElementById('res-note').focus();
+        }
+
+        function closeResolveBox() {
+            document.getElementById('resolve-box').classList.add('hidden');
+            document.getElementById('res-note').value = '';
+        }
+
+        function submitResolution() {
+            const note = document.getElementById('res-note').value.trim();
+            
+            if (note.length < 10) {
+                alert("Please write a detailed resolution note (at least 10 characters). Explain what you did.");
+                return;
+            }
+
+            // Close Modal
+            closeTicket();
+            
+            // Update List Row
+            const row = document.getElementById('row-1045');
+            row.classList.add('opacity-50', 'bg-green-50');
+            row.style.pointerEvents = 'none'; // disable clicking
+            
+            const listBadge = document.getElementById('badge-1045');
+            listBadge.className = 'status-badge status-resolved';
+            listBadge.innerText = 'Resolved';
+            
+            // Update Counters
+            document.getElementById('count-mine').innerText = '0';
+            document.getElementById('count-resolved').innerText = '13';
+
+            // Show Toast
+            const toast = document.getElementById('toast');
+            toast.classList.remove('opacity-0');
+            setTimeout(() => {
+                toast.classList.add('opacity-0');
+            }, 4000);
+        }
+    </script>
+</body>
+</html>

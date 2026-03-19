@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Router Config Simulator - Level 5</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap');
+        body { font-family: 'Roboto', sans-serif; background-color: #f4f6f8; }
+        
+        .router-header { background: linear-gradient(90deg, #1e3a8a, #3b82f6); }
+        .nav-item.active { background-color: #e0e7ff; color: #1e40af; border-left: 4px solid #1e40af; font-weight: 700; }
+        .nav-item { border-left: 4px solid transparent; cursor: pointer; transition: all 0.2s; }
+        .nav-item:hover:not(.active) { background-color: #f1f5f9; }
+        
+        /* Loading Bar */
+        @keyframes fillBar { 0% { width: 0%; } 100% { width: 100%; } }
+        .animate-fill { animation: fillBar 3s ease-in-out forwards; }
+    </style>
+</head>
+<body class="h-screen flex items-center justify-center p-4">
+
+    <!-- LOGIN SCREEN -->
+    <div id="login-screen" class="w-full max-w-sm bg-white rounded-lg shadow-2xl overflow-hidden z-50 absolute">
+        <div class="router-header p-6 text-center text-white">
+            <h1 class="text-2xl font-bold">NetConfig Pro</h1>
+            <p class="text-sm opacity-80">Router Management Utility</p>
+        </div>
+        <div class="p-6 space-y-4">
+            <div id="login-error" class="hidden bg-red-50 text-red-600 text-xs p-2 rounded border border-red-200 text-center">
+                Invalid Username or Password.
+            </div>
+            <p class="text-xs text-gray-500 text-center mb-4">Please enter default factory credentials to continue.</p>
+            <div>
+                <label class="block text-sm text-gray-700 mb-1">Username</label>
+                <input type="text" id="login-user" class="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500" value="admin">
+            </div>
+            <div>
+                <label class="block text-sm text-gray-700 mb-1">Password</label>
+                <input type="password" id="login-pass" class="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500">
+            </div>
+            <button onclick="attemptLogin()" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded transition mt-2">
+                Login
+            </button>
+        </div>
+    </div>
+
+    <!-- ROUTER INTERFACE (Hidden initially) -->
+    <div id="router-ui" class="hidden w-full max-w-5xl h-[80vh] bg-white rounded-lg shadow-2xl overflow-hidden flex flex-col relative opacity-0 transition-opacity duration-500">
+        
+        <!-- Header -->
+        <header class="router-header px-6 py-4 flex justify-between items-center text-white shrink-0">
+            <div class="flex items-center gap-2">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.111 16.404a5.5 5.5 0 017.778 0M12 20h.01m-7.08-7.071c3.904-3.905 10.236-3.906 14.142 0M1.394 9.393c5.857-5.857 15.355-5.857 21.213 0"></path></svg>
+                <span class="font-bold text-lg tracking-wide">NetConfig Pro AP-1200</span>
+            </div>
+            <div class="flex items-center gap-4 text-sm">
+                <span class="text-blue-200">Firmware: V1.4.2</span>
+                <button onclick="location.reload()" class="bg-blue-800 hover:bg-blue-900 px-3 py-1 rounded border border-blue-700 transition">Logout</button>
+            </div>
+        </header>
+
+        <!-- Main Body -->
+        <div class="flex flex-1 overflow-hidden">
+            
+            <!-- Sidebar -->
+            <aside class="w-64 bg-gray-50 border-r border-gray-200 flex flex-col shrink-0">
+                <div class="py-2">
+                    <div onclick="switchTab('status')" id="nav-status" class="nav-item active px-6 py-3 text-sm text-gray-700 flex items-center gap-3">
+                        <svg class="w-5 h-5 opacity-70" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                        System Status
+                    </div>
+                    <div onclick="switchTab('wireless')" id="nav-wireless" class="nav-item px-6 py-3 text-sm text-gray-700 flex items-center gap-3">
+                        <svg class="w-5 h-5 opacity-70" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.111 16.404a5.5 5.5 0 017.778 0M12 20h.01m-7.08-7.071c3.904-3.905 10.236-3.906 14.142 0M1.394 9.393c5.857-5.857 15.355-5.857 21.213 0"></path></svg>
+                        Wireless Settings
+                    </div>
+                    <div class="nav-item px-6 py-3 text-sm text-gray-400 flex items-center gap-3 cursor-not-allowed">
+                        <svg class="w-5 h-5 opacity-70" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9"></path></svg>
+                        Network (WAN/LAN)
+                    </div>
+                    <div class="nav-item px-6 py-3 text-sm text-gray-400 flex items-center gap-3 cursor-not-allowed">
+                        <svg class="w-5 h-5 opacity-70" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg>
+                        Security & Firewall
+                    </div>
+                </div>
+            </aside>
+
+            <!-- Content Area -->
+            <main class="flex-1 bg-white p-8 overflow-y-auto">
+                
+                <!-- VIEW 1: Status -->
+                <div id="view-status">
+                    <h2 class="text-2xl font-bold text-gray-800 border-b border-gray-200 pb-2 mb-6">Device Status</h2>
+                    
+                    <div class="grid grid-cols-2 gap-6">
+                        <div class="bg-gray-50 p-4 border border-gray-200 rounded">
+                            <h3 class="font-bold text-gray-700 mb-3 text-sm uppercase">Device Information</h3>
+                            <div class="space-y-2 text-sm">
+                                <div class="flex justify-between"><span class="text-gray-500">Uptime:</span> <span class="font-mono">0 days, 00:05:23</span></div>
+                                <div class="flex justify-between"><span class="text-gray-500">Hardware Version:</span> <span>v2.0</span></div>
+                                <div class="flex justify-between"><span class="text-gray-500">MAC Address:</span> <span class="font-mono text-gray-700">A4:2B:C5:99:E1:00</span></div>
+                            </div>
+                        </div>
+
+                        <div class="bg-red-50 p-4 border border-red-200 rounded" id="status-wireless-card">
+                            <h3 class="font-bold text-red-700 mb-3 text-sm uppercase flex items-center gap-2">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
+                                Wireless State (Insecure)
+                            </h3>
+                            <div class="space-y-2 text-sm">
+                                <div class="flex justify-between"><span class="text-gray-600">SSID:</span> <span class="font-bold text-gray-800" id="stat-ssid">WLAN_DEFAULT</span></div>
+                                <div class="flex justify-between"><span class="text-gray-600">Security:</span> <span class="font-bold text-red-600" id="stat-sec">Open (None)</span></div>
+                                <div class="flex justify-between"><span class="text-gray-600">Status:</span> <span class="text-green-600 font-bold">Broadcasting</span></div>
+                            </div>
+                            <div class="mt-4 text-xs text-red-600 bg-red-100 p-2 rounded border border-red-200">
+                                <strong>Warning:</strong> The network is currently open. Anyone can connect. Please configure security settings immediately.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- VIEW 2: Wireless Settings -->
+                <div id="view-wireless" class="hidden">
+                    <h2 class="text-2xl font-bold text-gray-800 border-b border-gray-200 pb-2 mb-6">Wireless Network Setup</h2>
+                    
+                    <div id="setup-form" class="max-w-xl space-y-6">
+                        
+                        <!-- Basic Setup -->
+                        <div class="bg-gray-50 p-5 border border-gray-200 rounded shadow-sm">
+                            <h3 class="font-bold text-gray-800 mb-4 border-b border-gray-200 pb-2">Basic Wireless Settings</h3>
+                            <div class="space-y-4">
+                                <div class="flex items-center">
+                                    <label class="w-1/3 text-sm font-medium text-gray-700">Wireless Radio:</label>
+                                    <div class="w-2/3">
+                                        <select class="border border-gray-300 rounded px-2 py-1 w-32 bg-white text-sm">
+                                            <option>Enable</option>
+                                            <option>Disable</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="flex items-center">
+                                    <label class="w-1/3 text-sm font-medium text-gray-700">Network Name (SSID):</label>
+                                    <div class="w-2/3">
+                                        <input type="text" id="in-ssid" value="WLAN_DEFAULT" class="border border-gray-300 rounded px-3 py-1.5 w-full text-sm focus:border-blue-500 focus:outline-none">
+                                        <p class="text-[10px] text-gray-500 mt-1">This is the name clients will see when scanning for Wi-Fi.</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Security Setup -->
+                        <div class="bg-gray-50 p-5 border border-gray-200 rounded shadow-sm">
+                            <h3 class="font-bold text-gray-800 mb-4 border-b border-gray-200 pb-2">Wireless Security</h3>
+                            <div class="space-y-4">
+                                <div class="flex items-center">
+                                    <label class="w-1/3 text-sm font-medium text-gray-700">Security Mode:</label>
+                                    <div class="w-2/3">
+                                        <select id="in-sec" class="border border-gray-300 rounded px-2 py-1 w-full bg-white text-sm focus:border-blue-500 focus:outline-none" onchange="togglePasswordBox()">
+                                            <option value="none">Disable Security (Open)</option>
+                                            <option value="wep">WEP (Insecure)</option>
+                                            <option value="wpa">WPA-PSK</option>
+                                            <option value="wpa2">WPA2-PSK (Recommended)</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                
+                                <div id="password-group" class="hidden items-center transition-all">
+                                    <label class="w-1/3 text-sm font-medium text-gray-700">Wi-Fi Password:</label>
+                                    <div class="w-2/3">
+                                        <input type="text" id="in-pass" class="border border-gray-300 rounded px-3 py-1.5 w-full text-sm focus:border-blue-500 focus:outline-none" placeholder="Enter new password">
+                                        <p class="text-[10px] text-gray-500 mt-1">Must be at least 8 characters.</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="pt-4 flex justify-end gap-3 border-t border-gray-200">
+                            <div id="error-msg" class="text-red-500 text-sm font-bold flex-1 hidden"></div>
+                            <button class="px-4 py-2 bg-gray-200 text-gray-700 rounded hover:bg-gray-300 text-sm transition font-medium">Cancel</button>
+                            <button onclick="saveSettings()" class="px-6 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 text-sm transition font-bold shadow">Apply / Save</button>
+                        </div>
+
+                    </div>
+                </div>
+
+            </main>
+        </div>
+
+        <!-- Rebooting Overlay -->
+        <div id="reboot-overlay" class="hidden absolute inset-0 bg-white/90 z-40 flex flex-col items-center justify-center backdrop-blur-sm">
+            <h2 class="text-2xl font-bold text-gray-800 mb-2">Rebooting Device...</h2>
+            <p class="text-gray-500 mb-8">Applying new wireless settings.</p>
+            
+            <div class="w-64 h-3 bg-gray-200 rounded-full overflow-hidden">
+                <div id="progress-bar" class="h-full bg-blue-600 w-0"></div>
+            </div>
+            
+            <p id="reboot-pct" class="mt-2 text-sm font-bold text-blue-600">0%</p>
+        </div>
+
+    </div>
+
+    <!-- Task Panel (The Mission) -->
+    <div class="absolute bottom-4 right-4 bg-yellow-50 border border-yellow-300 rounded shadow-lg p-4 w-72 z-50">
+        <h3 class="font-bold text-yellow-800 border-b border-yellow-200 pb-1 mb-2">Mission: Class 3 Setup</h3>
+        <ul class="text-xs text-yellow-900 space-y-1.5 list-disc pl-4">
+            <li>Log in: <span class="font-mono font-bold">admin</span> / <span class="font-mono font-bold">admin</span></li>
+            <li>Set SSID: <span class="font-mono font-bold">IRICEN_Classroom3</span></li>
+            <li>Set Security: <span class="font-mono font-bold">WPA2-PSK</span></li>
+            <li>Set Pass: <span class="font-mono font-bold">Pune@2026</span></li>
+        </ul>
+    </div>
+
+    <!-- Success Modal -->
+    <div id="success-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black/60">
+        <div class="bg-white p-8 rounded-xl shadow-2xl text-center max-w-sm transform transition-all animate-[scaleIn_0.3s_ease-out]">
+            <div class="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                <svg class="w-8 h-8 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path></svg>
+            </div>
+            <h2 class="text-2xl font-bold text-gray-800 mb-2">Setup Complete!</h2>
+            <p class="text-sm text-gray-600 mb-6">You successfully secured the Access Point. Devices can now securely connect to <strong class="text-blue-600">IRICEN_Classroom3</strong>.</p>
+            <button onclick="location.reload()" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-6 rounded-full transition shadow-md">Complete Module</button>
+        </div>
+    </div>
+
+    <script>
+        // -- LOGIN LOGIC --
+        function attemptLogin() {
+            const user = document.getElementById('login-user').value;
+            const pass = document.getElementById('login-pass').value;
+            const err = document.getElementById('login-error');
+
+            if (user === 'admin' && pass === 'admin') {
+                document.getElementById('login-screen').classList.add('hidden');
+                const ui = document.getElementById('router-ui');
+                ui.classList.remove('hidden');
+                
+                // Fade in effect
+                setTimeout(() => {
+                    ui.classList.remove('opacity-0');
+                    ui.classList.add('opacity-100');
+                }, 50);
+            } else {
+                err.classList.remove('hidden');
+            }
+        }
+
+        // Allow 'Enter' key to login
+        document.getElementById('login-pass').addEventListener('keypress', function (e) {
+            if (e.key === 'Enter') attemptLogin();
+        });
+
+        // -- NAVIGATION LOGIC --
+        function switchTab(tab) {
+            // Update Menu
+            document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+            document.getElementById(`nav-${tab}`).classList.add('active');
+
+            // Update View
+            document.getElementById('view-status').classList.add('hidden');
+            document.getElementById('view-wireless').classList.add('hidden');
+            document.getElementById(`view-${tab}`).classList.remove('hidden');
+        }
+
+        // -- UI LOGIC --
+        function togglePasswordBox() {
+            const secMode = document.getElementById('in-sec').value;
+            const passGroup = document.getElementById('password-group');
+            
+            if (secMode === 'wpa' || secMode === 'wpa2') {
+                passGroup.classList.remove('hidden');
+                passGroup.classList.add('flex');
+            } else {
+                passGroup.classList.add('hidden');
+                passGroup.classList.remove('flex');
+            }
+        }
+
+        // -- VALIDATION & SAVE LOGIC --
+        function saveSettings() {
+            const ssid = document.getElementById('in-ssid').value.trim();
+            const secMode = document.getElementById('in-sec').value;
+            const pass = document.getElementById('in-pass').value;
+            const errMsg = document.getElementById('error-msg');
+            
+            errMsg.classList.add('hidden');
+
+            // Mission Validations
+            if (ssid !== 'IRICEN_Classroom3') {
+                showError("Mission Failed: SSID must be exactly 'IRICEN_Classroom3'");
+                return;
+            }
+            if (secMode !== 'wpa2') {
+                showError("Mission Failed: Security mode must be WPA2-PSK");
+                return;
+            }
+            if (pass !== 'Pune@2026') {
+                showError("Mission Failed: Password must be 'Pune@2026'");
+                return;
+            }
+
+            // If success, trigger reboot animation
+            startReboot();
+        }
+
+        function showError(msg) {
+            const errMsg = document.getElementById('error-msg');
+            errMsg.innerText = msg;
+            errMsg.classList.remove('hidden');
+            errMsg.classList.add('animate-pulse');
+            setTimeout(() => errMsg.classList.remove('animate-pulse'), 1000);
+        }
+
+        function startReboot() {
+            const overlay = document.getElementById('reboot-overlay');
+            const bar = document.getElementById('progress-bar');
+            const pct = document.getElementById('reboot-pct');
+            
+            overlay.classList.remove('hidden');
+            bar.classList.add('animate-fill');
+
+            let progress = 0;
+            const interval = setInterval(() => {
+                progress += Math.floor(Math.random() * 5) + 1;
+                if (progress >= 100) {
+                    progress = 100;
+                    clearInterval(interval);
+                    setTimeout(showSuccess, 500); // show success after bar finishes
+                }
+                pct.innerText = progress + '%';
+            }, 100);
+        }
+
+        function showSuccess() {
+            document.getElementById('reboot-overlay').classList.add('hidden');
+            document.getElementById('success-modal').classList.remove('hidden');
+            
+            // Update Status Screen silently in background
+            document.getElementById('stat-ssid').innerText = "IRICEN_Classroom3";
+            document.getElementById('stat-sec').innerText = "WPA2-PSK";
+            document.getElementById('stat-sec').className = "font-bold text-green-600";
+            
+            const card = document.getElementById('status-wireless-card');
+            card.className = "bg-green-50 p-4 border border-green-200 rounded";
+            card.innerHTML = `
+                <h3 class="font-bold text-green-700 mb-3 text-sm uppercase flex items-center gap-2">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
+                    Wireless State (Secured)
+                </h3>
+                <div class="space-y-2 text-sm">
+                    <div class="flex justify-between"><span class="text-gray-600">SSID:</span> <span class="font-bold text-gray-800">IRICEN_Classroom3</span></div>
+                    <div class="flex justify-between"><span class="text-gray-600">Security:</span> <span class="font-bold text-green-600">WPA2-PSK</span></div>
+                    <div class="flex justify-between"><span class="text-gray-600">Status:</span> <span class="text-green-600 font-bold">Broadcasting</span></div>
+                </div>
+            `;
+        }
+    </script>
+</body>
+</html>

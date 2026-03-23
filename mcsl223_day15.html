@@ -1,0 +1,570 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>MCSL-222/223 Day 15: Super Sunday Lab | WEKA Toolkit | Data Flow Diagrams (DFD)</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+            background: linear-gradient(135deg, #eef2ef 0%, #e2e8e0 100%);
+            color: #1e2f2a;
+            line-height: 1.5;
+            padding: 2rem 1.5rem;
+        }
+
+        .master-textbook {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        /* header */
+        .lab-header {
+            background: linear-gradient(135deg, #2c6e5e 0%, #3f8a78 100%);
+            border-radius: 2rem 2rem 1.8rem 1.8rem;
+            padding: 1.8rem 2rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 12px 28px -12px rgba(0,0,0,0.3);
+        }
+        .lab-header h1 {
+            font-size: 2rem;
+            font-weight: 700;
+            color: white;
+            letter-spacing: -0.3px;
+        }
+        .lab-header h1 span {
+            background: #f4b942;
+            font-size: 1rem;
+            padding: 0.2rem 1rem;
+            border-radius: 40px;
+            margin-left: 0.8rem;
+            vertical-align: middle;
+            color: #1e2f1e;
+        }
+        .lab-badge {
+            display: inline-block;
+            background: #f4b942cc;
+            padding: 0.25rem 1rem;
+            border-radius: 30px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            margin-top: 0.6rem;
+            color: #1e3a2a;
+        }
+        .lab-header p {
+            color: #d4f0e8;
+            margin-top: 0.8rem;
+        }
+
+        /* topics grid */
+        .topics-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .topic-card {
+            background: white;
+            border-radius: 1.8rem;
+            overflow: hidden;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.08);
+            border: 1px solid #d4e0d4;
+        }
+
+        .topic-title {
+            background: #fafef7;
+            padding: 1rem 2rem;
+            border-bottom: 2px solid #e0ecd8;
+        }
+        .topic-title h2 {
+            font-size: 1.7rem;
+            font-weight: 600;
+            color: #2c7a6b;
+        }
+        .topic-title p {
+            color: #5b7c68;
+            font-size: 0.9rem;
+        }
+
+        .theory-body {
+            padding: 1.5rem 2rem;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+        }
+
+        .explain-text {
+            background: #ffffff;
+        }
+        .explain-text h3 {
+            font-size: 1.3rem;
+            font-weight: 600;
+            margin-bottom: 0.75rem;
+            color: #2c7a6b;
+            border-left: 5px solid #f4b942;
+            padding-left: 0.8rem;
+        }
+        .explain-text p, .explain-text li {
+            margin-bottom: 0.8rem;
+            color: #2c4a3a;
+        }
+        .explain-text ul, .explain-text ol {
+            padding-left: 1.5rem;
+            margin: 0.7rem 0;
+        }
+        .example-block {
+            background: #fef9e8;
+            border-radius: 1.2rem;
+            padding: 0.9rem 1.2rem;
+            margin: 1rem 0;
+            border-left: 4px solid #f4b942;
+        }
+        .code-block {
+            background: #1e2f2a;
+            color: #b3ffcf;
+            padding: 0.6rem;
+            border-radius: 0.8rem;
+            font-family: 'Fira Code', monospace;
+            font-size: 0.7rem;
+            overflow-x: auto;
+            margin: 0.8rem 0;
+        }
+
+        /* playground widgets */
+        .playground {
+            background: #fafef7;
+            border-radius: 1.5rem;
+            padding: 1rem;
+            box-shadow: inset 0 0 0 1px #d8ecd8, 0 4px 12px rgba(0,0,0,0.02);
+        }
+        .playground h4 {
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: #2c7a6b;
+        }
+
+        /* WEKA Simulator */
+        .weka-sim {
+            background: #eef3e8;
+            border-radius: 1rem;
+            padding: 1rem;
+        }
+        .dataset-preview {
+            background: #fffaf0;
+            border-radius: 0.8rem;
+            padding: 0.6rem;
+            font-family: monospace;
+            font-size: 0.7rem;
+            margin: 0.5rem 0;
+        }
+        .filter-buttons {
+            display: flex;
+            gap: 0.5rem;
+            justify-content: center;
+            margin: 0.8rem 0;
+            flex-wrap: wrap;
+        }
+
+        /* DFD Visualizer */
+        .dfd-viz {
+            background: #eef3e8;
+            border-radius: 1rem;
+            padding: 1rem;
+            min-height: 280px;
+        }
+        .dfd-canvas {
+            background: #fffaf0;
+            border-radius: 0.8rem;
+            padding: 0.8rem;
+            text-align: center;
+            margin-bottom: 0.8rem;
+        }
+        .dfd-level-buttons {
+            display: flex;
+            gap: 0.8rem;
+            justify-content: center;
+            margin: 0.5rem 0;
+        }
+
+        button {
+            background: #3e8a7a;
+            border: none;
+            padding: 0.4rem 1rem;
+            border-radius: 40px;
+            color: white;
+            font-weight: 500;
+            cursor: pointer;
+            font-family: inherit;
+            margin: 0.2rem;
+        }
+        button:hover {
+            background: #2c6e5e;
+        }
+        .active-btn {
+            background: #f4b942;
+            color: #1e2f1e;
+        }
+
+        /* Viva Section */
+        .viva-section {
+            background: white;
+            border-radius: 1.8rem;
+            margin-top: 2rem;
+            padding: 1.8rem 2rem;
+            border: 1px solid #d4e0d4;
+        }
+        .viva-section h2 {
+            font-size: 1.7rem;
+            font-weight: 700;
+            color: #2c7a6b;
+            border-left: 5px solid #f4b942;
+            padding-left: 1rem;
+            margin-bottom: 1.5rem;
+        }
+        .viva-item {
+            margin-bottom: 1.8rem;
+            border-bottom: 1px solid #e0ecd8;
+            padding-bottom: 1rem;
+        }
+        .viva-question {
+            font-weight: 700;
+            font-size: 1rem;
+            color: #2c7a6b;
+            margin-bottom: 0.5rem;
+        }
+        .viva-answer {
+            color: #2f5b48;
+            padding-left: 1rem;
+            border-left: 3px solid #f4b94280;
+        }
+
+        @media (max-width: 850px) {
+            .theory-body {
+                grid-template-columns: 1fr;
+                gap: 1.5rem;
+            }
+            body {
+                padding: 1rem;
+            }
+        }
+        footer {
+            text-align: center;
+            margin-top: 2rem;
+            font-size: 0.75rem;
+            color: #6f8e70;
+        }
+        .week-complete {
+            background: #e8f0e5;
+            border-radius: 1rem;
+            padding: 1rem;
+            text-align: center;
+            margin-top: 1rem;
+        }
+    </style>
+</head>
+<body>
+<div class="master-textbook">
+    <div class="lab-header">
+        <h1>🧪 MCSL-222/223: Super Sunday Lab Session <span>Day 15</span></h1>
+        <div class="lab-badge">🔧 WEKA Toolkit | Data Flow Diagrams (DFD) | Practical Walkthrough</div>
+        <p>Hands-on: ARFF datasets, ReplaceMissingValues filter • Context Diagram & Level-1 DFD for Student Registration System</p>
+    </div>
+
+    <div class="topics-grid">
+        <!-- Part 1: WEKA Toolkit -->
+        <div class="topic-card">
+            <div class="topic-title">
+                <h2>📊 1. Data Mining Lab (MCSL-223) - WEKA Toolkit</h2>
+                <p>ARFF format • Preprocessing • ReplaceMissingValues filter</p>
+            </div>
+            <div class="theory-body">
+                <div class="explain-text">
+                    <h3>📖 Setup & Walkthrough</h3>
+                    <p><strong>WEKA</strong> (Waikato Environment for Knowledge Analysis) is a Java-based open-source tool for data mining. Uses <strong>ARFF</strong> format:</p>
+                    <ul>
+                        <li><strong>Header:</strong> @relation, @attribute definitions</li>
+                        <li><strong>Data:</strong> @data with comma-separated values</li>
+                    </ul>
+                    <div class="example-block">
+                        🧹 <strong>Preprocessing Steps:</strong><br>
+                        1. Open WEKA Explorer → Preprocess tab<br>
+                        2. Load dataset (e.g., weather.nominal.arff)<br>
+                        3. Choose Filter: unsupervised → attribute → ReplaceMissingValues<br>
+                        4. Apply → Missing values filled with mean/mode
+                    </div>
+                    <div class="code-block">
+                        <strong>Sample ARFF Format:</strong><br>
+                        @relation weather<br>
+                        @attribute outlook {sunny, overcast, rainy}<br>
+                        @attribute temperature numeric<br>
+                        @attribute play {yes, no}<br>
+                        @data<br>
+                        sunny,85,yes<br>
+                        overcast,?,yes<br>
+                        rainy,68,no
+                    </div>
+                </div>
+                <div class="playground">
+                    <h4>🎮 WEKA Simulator (Missing Values Demo)</h4>
+                    <div class="weka-sim">
+                        <div class="dataset-preview" id="wekaDataset">
+                            <strong>📁 weather.nominal.arff (Sample Data)</strong><br>
+                            outlook,temperature,humidity,play<br>
+                            sunny,85,85,no<br>
+                            sunny,80,90,no<br>
+                            overcast,?,83,yes<br>
+                            rainy,70,?,yes<br>
+                            rainy,68,80,no
+                        </div>
+                        <div class="filter-buttons">
+                            <button id="applyMissingFilter">🔧 Apply ReplaceMissingValues Filter</button>
+                            <button id="resetDataset">⟳ Reset Dataset</button>
+                        </div>
+                        <div id="filterResult" class="dataset-preview" style="background:#e0f0dc;">
+                            💡 Click "Apply Filter" to replace missing values (?) with mean/mode
+                        </div>
+                        <div style="font-size:0.65rem; margin-top:0.5rem; text-align:center;">
+                            📌 ReplaceMissingValues fills numeric with mean, nominal with mode.
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Part 2: OOAD Lab - DFD Creation -->
+        <div class="topic-card">
+            <div class="topic-title">
+                <h2>📐 2. OOAD Lab (MCSL-222) - Data Flow Diagrams (DFD)</h2>
+                <p>Context Diagram (Level-0) → Level-1 DFD for Student Registration System</p>
+            </div>
+            <div class="theory-body">
+                <div class="explain-text">
+                    <h3>📖 Setup & Walkthrough</h3>
+                    <p><strong>Level-0 (Context Diagram):</strong> Single process bubble (Student Registration System) with external entity Student. Data flows: Application Form → System → Registration Receipt.</p>
+                    <p><strong>Level-1 DFD:</strong> Decompose into sub-processes: 1.0 Verify Details, 2.0 Process Payment, 3.0 Generate Receipt + Data Store Student_DB.</p>
+                    <div class="example-block">
+                        🎓 <strong>Student Registration System DFD:</strong><br>
+                        • External Entity: Student<br>
+                        • Processes: Verify Details, Process Payment, Generate Receipt<br>
+                        • Data Store: D1 Student_Database
+                    </div>
+                </div>
+                <div class="playground">
+                    <h4>🎮 Interactive DFD Builder</h4>
+                    <div class="dfd-viz">
+                        <div class="dfd-canvas" id="dfdCanvas">
+                            <strong>📄 Level-0 Context Diagram</strong><br>
+                            ┌─────────────────────────────┐<br>
+                            │   Student Registration     │<br>
+                            │         System             │<br>
+                            │         (0.0)              │<br>
+                            └─────────────────────────────┘<br>
+                            ↑ Application Form    ↓ Registration Receipt<br>
+                            Student ──────────────────────────→ Student
+                        </div>
+                        <div class="dfd-level-buttons">
+                            <button id="level0Btn" class="active-btn">📄 Level-0 (Context)</button>
+                            <button id="level1Btn">🔍 Level-1 DFD (Detailed)</button>
+                        </div>
+                        <div id="dfdExplanation" style="font-size:0.7rem; margin-top:0.5rem; text-align:center; background:#eef3e8; border-radius:0.5rem; padding:0.4rem;">
+                            💡 Context Diagram: Single process bubble shows system boundaries. No internal data stores.
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Viva & Practical Exam Questions -->
+    <div class="viva-section">
+        <h2>🎤 Viva & Practical Exam Questions (MCSL-222/223)</h2>
+        <div class="viva-item">
+            <div class="viva-question">Q1. What does WEKA stand for, and what language is it written in?</div>
+            <div class="viva-answer"><strong>Answer:</strong> WEKA stands for Waikato Environment for Knowledge Analysis. It is written entirely in Java, making it platform-independent.</div>
+        </div>
+        <div class="viva-item">
+            <div class="viva-question">Q2. What is the default file format used by WEKA to load datasets? Describe its structure.</div>
+            <div class="viva-answer"><strong>Answer:</strong> ARFF (Attribute-Relation File Format). Structure: <strong>Header</strong> – @relation (dataset name), @attribute (columns with types). <strong>Data</strong> – @data followed by comma-separated instances.</div>
+        </div>
+        <div class="viva-item">
+            <div class="viva-question">Q3. If a dataset has missing values, which specific tool or filter in WEKA would you use to handle it?</div>
+            <div class="viva-answer"><strong>Answer:</strong> The <strong>ReplaceMissingValues</strong> filter under unsupervised → attribute. It replaces missing numeric values with mean and nominal with mode from the training data.</div>
+        </div>
+        <div class="viva-item">
+            <div class="viva-question">Q4. In a Data Flow Diagram (DFD), what symbol is used to represent a Data Store (database), and what does it signify?</div>
+            <div class="viva-answer"><strong>Answer:</strong> A Data Store is represented by two parallel lines or an open-ended rectangle. It signifies data at rest — a repository like a database table or file cabinet.</div>
+        </div>
+        <div class="viva-item">
+            <div class="viva-question">Q5. Can two external entities communicate directly with each other in a DFD?</div>
+            <div class="viva-answer"><strong>Answer:</strong> No. External entities cannot directly communicate; all data must pass through at least one process bubble that transforms the data.</div>
+        </div>
+    </div>
+
+    <div class="week-complete">
+        🎉 <strong>Week 2 Complete!</strong> 🎉<br>
+        You've mastered Data Mining tools (WEKA) and OOAD diagrams (DFD). Ready for Week 3: MCS-220 Design Patterns & Spring Boot Basics — Day 16 starts tomorrow!
+    </div>
+    <footer>📘 MCA Sem-2 Master Mentorship — Day 15: Super Sunday Lab. WEKA preprocessing & DFD creation. Keep practicing these tools for lab exams.</footer>
+</div>
+
+<script>
+    // ----- WEKA Simulator: ReplaceMissingValues Filter -----
+    let dataset = [
+        "sunny,85,85,no",
+        "sunny,80,90,no",
+        "overcast,?,83,yes",
+        "rainy,70,?,yes",
+        "rainy,68,80,no"
+    ];
+    
+    function updateWekaDisplay() {
+        const previewDiv = document.getElementById('wekaDataset');
+        previewDiv.innerHTML = `<strong>📁 weather.nominal.arff (Sample Data)</strong><br>outlook,temperature,humidity,play<br>${dataset.join('<br>')}`;
+    }
+    
+    function applyMissingFilter() {
+        // Calculate mean for temperature (exclude missing)
+        let tempValues = [];
+        dataset.forEach(row => {
+            let parts = row.split(',');
+            let temp = parts[1];
+            if (temp !== '?') tempValues.push(parseInt(temp));
+        });
+        let meanTemp = tempValues.reduce((a,b) => a+b, 0) / tempValues.length;
+        
+        // Calculate mode for humidity (most common)
+        let humidityValues = [];
+        dataset.forEach(row => {
+            let parts = row.split(',');
+            let hum = parts[2];
+            if (hum !== '?') humidityValues.push(hum);
+        });
+        let modeHumidity = humidityValues.sort((a,b) => 
+            humidityValues.filter(v => v === a).length - humidityValues.filter(v => v === b).length
+        ).pop();
+        
+        // Apply replacements
+        let filteredDataset = dataset.map(row => {
+            let parts = row.split(',');
+            if (parts[1] === '?') parts[1] = Math.round(meanTemp).toString();
+            if (parts[2] === '?') parts[2] = modeHumidity;
+            return parts.join(',');
+        });
+        
+        const resultDiv = document.getElementById('filterResult');
+        resultDiv.innerHTML = `<strong>✅ After ReplaceMissingValues:</strong><br>${filteredDataset.join('<br>')}<br><span style="color:#2c7a6b;">📊 Temperature mean: ${Math.round(meanTemp)}°F | Humidity mode: ${modeHumidity}</span>`;
+        resultDiv.style.background = '#c0e0c0';
+        
+        // Optionally update main display to show filtered
+        dataset = filteredDataset;
+        updateWekaDisplay();
+    }
+    
+    function resetDataset() {
+        dataset = [
+            "sunny,85,85,no",
+            "sunny,80,90,no",
+            "overcast,?,83,yes",
+            "rainy,70,?,yes",
+            "rainy,68,80,no"
+        ];
+        updateWekaDisplay();
+        document.getElementById('filterResult').innerHTML = `💡 Click "Apply Filter" to replace missing values (?) with mean/mode`;
+        document.getElementById('filterResult').style.background = '#e0f0dc';
+    }
+    
+    document.getElementById('applyMissingFilter').addEventListener('click', applyMissingFilter);
+    document.getElementById('resetDataset').addEventListener('click', resetDataset);
+    updateWekaDisplay();
+    
+    // ----- DFD Level Toggle -----
+    const level0Btn = document.getElementById('level0Btn');
+    const level1Btn = document.getElementById('level1Btn');
+    const dfdCanvas = document.getElementById('dfdCanvas');
+    const dfdExplanation = document.getElementById('dfdExplanation');
+    
+    function showLevel0() {
+        dfdCanvas.innerHTML = `
+            <div style="font-weight:600; margin-bottom:8px;">📄 Level-0 Context Diagram</div>
+            <div style="border:2px solid #2c7a6b; border-radius:12px; padding:12px; display:inline-block; background:#fff8e8;">
+                <strong>0.0 Student Registration System</strong>
+            </div>
+            <div style="margin-top:12px;">
+                <div style="display:flex; justify-content:center; gap:2rem; flex-wrap:wrap;">
+                    <div>👤 Student</div>
+                    <div>→ Application Form →</div>
+                    <div>🏛️ System</div>
+                    <div>→ Registration Receipt →</div>
+                    <div>👤 Student</div>
+                </div>
+            </div>
+            <div style="font-size:0.7rem; margin-top:8px;">🎯 External Entity: Student | Single Process: Registration System | Data Flows: Form in, Receipt out</div>
+        `;
+        dfdExplanation.innerHTML = '💡 Context Diagram: Single process bubble shows system boundaries. No internal data stores. All data flows through the system.';
+        level0Btn.classList.add('active-btn');
+        level1Btn.classList.remove('active-btn');
+    }
+    
+    function showLevel1() {
+        dfdCanvas.innerHTML = `
+            <div style="font-weight:600; margin-bottom:8px;">🔍 Level-1 DFD (Student Registration System)</div>
+            <div style="display:flex; flex-direction:column; gap:8px; align-items:center;">
+                <div>👤 Student</div>
+                <div>↓ Application Form ↓</div>
+                <div style="border:1px solid #2c7a6b; border-radius:8px; padding:6px; background:#fff8e8;">1.0 Verify Details</div>
+                <div>↓ Verified Data ↓</div>
+                <div style="border:1px solid #6ab04c; border-radius:8px; padding:4px; background:#e0f0dc;">📁 D1: Student_DB</div>
+                <div>↓ ↓</div>
+                <div style="display:flex; gap:1rem;">
+                    <div style="border:1px solid #2c7a6b; border-radius:8px; padding:6px;">2.0 Process Payment</div>
+                    <div style="border:1px solid #2c7a6b; border-radius:8px; padding:6px;">3.0 Generate Receipt</div>
+                </div>
+                <div>↓ Registration Receipt ↓</div>
+                <div>👤 Student</div>
+            </div>
+            <div style="font-size:0.7rem; margin-top:8px;">📊 Processes: 1.0 Verify, 2.0 Payment, 3.0 Receipt | Data Store: Student_DB</div>
+        `;
+        dfdExplanation.innerHTML = '🔍 Level-1 DFD: Decomposed into sub-processes. Reveals internal data stores (Student_DB) and detailed data flows.';
+        level1Btn.classList.add('active-btn');
+        level0Btn.classList.remove('active-btn');
+    }
+    
+    level0Btn.addEventListener('click', showLevel0);
+    level1Btn.addEventListener('click', showLevel1);
+    showLevel0(); // default
+    
+    // Additional elaboration notes
+    const wekaPlayground = document.querySelector('.weka-sim')?.parentElement;
+    if (wekaPlayground) {
+        const wekaNote = document.createElement('div');
+        wekaNote.className = 'example-block';
+        wekaNote.style.marginTop = '0.8rem';
+        wekaNote.style.fontSize = '0.7rem';
+        wekaNote.innerHTML = '📌 <strong>WEKA Lab Tip:</strong> After preprocessing, switch to "Classify" tab to run algorithms like J48 (Decision Tree), Naive Bayes, or K-Means clustering.';
+        wekaPlayground.appendChild(wekaNote);
+    }
+    
+    const dfdPlayground = document.querySelector('.dfd-viz')?.parentElement;
+    if (dfdPlayground) {
+        const dfdNote = document.createElement('div');
+        dfdNote.className = 'example-block';
+        dfdNote.style.marginTop = '0.6rem';
+        dfdNote.style.fontSize = '0.7rem';
+        dfdNote.innerHTML = '💡 <strong>DFD Symbols:</strong> Circle/Ellipse = Process | Rectangle = External Entity | Open Rectangle = Data Store | Arrow = Data Flow. Level-0 has ONE process; Level-1 breaks into multiple.';
+        dfdPlayground.appendChild(dfdNote);
+    }
+</script>
+</body>
+</html>

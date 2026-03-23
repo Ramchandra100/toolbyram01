@@ -1,0 +1,586 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>Days 22-23: Final Lab & Buffer | Spring Security RBAC | WEKA K-NN | Data Integration Issues</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+            background: linear-gradient(135deg, #eef2ef 0%, #e2e8e0 100%);
+            color: #1e2f2a;
+            line-height: 1.5;
+            padding: 2rem 1.5rem;
+        }
+
+        .master-textbook {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .final-header {
+            background: linear-gradient(135deg, #2c6e5e 0%, #4a8a78 100%);
+            border-radius: 2rem 2rem 1.8rem 1.8rem;
+            padding: 1.8rem 2rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 12px 28px -12px rgba(0,0,0,0.3);
+        }
+        .final-header h1 {
+            font-size: 2rem;
+            font-weight: 700;
+            color: white;
+        }
+        .final-header h1 span {
+            background: #f4b942;
+            font-size: 1rem;
+            padding: 0.2rem 1rem;
+            border-radius: 40px;
+            margin-left: 0.8rem;
+            vertical-align: middle;
+            color: #1e2f1e;
+        }
+        .final-badge {
+            background: #f4b942cc;
+            padding: 0.25rem 1rem;
+            border-radius: 30px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            margin-top: 0.6rem;
+            display: inline-block;
+            color: #1e3a2a;
+        }
+        .final-header p {
+            color: #d4f0e8;
+            margin-top: 0.8rem;
+        }
+
+        .topics-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .topic-card {
+            background: white;
+            border-radius: 1.8rem;
+            overflow: hidden;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.08);
+            border: 1px solid #d4e0d4;
+        }
+
+        .topic-title {
+            background: #fafef7;
+            padding: 1rem 2rem;
+            border-bottom: 2px solid #e0ecd8;
+        }
+        .topic-title h2 {
+            font-size: 1.7rem;
+            font-weight: 600;
+            color: #2c7a6b;
+        }
+        .topic-title p {
+            color: #5b7c68;
+            font-size: 0.9rem;
+        }
+
+        .theory-body {
+            padding: 1.5rem 2rem;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+        }
+
+        .explain-text {
+            background: #ffffff;
+        }
+        .explain-text h3 {
+            font-size: 1.3rem;
+            font-weight: 600;
+            margin-bottom: 0.75rem;
+            color: #2c7a6b;
+            border-left: 5px solid #f4b942;
+            padding-left: 0.8rem;
+        }
+        .explain-text p, .explain-text li {
+            margin-bottom: 0.8rem;
+            color: #2c4a3a;
+        }
+        .explain-text ul, .explain-text ol {
+            padding-left: 1.5rem;
+            margin: 0.7rem 0;
+        }
+        .example-block {
+            background: #fef9e8;
+            border-radius: 1.2rem;
+            padding: 0.9rem 1.2rem;
+            margin: 1rem 0;
+            border-left: 4px solid #f4b942;
+        }
+        .code-block {
+            background: #1e2f2a;
+            color: #b3ffcf;
+            padding: 0.6rem;
+            border-radius: 0.8rem;
+            font-family: 'Fira Code', monospace;
+            font-size: 0.7rem;
+            overflow-x: auto;
+            margin: 0.8rem 0;
+        }
+
+        .playground {
+            background: #fafef7;
+            border-radius: 1.5rem;
+            padding: 1rem;
+            box-shadow: inset 0 0 0 1px #d8ecd8, 0 4px 12px rgba(0,0,0,0.02);
+        }
+        .playground h4 {
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: #2c7a6b;
+        }
+
+        .rbac-demo, .weka-demo, .integration-demo {
+            background: #eef3e8;
+            border-radius: 1rem;
+            padding: 1rem;
+        }
+        .role-panel {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            margin: 0.8rem 0;
+            flex-wrap: wrap;
+        }
+        .role-btn {
+            background: #c0cfb0;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 40px;
+            cursor: pointer;
+            font-weight: 600;
+        }
+        .role-btn.admin { background: #e68a5e; color: white; }
+        .role-btn.user { background: #6ab04c; color: white; }
+        .access-result {
+            background: #1e2f2a;
+            color: #b3ffcf;
+            padding: 0.6rem;
+            border-radius: 0.8rem;
+            margin: 0.5rem 0;
+            font-size: 0.7rem;
+        }
+        .knn-control {
+            display: flex;
+            gap: 0.5rem;
+            justify-content: center;
+            margin: 0.8rem 0;
+            flex-wrap: wrap;
+        }
+        .confusion-matrix {
+            font-family: monospace;
+            background: #1e2f2a;
+            color: #b3ffcf;
+            padding: 0.6rem;
+            border-radius: 0.8rem;
+            font-size: 0.65rem;
+        }
+
+        button {
+            background: #3e8a7a;
+            border: none;
+            padding: 0.4rem 1rem;
+            border-radius: 40px;
+            color: white;
+            font-weight: 500;
+            cursor: pointer;
+            font-family: inherit;
+            margin: 0.2rem;
+        }
+        button:hover {
+            background: #2c6e5e;
+        }
+
+        .qa-section {
+            background: white;
+            border-radius: 1.8rem;
+            margin-top: 2rem;
+            padding: 1.8rem 2rem;
+            border: 1px solid #d4e0d4;
+        }
+        .qa-section h2 {
+            font-size: 1.7rem;
+            font-weight: 700;
+            color: #2c7a6b;
+            border-left: 5px solid #f4b942;
+            padding-left: 1rem;
+            margin-bottom: 1.5rem;
+        }
+        .qa-item {
+            margin-bottom: 1.8rem;
+            border-bottom: 1px solid #e0ecd8;
+            padding-bottom: 1rem;
+        }
+        .qa-question {
+            font-weight: 700;
+            font-size: 1rem;
+            color: #2c7a6b;
+            margin-bottom: 0.5rem;
+        }
+        .qa-answer {
+            color: #2f5b48;
+            padding-left: 1rem;
+            border-left: 3px solid #f4b94280;
+        }
+
+        @media (max-width: 850px) {
+            .theory-body {
+                grid-template-columns: 1fr;
+                gap: 1.5rem;
+            }
+            body {
+                padding: 1rem;
+            }
+        }
+        footer {
+            text-align: center;
+            margin-top: 2rem;
+            font-size: 0.75rem;
+            color: #6f8e70;
+        }
+        .final-note {
+            background: #e8f0e5;
+            border-radius: 1rem;
+            padding: 1rem;
+            text-align: center;
+            margin-top: 1rem;
+        }
+    </style>
+</head>
+<body>
+<div class="master-textbook">
+    <div class="final-header">
+        <h1>🧪 Days 22-23: Final Lab & Buffer <span>Spring Security RBAC | WEKA K-NN | Data Integration</span></h1>
+        <div class="final-badge">🏁 Last Lap: High-Weightage PYQs & Practical Lab Execution</div>
+        <p>Role-Based Access Control • WEKA IBk (K-NN) Execution • Schema Integration, Redundancy, Data Value Conflicts</p>
+    </div>
+
+    <div class="topics-grid">
+        <!-- Topic 1: Spring Security & RBAC -->
+        <div class="topic-card">
+            <div class="topic-title">
+                <h2>🔒 1. Spring Security & Role-Based Access Control (RBAC)</h2>
+                <p>Authentication • Authorization • @PreAuthorize • .hasRole()</p>
+            </div>
+            <div class="theory-body">
+                <div class="explain-text">
+                    <h3>📖 Lab & Theory</h3>
+                    <p><strong>RBAC</strong> restricts system access based on user roles. Spring Security intercepts requests, checks authentication (who you are) and authorization (what you can do).</p>
+                    <ul>
+                        <li>Configuration: <code>.requestMatchers("/admin/**").hasRole("ADMIN")</code></li>
+                        <li>Annotations: <code>@PreAuthorize("hasRole('ADMIN')")</code></li>
+                        <li>403 Forbidden = authenticated but not authorized</li>
+                    </ul>
+                    <div class="example-block">
+                        🏫 <strong>University System:</strong> Student → /student/dashboard | Admin → /admin/delete-course<br>
+                        Spring Security blocks Student from admin endpoints automatically!
+                    </div>
+                    <div class="code-block">
+                        @Configuration<br>
+                        @EnableWebSecurity<br>
+                        public class SecurityConfig {<br>
+                        &nbsp;&nbsp;@Bean<br>
+                        &nbsp;&nbsp;public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {<br>
+                        &nbsp;&nbsp;&nbsp;&nbsp;http.authorizeHttpRequests(auth -> auth<br>
+                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;.requestMatchers("/admin/**").hasRole("ADMIN")<br>
+                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;.anyRequest().authenticated());<br>
+                        &nbsp;&nbsp;&nbsp;&nbsp;return http.build();<br>
+                        &nbsp;&nbsp;}<br>
+                        }
+                    </div>
+                </div>
+                <div class="playground">
+                    <h4>🎮 RBAC Simulator</h4>
+                    <div class="rbac-demo">
+                        <div class="role-panel">
+                            <button id="loginStudentBtn" class="role-btn user">👨‍🎓 Login as Student</button>
+                            <button id="loginAdminBtn" class="role-btn admin">👑 Login as Admin</button>
+                            <button id="logoutBtn">🚪 Logout</button>
+                        </div>
+                        <div id="rbacStatus" class="access-result">
+                            🔐 Not logged in
+                        </div>
+                        <div class="role-panel">
+                            <button id="accessStudentBtn">📚 Access /student/dashboard</button>
+                            <button id="accessAdminBtn">⚙️ Access /admin/delete-course</button>
+                        </div>
+                        <div id="accessResult" class="access-result" style="background:#2c6e5e;">
+                            💡 Login with different roles to see authorization in action
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Topic 2: WEKA K-NN Execution (IBk) -->
+        <div class="topic-card">
+            <div class="topic-title">
+                <h2>🤖 2. WEKA K-NN Execution (IBk Algorithm)</h2>
+                <p>Instance-Based Learning • K value selection • Cross-validation • Confusion Matrix</p>
+            </div>
+            <div class="theory-body">
+                <div class="explain-text">
+                    <h3>📖 Lab Integration</h3>
+                    <p><strong>WEKA K-NN:</strong> Found under <code>lazy → IBk</code>. Parameters: K value (number of neighbors), distance function (Euclidean default).</p>
+                    <ul>
+                        <li>Load dataset (e.g., iris.arff)</li>
+                        <li>Classify tab → Choose → lazy → IBk</li>
+                        <li>Click IBk text to set K (e.g., 3)</li>
+                        <li>Test: 10-fold cross-validation</li>
+                        <li>Output: Accuracy, Confusion Matrix, Precision/Recall</li>
+                    </ul>
+                    <div class="example-block">
+                        📊 <strong>Confusion Matrix:</strong> Shows True Positives, False Positives. Accuracy = (TP+TN)/Total.
+                    </div>
+                </div>
+                <div class="playground">
+                    <h4>🎮 WEKA IBk Simulator</h4>
+                    <div class="weka-demo">
+                        <div class="knn-control">
+                            <label>K Value: <span id="kValueWeights">3</span></label>
+                            <input type="range" id="kSliderWeka" min="1" max="10" value="3" step="1">
+                            <button id="runWekaKnn">▶️ Run IBk Classification</button>
+                        </div>
+                        <div id="wekaOutput" class="confusion-matrix">
+                            💡 Click "Run IBk" to simulate WEKA classification on Iris dataset
+                        </div>
+                        <div style="font-size:0.65rem; margin-top:0.5rem;">📌 WEKA output includes: Correctly Classified Instances, Confusion Matrix, Precision/Recall</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Topic 3: Data Integration Issues -->
+        <div class="topic-card">
+            <div class="topic-title">
+                <h2>🔄 3. Data Integration Issues (ETL Buffer)</h2>
+                <p>Schema Integration • Redundancy • Data Value Conflicts</p>
+            </div>
+            <div class="theory-body">
+                <div class="explain-text">
+                    <h3>📖 Buffer Review</h3>
+                    <p><strong>Data Integration</strong> challenges when merging multiple data sources into a warehouse:</p>
+                    <ul>
+                        <li><strong>Schema Integration:</strong> Different names for same entity (Cust_ID vs Customer_No)</li>
+                        <li><strong>Redundancy:</strong> Duplicate records across sources (same customer in sales and support DB)</li>
+                        <li><strong>Data Value Conflicts:</strong> Different units/representations (USD vs INR, kg vs lb)</li>
+                    </ul>
+                    <div class="example-block">
+                        🌍 <strong>Global Company Example:</strong><br>
+                        • Schema: Cust_Code (India) vs CustomerID (US)<br>
+                        • Redundancy: Same customer appears in both systems<br>
+                        • Conflicts: Weight in kg vs lb → Must transform to unified metric
+                    </div>
+                </div>
+                <div class="playground">
+                    <h4>🎮 Integration Issue Simulator</h4>
+                    <div class="integration-demo">
+                        <div id="integrationPreview" class="confusion-matrix" style="background:#1e2f2a;">
+                            <strong>Source A (India DB):</strong> Cust_Code=1001, Weight=70kg<br>
+                            <strong>Source B (US DB):</strong> CustomerID=1001, Weight=154lb
+                        </div>
+                        <div style="display: flex; gap: 0.5rem; justify-content: center; margin: 0.5rem 0;">
+                            <button id="resolveSchemaBtn">🔀 Resolve Schema Integration</button>
+                            <button id="resolveRedundancyBtn">🗑️ Resolve Redundancy</button>
+                            <button id="resolveConflictsBtn">⚖️ Resolve Data Value Conflicts</button>
+                            <button id="resetIntegrationBtn">⟳ Reset</button>
+                        </div>
+                        <div id="integrationResult" class="access-result" style="background:#2c6e5e;">
+                            💡 Click buttons to see how ETL resolves integration issues
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Exam-Style Q&A -->
+    <div class="qa-section">
+        <h2>📝 Exam-Style Questions & Answers (PYQ Focus - Last Lap)</h2>
+        <div class="qa-item">
+            <div class="qa-question">Q1. Write a short note on Role-Based Access Control (RBAC). (MCS-220 PYQ)</div>
+            <div class="qa-answer"><strong>Answer:</strong> RBAC is an authorization mechanism where permissions are assigned to roles (e.g., ADMIN, USER), and users are assigned roles. This simplifies security management in large applications. Spring Security implements RBAC via <code>.hasRole()</code> and <code>@PreAuthorize</code> annotations. Example: Only ADMIN can access /admin endpoints.</div>
+        </div>
+        <div class="qa-item">
+            <div class="qa-question">Q2. Discuss the Data Integration issues: Schema Integration, Redundancy, and Data Value Conflicts. (MCS-221 PYQ - 10 Marks)</div>
+            <div class="qa-answer"><strong>Answer:</strong> <strong>Schema Integration:</strong> Matching equivalent entities across databases (Cust_ID vs Customer_No). <strong>Redundancy:</strong> Duplicate records across sources requiring deduplication. <strong>Data Value Conflicts:</strong> Different representations (kg vs lb, USD vs INR) requiring transformation. ETL processes must resolve these to ensure warehouse data quality.</div>
+        </div>
+        <div class="qa-item">
+            <div class="qa-question">Q3. Write a short note on Java Secure Socket Extension (JSSE). (MCS-220 PYQ)</div>
+            <div class="qa-answer"><strong>Answer:</strong> JSSE provides Java implementation of SSL/TLS protocols for secure internet communication. It enables encrypted data transmission, server/client authentication, and message integrity. Used in HTTPS, secure email, and VPNs. Key classes: SSLSocket, SSLServerSocket.</div>
+        </div>
+        <div class="qa-item">
+            <div class="qa-question">Q4. What is the "Count to Infinity" problem in networking? (MCS-218 PYQ)</div>
+            <div class="qa-answer"><strong>Answer:</strong> A routing loop issue in Distance Vector protocols (RIP) where routers infinitely increase distance to an unreachable network. Solved by Split Horizon, Poison Reverse, or setting a maximum hop count (e.g., 15 in RIP).</div>
+        </div>
+        <div class="qa-item">
+            <div class="qa-question">Q5. How do you evaluate the accuracy of a classification model in WEKA? (MCSL-223 Viva)</div>
+            <div class="qa-answer"><strong>Answer:</strong> Using <strong>Confusion Matrix</strong> (TP, TN, FP, FN) and overall <strong>Correctly Classified Instances</strong> percentage. WEKA also outputs Precision, Recall, F-Measure, and ROC Area under Classifier Output. Cross-validation ensures reliable evaluation.</div>
+        </div>
+    </div>
+    <div class="final-note">
+        🎉 <strong>Final Lab & Buffer Complete!</strong> 🎉<br>
+        You're now ready for Day 24: The Grand Finale — Rapid-Fire Recap of Definitions, Formulas, and UML Notations!
+    </div>
+    <footer>📘 MCA Sem-2 Master Mentorship — Days 22-23: Final Lab Execution & Buffer Review. Tomorrow: Final Review Day 24!</footer>
+</div>
+
+<script>
+    // RBAC Simulator
+    let currentRole = null;
+    const rbacStatus = document.getElementById('rbacStatus');
+    const accessResult = document.getElementById('accessResult');
+    
+    function updateRBACStatus() {
+        if (currentRole === 'student') {
+            rbacStatus.innerHTML = '✅ Logged in as: STUDENT (ROLE_USER)<br>🔐 Authentication: Verified';
+        } else if (currentRole === 'admin') {
+            rbacStatus.innerHTML = '✅ Logged in as: ADMIN (ROLE_ADMIN)<br>🔐 Authentication: Verified';
+        } else {
+            rbacStatus.innerHTML = '🔐 Not logged in';
+        }
+    }
+    
+    function checkAccess(endpoint) {
+        if (!currentRole) {
+            accessResult.innerHTML = '❌ Access Denied: Not authenticated. Please login first.';
+            return false;
+        }
+        if (endpoint === 'student' && currentRole === 'student') {
+            accessResult.innerHTML = '✅ Access GRANTED: /student/dashboard<br>📚 Welcome Student! (ROLE_USER authorized)';
+            return true;
+        } else if (endpoint === 'admin' && currentRole === 'admin') {
+            accessResult.innerHTML = '✅ Access GRANTED: /admin/delete-course<br>⚙️ Admin privileges confirmed. (ROLE_ADMIN authorized)';
+            return true;
+        } else if (endpoint === 'admin' && currentRole === 'student') {
+            accessResult.innerHTML = '❌ Access DENIED: 403 Forbidden<br>🔒 Student does not have ADMIN role. RBAC blocks unauthorized access.';
+            return false;
+        } else if (endpoint === 'student' && currentRole === 'admin') {
+            accessResult.innerHTML = '✅ Access GRANTED: /student/dashboard<br>👑 Admin also has student access (role inheritance).';
+            return true;
+        }
+        return false;
+    }
+    
+    document.getElementById('loginStudentBtn').addEventListener('click', () => {
+        currentRole = 'student';
+        updateRBACStatus();
+        accessResult.innerHTML = '💡 Now try accessing /student/dashboard or /admin/delete-course';
+    });
+    document.getElementById('loginAdminBtn').addEventListener('click', () => {
+        currentRole = 'admin';
+        updateRBACStatus();
+        accessResult.innerHTML = '💡 Now try accessing /admin/delete-course (should work)';
+    });
+    document.getElementById('logoutBtn').addEventListener('click', () => {
+        currentRole = null;
+        updateRBACStatus();
+        accessResult.innerHTML = '💡 Logged out. Try accessing endpoints to see authentication required.';
+    });
+    document.getElementById('accessStudentBtn').addEventListener('click', () => checkAccess('student'));
+    document.getElementById('accessAdminBtn').addEventListener('click', () => checkAccess('admin'));
+    
+    // WEKA K-NN Simulator
+    const kSliderWeka = document.getElementById('kSliderWeka');
+    const kValueWeights = document.getElementById('kValueWeights');
+    const runWekaKnn = document.getElementById('runWekaKnn');
+    const wekaOutput = document.getElementById('wekaOutput');
+    
+    kSliderWeka.addEventListener('input', () => {
+        kValueWeights.textContent = kSliderWeka.value;
+    });
+    
+    runWekaKnn.addEventListener('click', () => {
+        const k = kSliderWeka.value;
+        const accuracy = (85 + Math.random() * 10).toFixed(1);
+        wekaOutput.innerHTML = `📊 <strong>WEKA IBk (K=${k}) Classification Results</strong><br>
+        ✅ Correctly Classified Instances: ${accuracy}%<br>
+        🔢 Confusion Matrix:<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;a &nbsp;b &nbsp;c &nbsp;&nbsp;&lt;-- classified as<br>
+        &nbsp;&nbsp;45 &nbsp;3 &nbsp;2 &nbsp;| &nbsp;a = Iris-setosa<br>
+        &nbsp;&nbsp;2 &nbsp;42 &nbsp;6 &nbsp;| &nbsp;b = Iris-versicolor<br>
+        &nbsp;&nbsp;1 &nbsp;4 &nbsp;45 &nbsp;| &nbsp;c = Iris-virginica<br>
+        📈 Precision: ${(88 + Math.random() * 8).toFixed(1)}% | Recall: ${(87 + Math.random() * 8).toFixed(1)}%<br>
+        🔍 Euclidean distance used for nearest neighbor calculation.`;
+    });
+    
+    // Data Integration Simulator
+    const integrationPreview = document.getElementById('integrationPreview');
+    const integrationResult = document.getElementById('integrationResult');
+    let integrationState = 'initial';
+    
+    function resetIntegration() {
+        integrationPreview.innerHTML = `<strong>Source A (India DB):</strong> Cust_Code=1001, Weight=70kg<br>
+        <strong>Source B (US DB):</strong> CustomerID=1001, Weight=154lb`;
+        integrationResult.innerHTML = '💡 Click buttons to resolve integration issues step by step';
+        integrationState = 'initial';
+    }
+    
+    function resolveSchema() {
+        integrationPreview.innerHTML = `<strong>✅ Schema Integration Resolved:</strong><br>
+        Mapped: Cust_Code (India) = CustomerID (US) → Unified: Customer_ID = 1001<br>
+        Unified schema: customer_id (PK), weight_kg`;
+        integrationResult.innerHTML = '🔀 Schema conflict resolved: Different column names mapped to common identifier.';
+        integrationState = 'schema';
+    }
+    
+    function resolveRedundancy() {
+        if (integrationState === 'initial' || integrationState === 'schema') {
+            integrationPreview.innerHTML = `<strong>✅ Redundancy Resolved:</strong><br>
+            Duplicate customer record detected in both sources.<br>
+            Deduplication applied: Single record kept (Customer_ID=1001).`;
+            integrationResult.innerHTML = '🗑️ Redundancy removed: Duplicate records consolidated.';
+            integrationState = 'redundancy';
+        } else {
+            integrationResult.innerHTML = '⚠️ Already resolved redundancy. Proceed to value conflicts.';
+        }
+    }
+    
+    function resolveConflicts() {
+        integrationPreview.innerHTML = `<strong>✅ All Integration Issues Resolved:</strong><br>
+        Unified Customer_ID: 1001<br>
+        Weight: 70kg (converted from 154lb)<br>
+        Clean, deduplicated, harmonized record ready for warehouse.`;
+        integrationResult.innerHTML = '⚖️ Data value conflict resolved: Converted lb to kg. Warehouse ready for loading!';
+        integrationState = 'complete';
+    }
+    
+    document.getElementById('resolveSchemaBtn').addEventListener('click', resolveSchema);
+    document.getElementById('resolveRedundancyBtn').addEventListener('click', resolveRedundancy);
+    document.getElementById('resolveConflictsBtn').addEventListener('click', resolveConflicts);
+    document.getElementById('resetIntegrationBtn').addEventListener('click', resetIntegration);
+    
+    // Additional notes
+    const rbacPlayground = document.querySelector('.rbac-demo')?.parentElement;
+    if (rbacPlayground) {
+        const note = document.createElement('div');
+        note.className = 'example-block';
+        note.style.marginTop = '0.6rem';
+        note.style.fontSize = '0.7rem';
+        note.innerHTML = '📌 <strong>Spring Security Tip:</strong> Use <code>@PreAuthorize("hasRole(''ADMIN'')")</code> on controller methods for method-level security.';
+        rbacPlayground.appendChild(note);
+    }
+</script>
+</body>
+</html>

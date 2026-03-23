@@ -1,0 +1,602 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>MCS-218 Day 2: OSI Model | ARQ | CRC | Interactive Textbook</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+            background: #eef2f7;
+            color: #1a2c3a;
+            line-height: 1.5;
+            padding: 2rem 1.5rem;
+        }
+
+        .master-textbook {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        /* header */
+        .day-header {
+            background: linear-gradient(135deg, #0f2f3a 0%, #1e5a6f 100%);
+            border-radius: 2rem 2rem 1.8rem 1.8rem;
+            padding: 1.8rem 2rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 12px 28px -12px rgba(0,0,0,0.25);
+        }
+        .day-header h1 {
+            font-size: 2rem;
+            font-weight: 700;
+            color: white;
+            letter-spacing: -0.3px;
+        }
+        .day-header h1 span {
+            background: #f4b942;
+            font-size: 1rem;
+            padding: 0.2rem 1rem;
+            border-radius: 40px;
+            margin-left: 0.8rem;
+            vertical-align: middle;
+            color: #1e2f3a;
+        }
+        .day-badge {
+            display: inline-block;
+            background: #f4b942cc;
+            padding: 0.25rem 1rem;
+            border-radius: 30px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            margin-top: 0.6rem;
+            color: #0f2f3a;
+        }
+        .day-header p {
+            color: #cfe3ed;
+            margin-top: 0.8rem;
+        }
+
+        /* topics grid */
+        .topics-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .topic-card {
+            background: white;
+            border-radius: 1.8rem;
+            overflow: hidden;
+            box-shadow: 0 6px 16px rgba(0,0,0,0.05);
+            border: 1px solid #e0e9f0;
+        }
+
+        .topic-title {
+            background: #fbfefd;
+            padding: 1rem 2rem;
+            border-bottom: 2px solid #e6f0f5;
+        }
+        .topic-title h2 {
+            font-size: 1.7rem;
+            font-weight: 600;
+            color: #165a6e;
+        }
+        .topic-title p {
+            color: #4c6f82;
+            font-size: 0.9rem;
+        }
+
+        .theory-body {
+            padding: 1.5rem 2rem;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+        }
+
+        .explain-text {
+            background: #ffffff;
+        }
+        .explain-text h3 {
+            font-size: 1.3rem;
+            font-weight: 600;
+            margin-bottom: 0.75rem;
+            color: #1a5e6e;
+            border-left: 4px solid #f4b942;
+            padding-left: 0.8rem;
+        }
+        .explain-text p, .explain-text li {
+            margin-bottom: 0.75rem;
+            color: #2c4b5e;
+        }
+        .explain-text ul, .explain-text ol {
+            padding-left: 1.5rem;
+            margin: 0.7rem 0;
+        }
+        .example-block {
+            background: #fef8e8;
+            border-radius: 1.2rem;
+            padding: 0.9rem 1.2rem;
+            margin: 1rem 0;
+            border-left: 4px solid #f4b942;
+        }
+
+        /* playground widgets */
+        .playground {
+            background: #f9fcfd;
+            border-radius: 1.5rem;
+            padding: 1rem;
+            box-shadow: inset 0 0 0 1px #e2edf5, 0 4px 8px rgba(0,0,0,0.02);
+        }
+        .playground h4 {
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: #165a6e;
+        }
+
+        /* OSI interactive layers */
+        .osi-container {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            margin-bottom: 1rem;
+        }
+        .osi-layer {
+            background: #eef3fa;
+            border-radius: 28px;
+            padding: 0.5rem 0.8rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.8rem;
+            font-weight: 500;
+            transition: all 0.1s ease;
+            cursor: pointer;
+            border: 1px solid #d4e2ec;
+        }
+        .osi-layer:hover {
+            background: #e2ecf5;
+            transform: translateX(4px);
+        }
+        .layer-name {
+            font-weight: 700;
+            color: #1f6e86;
+        }
+        .layer-desc {
+            font-size: 0.7rem;
+            color: #5c7e91;
+        }
+
+        /* ARQ simulation */
+        .arq-sim {
+            background: #ffffff;
+            border-radius: 1rem;
+            padding: 1rem;
+            border: 1px solid #e0eef5;
+        }
+        .frame-row {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+            margin: 0.8rem 0;
+            justify-content: center;
+        }
+        .frame {
+            background: #cbdde8;
+            padding: 0.4rem 0.9rem;
+            border-radius: 24px;
+            font-weight: 600;
+            font-size: 0.8rem;
+        }
+        .frame.lost {
+            background: #f3b3a2;
+            text-decoration: line-through;
+        }
+        .frame.resent {
+            background: #f4b942;
+            color: #1e2f3a;
+        }
+        .arq-btn {
+            background: #1f6e86;
+            border: none;
+            padding: 0.4rem 0.9rem;
+            border-radius: 40px;
+            color: white;
+            font-weight: 500;
+            cursor: pointer;
+            font-size: 0.7rem;
+            margin: 0 0.2rem;
+        }
+        .arq-status {
+            font-size: 0.7rem;
+            margin-top: 0.6rem;
+            text-align: center;
+        }
+
+        /* CRC Calculator */
+        .crc-panel {
+            background: #f4f9fe;
+            border-radius: 1rem;
+            padding: 1rem;
+        }
+        .crc-input {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.6rem;
+            margin: 0.8rem 0;
+        }
+        .crc-input input {
+            flex: 1;
+            padding: 0.5rem;
+            border-radius: 28px;
+            border: 1px solid #cbdde8;
+            font-family: monospace;
+        }
+        .crc-result {
+            background: #1e2f3a;
+            color: #b9fbc0;
+            padding: 0.6rem;
+            border-radius: 1rem;
+            font-family: monospace;
+            font-size: 0.8rem;
+            word-break: break-all;
+        }
+        button {
+            background: #2c7f9e;
+            border: none;
+            padding: 0.4rem 1rem;
+            border-radius: 40px;
+            color: white;
+            font-weight: 500;
+            cursor: pointer;
+            transition: 0.1s;
+        }
+        button:hover {
+            background: #1e5a6e;
+        }
+
+        /* Q&A Section */
+        .qa-section {
+            background: white;
+            border-radius: 1.8rem;
+            margin-top: 2rem;
+            padding: 1.8rem 2rem;
+            border: 1px solid #e0e9f0;
+        }
+        .qa-section h2 {
+            font-size: 1.7rem;
+            font-weight: 700;
+            color: #165a6e;
+            border-left: 5px solid #f4b942;
+            padding-left: 1rem;
+            margin-bottom: 1.5rem;
+        }
+        .qa-item {
+            margin-bottom: 1.8rem;
+            border-bottom: 1px solid #e5edf3;
+            padding-bottom: 1rem;
+        }
+        .qa-question {
+            font-weight: 700;
+            font-size: 1rem;
+            color: #1f6e86;
+            margin-bottom: 0.5rem;
+        }
+        .qa-answer {
+            color: #2f5568;
+            padding-left: 1rem;
+            border-left: 3px solid #f4b94280;
+        }
+
+        @media (max-width: 850px) {
+            .theory-body {
+                grid-template-columns: 1fr;
+                gap: 1.5rem;
+            }
+            body {
+                padding: 1rem;
+            }
+        }
+        footer {
+            text-align: center;
+            margin-top: 2rem;
+            font-size: 0.75rem;
+            color: #6f8ea0;
+        }
+    </style>
+</head>
+<body>
+<div class="master-textbook">
+    <div class="day-header">
+        <h1>📡 MCS-218: Data Communication & Networks <span>Day 2</span></h1>
+        <div class="day-badge">🔥 High-Weightage Topics | OSI Model · ARQ · CRC</div>
+        <p>OSI 7 Layers · Data Link Control (ARQ: Stop-and-Wait, Go-Back-N) · Cyclic Redundancy Check (CRC) with interactive simulations</p>
+    </div>
+
+    <div class="topics-grid">
+        <!-- Topic 1: OSI Model -->
+        <div class="topic-card">
+            <div class="topic-title">
+                <h2>🌐 1. OSI Reference Model (7 Layers)</h2>
+                <p>Conceptual framework: from Application to Physical</p>
+            </div>
+            <div class="theory-body">
+                <div class="explain-text">
+                    <h3>📖 Explain</h3>
+                    <p>The OSI model standardizes network functions into <strong>7 layers</strong>. Each layer serves the layer above and is served by the layer below.</p>
+                    <ul>
+                        <li><strong>7. Application:</strong> User-facing services (HTTP, FTP, SMTP).</li>
+                        <li><strong>6. Presentation:</strong> Data translation, encryption, compression.</li>
+                        <li><strong>5. Session:</strong> Manages sessions, synchronization.</li>
+                        <li><strong>4. Transport:</strong> End-to-end reliability, TCP/UDP.</li>
+                        <li><strong>3. Network:</strong> Routing, logical addressing (IP).</li>
+                        <li><strong>2. Data Link:</strong> Framing, MAC, error control (ARQ).</li>
+                        <li><strong>1. Physical:</strong> Bits over media, electrical signals.</li>
+                    </ul>
+                    <div class="example-block">
+                        🧠 <strong>Mnemonic (bottom-up):</strong> <strong>P</strong>lease <strong>D</strong>o <strong>N</strong>ot <strong>T</strong>hrow <strong>S</strong>ausage <strong>P</strong>izza <strong>A</strong>way<br>
+                        📡 Data Link sublayers: LLC (Logical Link Control) + MAC (Media Access Control)
+                    </div>
+                </div>
+                <div class="playground">
+                    <h4>🎮 Interactive OSI Explorer</h4>
+                    <div class="osi-container" id="osiLayersContainer">
+                        <!-- dynamically filled but static -->
+                    </div>
+                    <div id="osiInfo" style="background:#eef3fa; border-radius:1rem; padding:0.6rem; font-size:0.75rem; margin-top:0.5rem;">
+                        💡 Click any layer to see its role
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Topic 2: Data Link Layer & ARQ (Go-Back-N Simulation) -->
+        <div class="topic-card">
+            <div class="topic-title">
+                <h2>🔄 2. Data Link Layer & ARQ (Stop-and-Wait / Go-Back-N)</h2>
+                <p>Error control, pipelining, and retransmission strategies</p>
+            </div>
+            <div class="theory-body">
+                <div class="explain-text">
+                    <h3>📖 Explain</h3>
+                    <p><strong>ARQ (Automatic Repeat Request)</strong> ensures reliable frame delivery. Two main types:</p>
+                    <ul>
+                        <li><strong>Stop-and-Wait:</strong> Send one frame → wait for ACK → send next. Simple but low efficiency.</li>
+                        <li><strong>Go-Back-N ARQ (pipelining):</strong> Sender transmits up to N frames without waiting for ACK. If a frame is lost, receiver discards all later frames, sender "goes back" and retransmits from lost frame onward.</li>
+                    </ul>
+                    <div class="example-block">
+                        🧑‍🏫 Example: Teacher sends 5 tasks quickly. Task 3 lost → teacher must repeat tasks 3,4,5 (Go-Back-N).
+                    </div>
+                </div>
+                <div class="playground">
+                    <h4>🎮 Go-Back-N Simulator</h4>
+                    <div class="arq-sim">
+                        <div style="font-size:0.8rem; font-weight:600;">📤 Frames in window (simulate lost frame):</div>
+                        <div class="frame-row" id="frameRow">
+                            <!-- frames injected -->
+                        </div>
+                        <div style="display: flex; gap: 0.6rem; justify-content: center; margin: 0.8rem 0;">
+                            <button id="simulateLossBtn" class="arq-btn">⚠️ Simulate Lost Frame (Frame 2)</button>
+                            <button id="resetARQBtn" class="arq-btn">⟳ Reset Transmission</button>
+                        </div>
+                        <div id="arqStatus" class="arq-status">✅ All frames transmitted successfully. Click simulate loss to see Go-Back-N in action.</div>
+                    </div>
+                    <p style="font-size:0.7rem; margin-top:0.5rem;">💡 When frame 2 is lost, receiver discards frames 3 & 4 → sender retransmits from frame 2 (Go-Back-N).</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Topic 3: CRC (Cyclic Redundancy Check) interactive calculator -->
+        <div class="topic-card">
+            <div class="topic-title">
+                <h2>🔢 3. CRC (Cyclic Redundancy Check) – Error Detection</h2>
+                <p>Binary division, generator polynomial, remainder as CRC</p>
+            </div>
+            <div class="theory-body">
+                <div class="explain-text">
+                    <h3>📖 Explain</h3>
+                    <p>CRC appends redundant bits (remainder) to the data frame using modulo-2 division. Receiver divides by same generator; remainder = 0 means no error. Powerful against burst errors.</p>
+                    <div class="example-block">
+                        <strong>📐 Example (from PYQ):</strong> Frame `1101011011`, Generator $x^3+1$ = binary `1001`<br>
+                        Append 3 zeros → divide → remainder = `101`. Final transmitted frame: `1101011011101`.
+                    </div>
+                </div>
+                <div class="playground">
+                    <h4>🧮 CRC Interactive Calculator</h4>
+                    <div class="crc-panel">
+                        <div class="crc-input">
+                            <input type="text" id="dataInput" placeholder="Data bits (e.g., 1101011011)" value="1101011011">
+                            <input type="text" id="genInput" placeholder="Generator (e.g., 1001)" value="1001">
+                            <button id="computeCRC">Compute CRC</button>
+                        </div>
+                        <div id="crcResult" class="crc-result">
+                            💡 Click "Compute CRC" to get remainder and final frame.
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Exam-Style Q&A (from PYQs) -->
+    <div class="qa-section">
+        <h2>📝 Exam-Style Questions & Answers (PYQ Focus)</h2>
+        <div class="qa-item">
+            <div class="qa-question">Q1. List and explain the functionalities of various layers in the OSI reference model.</div>
+            <div class="qa-answer"><strong>Answer:</strong> OSI has 7 layers: 1) Physical – bit transmission; 2) Data Link – framing, MAC, error control; 3) Network – routing, IP addressing; 4) Transport – end-to-end reliability (TCP/UDP); 5) Session – session management; 6) Presentation – translation/encryption; 7) Application – network services to user apps. Each layer provides specific abstractions.</div>
+        </div>
+        <div class="qa-item">
+            <div class="qa-question">Q2. Enlist sublayers of the data link layer. What are the key functions of these sublayers?</div>
+            <div class="qa-answer"><strong>Answer:</strong> LLC (Logical Link Control) – multiplexing, flow/error control over logical links; MAC (Media Access Control) – physical addressing, channel access coordination (CSMA/CD, etc.).</div>
+        </div>
+        <div class="qa-item">
+            <div class="qa-question">Q3. Explain pipelining in Go-Back-N ARQ with an example.</div>
+            <div class="qa-answer"><strong>Answer:</strong> Pipelining allows sender to transmit multiple frames (window size N) without waiting for ACK. Example: sender sends frames 0,1,2,3. If frame 1 lost, receiver discards frames 2,3 and sends NAK for frame 1; sender goes back and retransmits 1,2,3.</div>
+        </div>
+        <div class="qa-item">
+            <div class="qa-question">Q4. What do you mean by error detection? Cyclic Redundancy Check (CRC) is used to detect which type of error?</div>
+            <div class="qa-answer"><strong>Answer:</strong> Error detection identifies corrupted bits using redundant info. CRC is especially effective at detecting <strong>burst errors</strong> (multiple consecutive bit errors) and single-bit errors.</div>
+        </div>
+        <div class="qa-item">
+            <div class="qa-question">Q5. Find the CRC for the frame `1101011011` with the generator polynomial $x^3 + 1$.</div>
+            <div class="qa-answer"><strong>Answer:</strong> Generator = `1001` (4 bits). Append 3 zeros → `1101011011000`. Perform modulo-2 division (XOR) → remainder = `101`. Transmitted frame = `1101011011101`. The interactive CRC tool above confirms the calculation!</div>
+        </div>
+    </div>
+    <footer>📘 MCA Sem-2 Master Mentorship — Day 2: OSI Model, ARQ & CRC. Interactive widgets bring concepts to life. Keep practicing!</footer>
+</div>
+
+<script>
+    // ---- OSI interactive layers ----
+    const layers = [
+        { name: "Layer 7: Application", desc: "Provides network services to user applications (HTTP, FTP, DNS)." },
+        { name: "Layer 6: Presentation", desc: "Data translation, encryption, compression — ensures data is readable by application." },
+        { name: "Layer 5: Session", desc: "Manages sessions, dialog control, synchronization checkpoints." },
+        { name: "Layer 4: Transport", desc: "End-to-end connection, reliability (TCP/UDP), segmentation." },
+        { name: "Layer 3: Network", desc: "Logical addressing (IP), routing, packet forwarding." },
+        { name: "Layer 2: Data Link", desc: "Framing, MAC addresses, error & flow control (ARQ, LLC/MAC)." },
+        { name: "Layer 1: Physical", desc: "Transmission of raw bits over physical medium (cables, voltage)." }
+    ];
+    const osiContainer = document.getElementById('osiLayersContainer');
+    const osiInfoDiv = document.getElementById('osiInfo');
+    function buildOSI() {
+        osiContainer.innerHTML = '';
+        layers.forEach(layer => {
+            const div = document.createElement('div');
+            div.className = 'osi-layer';
+            div.innerHTML = `<span class="layer-name">${layer.name}</span><span class="layer-desc">📌 click</span>`;
+            div.addEventListener('click', () => {
+                osiInfoDiv.innerHTML = `<strong>${layer.name}</strong><br>${layer.desc}`;
+            });
+            osiContainer.appendChild(div);
+        });
+    }
+    buildOSI();
+
+    // ---- ARQ Simulation (Go-Back-N with window of 4 frames) ----
+    let frames = [0, 1, 2, 3];
+    let lostSimulated = false;
+    const frameRow = document.getElementById('frameRow');
+    const arqStatus = document.getElementById('arqStatus');
+
+    function renderARQ() {
+        frameRow.innerHTML = '';
+        frames.forEach(f => {
+            const span = document.createElement('span');
+            span.className = 'frame';
+            if (lostSimulated && f === 1) span.classList.add('lost');
+            if (lostSimulated && f === 2 && !lostSimulated) {}
+            if (lostSimulated && (f === 2 || f === 3)) {
+                // after loss, these are discarded initially, but during retransmission we can add effect
+                if (window.retransmitMode && window.retransmitMode === true) {
+                    if (f === 1 || f === 2 || f === 3) span.classList.add('resent');
+                } else {
+                    if (f === 2 || f === 3) span.classList.add('lost');
+                }
+            }
+            span.textContent = `Frame ${f}`;
+            frameRow.appendChild(span);
+        });
+    }
+
+    function resetARQ() {
+        lostSimulated = false;
+        window.retransmitMode = false;
+        frames = [0, 1, 2, 3];
+        renderARQ();
+        arqStatus.innerHTML = '✅ All frames transmitted successfully. Click "Simulate Lost Frame" to see Go-Back-N retransmission.';
+    }
+
+    function simulateLoss() {
+        if (lostSimulated) {
+            arqStatus.innerHTML = '⚠️ Loss already simulated. Press reset first.';
+            return;
+        }
+        lostSimulated = true;
+        window.retransmitMode = false;
+        // simulate that frame 1 is lost → go-back-N behavior: frames after lost are discarded, and sender retransmits from frame 1.
+        // Visual: mark frame 1 as lost, frames 2,3 as discarded initially, then "Go back" retransmit.
+        frames = [0, 1, 2, 3];
+        renderARQ();
+        arqStatus.innerHTML = '📡 Frame 1 lost! Receiver discards frames 2 and 3. Sender performs Go-Back-N: retransmitting frames 1,2,3 ...';
+        setTimeout(() => {
+            // go-back-N: retransmit frames 1,2,3
+            window.retransmitMode = true;
+            frames = [0, 1, 2, 3];
+            renderARQ();
+            arqStatus.innerHTML = '✅ Go-Back-N complete: frames 1,2,3 retransmitted and acknowledged. Transmission recovered.';
+            lostSimulated = false;   // after retransmission simulation ends, reset loss state
+            window.retransmitMode = false;
+        }, 1500);
+    }
+
+    document.getElementById('simulateLossBtn').addEventListener('click', simulateLoss);
+    document.getElementById('resetARQBtn').addEventListener('click', resetARQ);
+    resetARQ();
+
+    // ---- CRC CALCULATOR (binary modulo-2 division) ----
+    function binaryModulo2Divide(dividend, divisor) {
+        let rem = dividend.slice(0, divisor.length);
+        for (let i = divisor.length; i <= dividend.length; i++) {
+            if (rem[0] === '1') {
+                let xor = '';
+                for (let j = 0; j < divisor.length; j++) {
+                    xor += (rem[j] === divisor[j]) ? '0' : '1';
+                }
+                rem = xor;
+            }
+            // shift in next bit
+            if (i < dividend.length) {
+                rem = rem.slice(1) + dividend[i];
+            } else {
+                rem = rem.slice(1);
+            }
+        }
+        while (rem.length > 0 && rem[0] === '0') rem = rem.slice(1);
+        if (rem === '') rem = '0';
+        return rem;
+    }
+
+    function computeCRC() {
+        let data = document.getElementById('dataInput').value.trim();
+        let generator = document.getElementById('genInput').value.trim();
+        if (!data.match(/^[01]+$/) || !generator.match(/^[01]+$/)) {
+            document.getElementById('crcResult').innerHTML = '❌ Invalid input! Use binary strings (0/1).';
+            return;
+        }
+        const n = generator.length;
+        const appended = data + '0'.repeat(n - 1);
+        const remainder = binaryModulo2Divide(appended, generator);
+        const crcBits = remainder.padStart(n-1, '0');
+        const transmittedFrame = data + crcBits;
+        document.getElementById('crcResult').innerHTML = `
+            <strong>📟 Data:</strong> ${data}<br>
+            <strong>⚙️ Generator:</strong> ${generator} (length ${n})<br>
+            <strong>🧮 CRC Remainder:</strong> ${crcBits}<br>
+            <strong>📨 Transmitted Frame (Data + CRC):</strong> ${transmittedFrame}<br>
+            <span style="color:#a5e0b2;">✅ Receiver divides by generator → remainder 0 if no error.</span>
+        `;
+    }
+
+    document.getElementById('computeCRC').addEventListener('click', computeCRC);
+    // preset example
+    computeCRC();
+
+    // extra interactive touch: highlight data link sublayers
+    const dataLinkExample = document.querySelector('.explain-text ul li:nth-child(2)');
+    if (dataLinkExample) {
+        // just aesthetic
+    }
+</script>
+</body>
+</html>

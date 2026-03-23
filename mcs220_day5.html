@@ -1,0 +1,510 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>MCS-220 Day 5: Web Technologies | Web Server vs Web Container | J2EE Architecture</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+            background: #f0f4f9;
+            color: #1e2f3a;
+            line-height: 1.5;
+            padding: 2rem 1.5rem;
+        }
+
+        .master-textbook {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        /* header */
+        .day-header {
+            background: linear-gradient(135deg, #1a4d5e 0%, #2f6f82 100%);
+            border-radius: 2rem 2rem 1.8rem 1.8rem;
+            padding: 1.8rem 2rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 12px 28px -12px rgba(0,0,0,0.25);
+        }
+        .day-header h1 {
+            font-size: 2rem;
+            font-weight: 700;
+            color: white;
+            letter-spacing: -0.3px;
+        }
+        .day-header h1 span {
+            background: #f4b942;
+            font-size: 1rem;
+            padding: 0.2rem 1rem;
+            border-radius: 40px;
+            margin-left: 0.8rem;
+            vertical-align: middle;
+            color: #1e2f3a;
+        }
+        .day-badge {
+            display: inline-block;
+            background: #f4b942cc;
+            padding: 0.25rem 1rem;
+            border-radius: 30px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            margin-top: 0.6rem;
+            color: #1e3a44;
+        }
+        .day-header p {
+            color: #d4e9f2;
+            margin-top: 0.8rem;
+        }
+
+        /* topics grid */
+        .topics-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .topic-card {
+            background: white;
+            border-radius: 1.8rem;
+            overflow: hidden;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.05);
+            border: 1px solid #e2ecf3;
+        }
+
+        .topic-title {
+            background: #fbfefd;
+            padding: 1rem 2rem;
+            border-bottom: 2px solid #eef3f8;
+        }
+        .topic-title h2 {
+            font-size: 1.7rem;
+            font-weight: 600;
+            color: #2c7a6b;
+        }
+        .topic-title p {
+            color: #5b7c8c;
+            font-size: 0.9rem;
+        }
+
+        .theory-body {
+            padding: 1.5rem 2rem;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+        }
+
+        .explain-text {
+            background: #ffffff;
+        }
+        .explain-text h3 {
+            font-size: 1.3rem;
+            font-weight: 600;
+            margin-bottom: 0.75rem;
+            color: #2c7a6b;
+            border-left: 5px solid #f4b942;
+            padding-left: 0.8rem;
+        }
+        .explain-text p, .explain-text li {
+            margin-bottom: 0.8rem;
+            color: #2c4a5a;
+        }
+        .explain-text ul, .explain-text ol {
+            padding-left: 1.5rem;
+            margin: 0.7rem 0;
+        }
+        .example-block {
+            background: #fef9e8;
+            border-radius: 1.2rem;
+            padding: 0.9rem 1.2rem;
+            margin: 1rem 0;
+            border-left: 4px solid #f4b942;
+        }
+        .highlight-badge {
+            background: #e9f3f0;
+            padding: 0.1rem 0.4rem;
+            border-radius: 12px;
+            font-family: monospace;
+            font-size: 0.85rem;
+        }
+        .server-analogy {
+            background: #eef3fa;
+            border-radius: 1rem;
+            padding: 0.8rem;
+            font-size: 0.85rem;
+            margin-top: 0.5rem;
+        }
+
+        /* playground widgets */
+        .playground {
+            background: #fafdfe;
+            border-radius: 1.5rem;
+            padding: 1rem;
+            box-shadow: inset 0 0 0 1px #e4eff6, 0 4px 12px rgba(0,0,0,0.02);
+        }
+        .playground h4 {
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: #2c7a6b;
+        }
+
+        /* Web Server vs Container visual */
+        .server-container-viz {
+            display: flex;
+            justify-content: space-between;
+            align-items: stretch;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+        .server-card {
+            flex: 1;
+            background: #fef5e7;
+            border-radius: 1.2rem;
+            padding: 1rem;
+            text-align: center;
+            border: 2px solid #e0cfb0;
+        }
+        .server-card h5 {
+            font-size: 1.1rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+        .container-highlight {
+            background: #e6f0ec;
+            border: 2px solid #2c7a6b;
+        }
+        .request-flow {
+            background: #eef2f0;
+            border-radius: 1rem;
+            padding: 0.6rem;
+            margin-top: 1rem;
+            font-size: 0.7rem;
+            text-align: center;
+        }
+
+        /* J2EE Architecture Diagram */
+        .arch-diagram {
+            background: #fef9ef;
+            border-radius: 1rem;
+            padding: 1rem;
+            font-family: monospace;
+        }
+        .tier-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 0.5rem;
+            margin: 0.5rem 0;
+            flex-wrap: wrap;
+        }
+        .tier-box {
+            background: #e9f0e6;
+            border: 1px solid #c0cfb8;
+            border-radius: 12px;
+            padding: 0.5rem;
+            flex: 1;
+            text-align: center;
+            font-size: 0.7rem;
+        }
+        .arrow {
+            font-size: 1.2rem;
+        }
+
+        button {
+            background: #3e8a7a;
+            border: none;
+            padding: 0.4rem 1rem;
+            border-radius: 40px;
+            color: white;
+            font-weight: 500;
+            cursor: pointer;
+            font-family: inherit;
+        }
+        button:hover {
+            background: #1e6b5e;
+        }
+
+        /* Q&A Section */
+        .qa-section {
+            background: white;
+            border-radius: 1.8rem;
+            margin-top: 2rem;
+            padding: 1.8rem 2rem;
+            border: 1px solid #e2ecf3;
+        }
+        .qa-section h2 {
+            font-size: 1.7rem;
+            font-weight: 700;
+            color: #1e6b5e;
+            border-left: 5px solid #f4b942;
+            padding-left: 1rem;
+            margin-bottom: 1.5rem;
+        }
+        .qa-item {
+            margin-bottom: 1.8rem;
+            border-bottom: 1px solid #eaf0f5;
+            padding-bottom: 1rem;
+        }
+        .qa-question {
+            font-weight: 700;
+            font-size: 1rem;
+            color: #2c7a6b;
+            margin-bottom: 0.5rem;
+        }
+        .qa-answer {
+            color: #2f5b68;
+            padding-left: 1rem;
+            border-left: 3px solid #f4b94280;
+        }
+
+        @media (max-width: 850px) {
+            .theory-body {
+                grid-template-columns: 1fr;
+                gap: 1.5rem;
+            }
+            body {
+                padding: 1rem;
+            }
+        }
+        footer {
+            text-align: center;
+            margin-top: 2rem;
+            font-size: 0.75rem;
+            color: #6f8ea0;
+        }
+    </style>
+</head>
+<body>
+<div class="master-textbook">
+    <div class="day-header">
+        <h1>🌐 MCS-220: Web Technologies <span>Day 5</span></h1>
+        <div class="day-badge">⚙️ Web Server vs Web Container | J2EE Architecture | Enterprise Platform</div>
+        <p>Understanding HTTP servers, dynamic content containers, and the multi-tier J2EE model — with interactive visualizations</p>
+    </div>
+
+    <div class="topics-grid">
+        <!-- Topic 1: Web Server vs Web Container -->
+        <div class="topic-card">
+            <div class="topic-title">
+                <h2>🖥️ 1. Web Server vs. Web Container</h2>
+                <p>Static content delivery vs. dynamic Java component runtime</p>
+            </div>
+            <div class="theory-body">
+                <div class="explain-text">
+                    <h3>📖 Explain</h3>
+                    <p><strong>Web Server:</strong> Handles HTTP requests and serves static content (HTML, images). It provides the basic execution infrastructure for web technologies. Example: Apache HTTP Server.</p>
+                    <p><strong>Web Container (Servlet Container):</strong> A component inside the web server that manages Servlets, JSPs, and dynamic Java-based web components. It maps URLs to servlets, manages lifecycle, and ensures security. Example: Apache Tomcat (both server & container).</p>
+                    <div class="example-block">
+                        🍽️ <strong>Restaurant Analogy:</strong> Web Server = Receptionist (hands out printed menu). Web Container = Chef (cooks custom dynamic meal/Servlet).
+                    </div>
+                    <div class="server-analogy">
+                        💡 <strong>Lab Note (MCSL-222):</strong> You will install <strong>Apache Tomcat</strong> — it acts as both a web server and a web container to run your servlets.
+                    </div>
+                </div>
+                <div class="playground">
+                    <h4>🎮 Interactive: Server vs Container</h4>
+                    <div class="server-container-viz">
+                        <div class="server-card">
+                            <h5>🌍 Web Server</h5>
+                            <div style="font-size:0.7rem;">Apache, Nginx</div>
+                            <div style="margin-top:0.5rem;">📄 Serves HTML, CSS, Images<br>⚡ HTTP protocol handler</div>
+                        </div>
+                        <div class="server-card container-highlight">
+                            <h5>📦 Web Container</h5>
+                            <div style="font-size:0.7rem;">Tomcat, Jetty (inside server)</div>
+                            <div style="margin-top:0.5rem;">🧠 Runs Servlets/JSP<br>🔁 Lifecycle, mapping, security</div>
+                        </div>
+                    </div>
+                    <div class="request-flow" id="requestFlowDemo">
+                        🔄 <strong>HTTP Request Flow:</strong> Browser → Web Server → (if dynamic) → Web Container → Servlet/JSP → Response
+                    </div>
+                    <button id="animateFlowBtn" style="margin-top:0.5rem; width:100%;">▶️ Simulate Request Flow</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Topic 2: J2EE Architecture (4-tier) -->
+        <div class="topic-card">
+            <div class="topic-title">
+                <h2>🏗️ 2. J2EE Architecture & Multi-Tier Model</h2>
+                <p>Presentation · Web · Business · EIS (Database) tiers</p>
+            </div>
+            <div class="theory-body">
+                <div class="explain-text">
+                    <h3>📖 Explain</h3>
+                    <p><strong>J2EE (Java 2 Enterprise Edition)</strong> is a platform with APIs (Servlets, JSP, EJB, JDBC) for building multi-tier enterprise applications. The architecture divides into:</p>
+                    <ul>
+                        <li><strong>Client Tier (Presentation):</strong> Web browser or Java app client.</li>
+                        <li><strong>Web Tier (Application):</strong> Web Container with Servlets/JSP.</li>
+                        <li><strong>Business Tier:</strong> EJB Container with Enterprise JavaBeans (business logic).</li>
+                        <li><strong>EIS Tier (Resource):</strong> Database, legacy systems.</li>
+                    </ul>
+                    <div class="example-block">
+                        📊 <strong>Example:</strong> Online Banking — Browser (client) → Servlet (web tier) → EJB (business logic) → Database (EIS).
+                    </div>
+                </div>
+                <div class="playground">
+                    <h4>🎮 J2EE Architecture Explorer</h4>
+                    <div class="arch-diagram" id="archDiagram">
+                        <div class="tier-row">
+                            <div class="tier-box">🖥️ <strong>Client Tier</strong><br>Web Browser / App Client</div>
+                            <span class="arrow">→</span>
+                            <div class="tier-box">🌐 <strong>Web Tier</strong><br>Web Container<br>(Servlets, JSP)</div>
+                            <span class="arrow">→</span>
+                            <div class="tier-box">⚙️ <strong>Business Tier</strong><br>EJB Container<br>(Enterprise Beans)</div>
+                            <span class="arrow">→</span>
+                            <div class="tier-box">🗄️ <strong>EIS Tier</strong><br>Database / Legacy</div>
+                        </div>
+                    </div>
+                    <div style="margin-top: 0.6rem; background:#eef2f0; border-radius: 1rem; padding:0.5rem; font-size:0.7rem; text-align:center;">
+                        💡 J2EE containers provide transaction, security, and resource pooling services.
+                    </div>
+                    <button id="highlightTiersBtn" style="margin-top:0.6rem; width:100%; background:#5f7f8c;">🔍 Highlight Each Tier (Cycle)</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Exam-Style Q&A (5 PYQ-style with elaborated answers) -->
+    <div class="qa-section">
+        <h2>📝 Exam-Style Questions & Answers (Check Your Progress)</h2>
+        <div class="qa-item">
+            <div class="qa-question">Q1. Differentiate between web server and web container. (Very frequent PYQ)</div>
+            <div class="qa-answer"><strong>Answer:</strong> <strong>Web Server:</strong> Server software that handles HTTP requests and serves static content (HTML, images). It provides the execution infrastructure for server technologies. Example: Apache HTTP Server. <strong>Web Container:</strong> A component inside the web server that specifically manages Servlets and JSPs, providing runtime environment, URL mapping, lifecycle management, and security. Example: Apache Tomcat (which also acts as a lightweight web server).</div>
+        </div>
+        <div class="qa-item">
+            <div class="qa-question">Q2. Explain the various components of J2EE architecture with a suitable block diagram.</div>
+            <div class="qa-answer"><strong>Answer:</strong> J2EE architecture comprises four tiers: <strong>Client Tier</strong> (web browser or application client), <strong>Web Tier</strong> (Web Container hosting Servlets/JSP), <strong>Business Tier</strong> (EJB Container hosting Enterprise JavaBeans for business logic), and <strong>EIS Tier</strong> (database or legacy systems). The interactive diagram above demonstrates the flow: Client → Web Container → EJB Container → Database. Each container provides services like transaction management, security, and connection pooling.</div>
+        </div>
+        <div class="qa-item">
+            <div class="qa-question">Q3. What is J2EE?</div>
+            <div class="qa-answer"><strong>Answer:</strong> Java 2 Enterprise Edition (J2EE) is a platform consisting of a set of APIs (Servlets, JSP, EJB, JDBC, JNDI) and protocols used to develop, deploy, and manage multi-tier, scalable, secure enterprise applications. It defines a component-based architecture where containers manage the lifecycle of components and provide system-level services.</div>
+        </div>
+        <div class="qa-item">
+            <div class="qa-question">Q4. What is the role of a container in the J2EE application model?</div>
+            <div class="qa-answer"><strong>Answer:</strong> In J2EE, containers (Web Container, EJB Container) act as the runtime environment that manages components (Servlets, JSPs, EJBs). They provide essential background services such as transaction control, security, resource pooling, concurrency, and lifecycle management, allowing developers to focus on business logic rather than infrastructure concerns.</div>
+        </div>
+        <div class="qa-item">
+            <div class="qa-question">Q5. Name any four common web containers used in J2EE.</div>
+            <div class="qa-answer"><strong>Answer:</strong> Four widely used web containers: <strong>1. Apache Tomcat</strong> (open-source, reference implementation), <strong>2. GlassFish</strong> (full J2EE compatible), <strong>3. JBoss/WildFly</strong> (enterprise-grade), <strong>4. Eclipse Jetty</strong> (lightweight embeddable container).</div>
+        </div>
+    </div>
+    <footer>📘 MCA Sem-2 Master Mentorship — Day 5: Web Technologies. Web Server vs Container & J2EE multi-tier architecture. Master these definitions for IGNOU exams and lab (MCSL-222).</footer>
+</div>
+
+<script>
+    // Interactive: Animate request flow
+    const flowDiv = document.getElementById('requestFlowDemo');
+    const animateBtn = document.getElementById('animateFlowBtn');
+    let animationInterval = null;
+
+    function animateRequestFlow() {
+        if (animationInterval) clearInterval(animationInterval);
+        const steps = [
+            "🌐 Browser → Web Server (HTTP request)",
+            "🔄 Web Server → Web Container (if dynamic resource)",
+            "⚙️ Web Container invokes Servlet/JSP",
+            "📄 Dynamic response generated → Web Server → Browser"
+        ];
+        let idx = 0;
+        flowDiv.innerHTML = `🚀 ${steps[0]}`;
+        animationInterval = setInterval(() => {
+            idx = (idx + 1) % steps.length;
+            flowDiv.innerHTML = `🚀 ${steps[idx]}`;
+            if (idx === steps.length - 1) {
+                setTimeout(() => {
+                    if (animationInterval) clearInterval(animationInterval);
+                    flowDiv.innerHTML = `🔄 <strong>HTTP Request Flow:</strong> Browser → Web Server → (if dynamic) → Web Container → Servlet/JSP → Response`;
+                    animationInterval = null;
+                }, 1200);
+                clearInterval(animationInterval);
+                animationInterval = null;
+            }
+        }, 1200);
+    }
+
+    animateBtn.addEventListener('click', animateRequestFlow);
+
+    // Highlight tiers cyclically in J2EE architecture
+    const highlightBtn = document.getElementById('highlightTiersBtn');
+    const tierBoxes = document.querySelectorAll('.tier-box');
+    let tierIndex = 0;
+    let highlightInterval = null;
+
+    function resetHighlight() {
+        tierBoxes.forEach(box => {
+            box.style.transition = '0.2s';
+            box.style.backgroundColor = '#e9f0e6';
+            box.style.border = '1px solid #c0cfb8';
+        });
+    }
+
+    function startTierHighlight() {
+        if (highlightInterval) clearInterval(highlightInterval);
+        resetHighlight();
+        tierIndex = 0;
+        function highlightNext() {
+            resetHighlight();
+            if (tierBoxes[tierIndex]) {
+                tierBoxes[tierIndex].style.backgroundColor = '#f4b942';
+                tierBoxes[tierIndex].style.border = '2px solid #c9822e';
+                tierBoxes[tierIndex].style.fontWeight = 'bold';
+            }
+            tierIndex = (tierIndex + 1) % tierBoxes.length;
+        }
+        highlightNext();
+        highlightInterval = setInterval(highlightNext, 1500);
+    }
+
+    function stopHighlightAndReset() {
+        if (highlightInterval) {
+            clearInterval(highlightInterval);
+            highlightInterval = null;
+        }
+        resetHighlight();
+    }
+
+    highlightBtn.addEventListener('click', () => {
+        if (highlightInterval) {
+            stopHighlightAndReset();
+            highlightBtn.textContent = '🔍 Highlight Each Tier (Cycle)';
+        } else {
+            startTierHighlight();
+            highlightBtn.textContent = '⏸️ Stop Highlight';
+        }
+    });
+
+    // Additional elaboration note: add extra explanation to playgrounds
+    const serverPlayground = document.querySelector('.server-container-viz')?.parentElement;
+    if (serverPlayground) {
+        const extraNote = document.createElement('div');
+        extraNote.className = 'example-block';
+        extraNote.style.marginTop = '0.6rem';
+        extraNote.style.fontSize = '0.7rem';
+        extraNote.innerHTML = '📌 <strong>Elaboration:</strong> Tomcat is both a web server (handles HTTP) and a web container (runs servlets). In production, you might front Tomcat with Apache HTTP Server for load balancing.';
+        serverPlayground.appendChild(extraNote);
+    }
+
+    const archPlayground = document.querySelector('.arch-diagram')?.parentElement;
+    if (archPlayground) {
+        const archNote = document.createElement('div');
+        archNote.className = 'example-block';
+        archNote.style.marginTop = '0.6rem';
+        archNote.style.fontSize = '0.7rem';
+        archNote.innerHTML = '📐 <strong>J2EE Tier Explanation:</strong> Client Tier = browser/desktop; Web Tier = presentation logic (Servlets); Business Tier = core business rules (EJBs); EIS Tier = database. This separation enables scalability and maintainability.';
+        archPlayground.appendChild(archNote);
+    }
+</script>
+</body>
+</html>

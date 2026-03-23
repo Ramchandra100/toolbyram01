@@ -1,0 +1,549 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>MCS-220 Day 16: Design Patterns | Singleton & Factory | MVC Architecture | Struts 2 Flow</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+            background: linear-gradient(135deg, #eef2ef 0%, #e2e8e0 100%);
+            color: #1e2f2a;
+            line-height: 1.5;
+            padding: 2rem 1.5rem;
+        }
+
+        .master-textbook {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .day-header {
+            background: linear-gradient(135deg, #2c6e5e 0%, #3f8a78 100%);
+            border-radius: 2rem 2rem 1.8rem 1.8rem;
+            padding: 1.8rem 2rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 12px 28px -12px rgba(0,0,0,0.3);
+        }
+        .day-header h1 {
+            font-size: 2rem;
+            font-weight: 700;
+            color: white;
+        }
+        .day-header h1 span {
+            background: #f4b942;
+            font-size: 1rem;
+            padding: 0.2rem 1rem;
+            border-radius: 40px;
+            margin-left: 0.8rem;
+            vertical-align: middle;
+            color: #1e2f1e;
+        }
+        .day-badge {
+            background: #f4b942cc;
+            padding: 0.25rem 1rem;
+            border-radius: 30px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            margin-top: 0.6rem;
+            display: inline-block;
+            color: #1e3a2a;
+        }
+        .day-header p {
+            color: #d4f0e8;
+            margin-top: 0.8rem;
+        }
+
+        .topics-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .topic-card {
+            background: white;
+            border-radius: 1.8rem;
+            overflow: hidden;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.08);
+            border: 1px solid #d4e0d4;
+        }
+
+        .topic-title {
+            background: #fafef7;
+            padding: 1rem 2rem;
+            border-bottom: 2px solid #e0ecd8;
+        }
+        .topic-title h2 {
+            font-size: 1.7rem;
+            font-weight: 600;
+            color: #2c7a6b;
+        }
+        .topic-title p {
+            color: #5b7c68;
+            font-size: 0.9rem;
+        }
+
+        .theory-body {
+            padding: 1.5rem 2rem;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+        }
+
+        .explain-text {
+            background: #ffffff;
+        }
+        .explain-text h3 {
+            font-size: 1.3rem;
+            font-weight: 600;
+            margin-bottom: 0.75rem;
+            color: #2c7a6b;
+            border-left: 5px solid #f4b942;
+            padding-left: 0.8rem;
+        }
+        .explain-text p, .explain-text li {
+            margin-bottom: 0.8rem;
+            color: #2c4a3a;
+        }
+        .explain-text ul, .explain-text ol {
+            padding-left: 1.5rem;
+            margin: 0.7rem 0;
+        }
+        .example-block {
+            background: #fef9e8;
+            border-radius: 1.2rem;
+            padding: 0.9rem 1.2rem;
+            margin: 1rem 0;
+            border-left: 4px solid #f4b942;
+        }
+        .code-block {
+            background: #1e2f2a;
+            color: #b3ffcf;
+            padding: 0.6rem;
+            border-radius: 0.8rem;
+            font-family: 'Fira Code', monospace;
+            font-size: 0.7rem;
+            overflow-x: auto;
+            margin: 0.8rem 0;
+        }
+
+        .playground {
+            background: #fafef7;
+            border-radius: 1.5rem;
+            padding: 1rem;
+            box-shadow: inset 0 0 0 1px #d8ecd8, 0 4px 12px rgba(0,0,0,0.02);
+        }
+        .playground h4 {
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: #2c7a6b;
+        }
+
+        .pattern-demo, .mvc-demo, .struts-demo {
+            background: #eef3e8;
+            border-radius: 1rem;
+            padding: 1rem;
+        }
+        .counter-display {
+            background: #1e2f2a;
+            color: #b3ffcf;
+            padding: 0.6rem;
+            border-radius: 0.8rem;
+            text-align: center;
+            font-size: 1.2rem;
+            font-weight: 700;
+            margin: 0.5rem 0;
+        }
+        .factory-result {
+            background: #fff8e8;
+            border-radius: 0.8rem;
+            padding: 0.6rem;
+            font-family: monospace;
+            font-size: 0.7rem;
+            margin: 0.5rem 0;
+        }
+        .mvc-flow {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+            margin: 0.8rem 0;
+        }
+        .mvc-card {
+            background: #fff8e8;
+            border-radius: 0.8rem;
+            padding: 0.6rem;
+            text-align: center;
+            flex: 1;
+            min-width: 80px;
+        }
+        .flow-arrow {
+            font-size: 1.2rem;
+        }
+        button {
+            background: #3e8a7a;
+            border: none;
+            padding: 0.4rem 1rem;
+            border-radius: 40px;
+            color: white;
+            font-weight: 500;
+            cursor: pointer;
+            font-family: inherit;
+            margin: 0.2rem;
+        }
+        button:hover {
+            background: #2c6e5e;
+        }
+
+        .qa-section {
+            background: white;
+            border-radius: 1.8rem;
+            margin-top: 2rem;
+            padding: 1.8rem 2rem;
+            border: 1px solid #d4e0d4;
+        }
+        .qa-section h2 {
+            font-size: 1.7rem;
+            font-weight: 700;
+            color: #2c7a6b;
+            border-left: 5px solid #f4b942;
+            padding-left: 1rem;
+            margin-bottom: 1.5rem;
+        }
+        .qa-item {
+            margin-bottom: 1.8rem;
+            border-bottom: 1px solid #e0ecd8;
+            padding-bottom: 1rem;
+        }
+        .qa-question {
+            font-weight: 700;
+            font-size: 1rem;
+            color: #2c7a6b;
+            margin-bottom: 0.5rem;
+        }
+        .qa-answer {
+            color: #2f5b48;
+            padding-left: 1rem;
+            border-left: 3px solid #f4b94280;
+        }
+
+        @media (max-width: 850px) {
+            .theory-body {
+                grid-template-columns: 1fr;
+                gap: 1.5rem;
+            }
+            body {
+                padding: 1rem;
+            }
+        }
+        footer {
+            text-align: center;
+            margin-top: 2rem;
+            font-size: 0.75rem;
+            color: #6f8e70;
+        }
+    </style>
+</head>
+<body>
+<div class="master-textbook">
+    <div class="day-header">
+        <h1>🏗️ MCS-220: Web Technologies <span>Day 16</span></h1>
+        <div class="day-badge">🎨 Design Patterns: Singleton & Factory | MVC Architecture | Struts 2 Framework Flow</div>
+        <p>Creational patterns • Model-View-Controller separation • Struts 2 request lifecycle</p>
+    </div>
+
+    <div class="topics-grid">
+        <!-- Topic 1: Design Patterns (Singleton & Factory) -->
+        <div class="topic-card">
+            <div class="topic-title">
+                <h2>🎨 1. Creational Design Patterns: Singleton & Factory</h2>
+                <p>Object creation blueprints — one instance vs dynamic object creation</p>
+            </div>
+            <div class="theory-body">
+                <div class="explain-text">
+                    <h3>📖 Explain</h3>
+                    <p><strong>Singleton Pattern:</strong> Ensures only one instance of a class exists globally. Private constructor + static method. Used for Database Connection Pools, Loggers, Configuration managers.</p>
+                    <p><strong>Factory Pattern:</strong> Provides an interface for creating objects without exposing instantiation logic. Encapsulates object creation, promotes loose coupling.</p>
+                    <div class="example-block">
+                        🏭 <strong>Examples:</strong><br>
+                        • Singleton: Database connection pool (single manager)<br>
+                        • Factory: ShapeFactory — pass "Circle" → get Circle object
+                    </div>
+                    <div class="code-block">
+                        // Singleton Pattern (Java)<br>
+                        public class DBConnection {<br>
+                        &nbsp;&nbsp;private static DBConnection instance;<br>
+                        &nbsp;&nbsp;private DBConnection() {}<br>
+                        &nbsp;&nbsp;public static DBConnection getInstance() {<br>
+                        &nbsp;&nbsp;&nbsp;&nbsp;if(instance == null) instance = new DBConnection();<br>
+                        &nbsp;&nbsp;&nbsp;&nbsp;return instance;<br>
+                        &nbsp;&nbsp;}<br>
+                        }
+                    </div>
+                </div>
+                <div class="playground">
+                    <h4>🎮 Singleton Counter Demo</h4>
+                    <div class="pattern-demo">
+                        <div class="counter-display" id="counterDisplay">Singleton Instance Count: 0</div>
+                        <div style="display: flex; gap: 0.5rem; justify-content: center;">
+                            <button id="incrementBtn">➕ Increment</button>
+                            <button id="resetSingletonBtn">⟳ Reset</button>
+                        </div>
+                        <div id="singletonNote" style="font-size:0.7rem; margin-top:0.5rem; text-align:center;">
+                            💡 Only one Counter instance exists across all button clicks!
+                        </div>
+                    </div>
+                    <div style="margin-top: 1rem;">
+                        <h4>🎮 Factory Pattern: Shape Factory</h4>
+                        <div class="pattern-demo">
+                            <div style="display: flex; gap: 0.5rem; justify-content: center; flex-wrap: wrap;">
+                                <button id="circleBtn">🔵 Create Circle</button>
+                                <button id="squareBtn">⬛ Create Square</button>
+                                <button id="triangleBtn">🔺 Create Triangle</button>
+                            </div>
+                            <div id="factoryResult" class="factory-result">
+                                💡 Click a shape button — Factory creates the appropriate object
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Topic 2: MVC Architecture -->
+        <div class="topic-card">
+            <div class="topic-title">
+                <h2>📐 2. MVC Architecture (Model-View-Controller)</h2>
+                <p>Separation of concerns — Data, Presentation, Routing</p>
+            </div>
+            <div class="theory-body">
+                <div class="explain-text">
+                    <h3>📖 Explain</h3>
+                    <p><strong>MVC</strong> separates application into three interconnected components:</p>
+                    <ul>
+                        <li><strong>Model:</strong> Data + Business logic (Java Beans, Database)</li>
+                        <li><strong>View:</strong> Presentation layer (HTML, JSP, CSS)</li>
+                        <li><strong>Controller:</strong> Request router (Servlet) — receives input, updates Model, selects View</li>
+                    </ul>
+                    <div class="example-block">
+                        🍽️ <strong>Restaurant Analogy:</strong><br>
+                        • View: Menu & plated food<br>
+                        • Controller: Waiter (takes order, routes)<br>
+                        • Model: Chef (cooks using ingredients)
+                    </div>
+                </div>
+                <div class="playground">
+                    <h4>🎮 MVC Interactive Flow</h4>
+                    <div class="mvc-demo">
+                        <div class="mvc-flow">
+                            <div class="mvc-card">🌐 <strong>View</strong><br>User clicks button</div>
+                            <span class="flow-arrow">→</span>
+                            <div class="mvc-card">🎮 <strong>Controller</strong><br>Servlet receives request</div>
+                            <span class="flow-arrow">→</span>
+                            <div class="mvc-card">📊 <strong>Model</strong><br>Processes data</div>
+                            <span class="flow-arrow">→</span>
+                            <div class="mvc-card">🖥️ <strong>View</strong><br>Displays response</div>
+                        </div>
+                        <button id="simulateMVCBtn">▶️ Simulate MVC Request Flow</button>
+                        <div id="mvcLog" class="factory-result" style="margin-top:0.8rem;">
+                            💡 Click to see MVC sequence
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Topic 3: Struts 2 Framework Flow -->
+        <div class="topic-card">
+            <div class="topic-title">
+                <h2>⚡ 3. Struts 2 Framework Flow</h2>
+                <p>MVC-based web framework — FilterDispatcher → Interceptors → Action → Result</p>
+            </div>
+            <div class="theory-body">
+                <div class="explain-text">
+                    <h3>📖 Explain</h3>
+                    <p><strong>Struts 2</strong> implements MVC pattern. Request flow:</p>
+                    <ol>
+                        <li>Browser sends HTTP request</li>
+                        <li><strong>FilterDispatcher</strong> (Controller) intercepts request</li>
+                        <li><strong>Interceptors</strong> handle cross-cutting concerns (validation, file upload)</li>
+                        <li><strong>Action</strong> (Model) executes business logic</li>
+                        <li><strong>Result</strong> (View) renders response based on result code</li>
+                    </ol>
+                    <div class="example-block">
+                        📋 <strong>struts.xml mapping:</strong><br>
+                        &lt;action name="login" class="LoginAction"&gt;<br>
+                        &nbsp;&nbsp;&lt;result name="success"&gt;welcome.jsp&lt;/result&gt;<br>
+                        &nbsp;&nbsp;&lt;result name="error"&gt;login.jsp&lt;/result&gt;<br>
+                        &lt;/action&gt;
+                    </div>
+                </div>
+                <div class="playground">
+                    <h4>🎮 Struts 2 Flow Simulator</h4>
+                    <div class="struts-demo">
+                        <div id="strutsFlow" style="background:#fff8e8; border-radius:0.8rem; padding:0.6rem; text-align:center; font-family:monospace; font-size:0.7rem;">
+                            1. Request → 2. FilterDispatcher → 3. Interceptors → 4. Action → 5. Result → Response
+                        </div>
+                        <button id="stepStrutsBtn">▶️ Step Through Struts 2 Flow</button>
+                        <div id="strutsStepLog" class="factory-result" style="margin-top:0.8rem;">
+                            💡 Click to see each step of Struts 2 request processing
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Exam-Style Q&A -->
+    <div class="qa-section">
+        <h2>📝 Exam-Style Questions & Answers (MCS-220 PYQ Pattern)</h2>
+        <div class="qa-item">
+            <div class="qa-question">Q1. What are "Creational Design Patterns"? Write their utility. (Direct PYQ)</div>
+            <div class="qa-answer"><strong>Answer:</strong> Creational Design Patterns deal with object creation mechanisms, hiding instantiation logic. <strong>Utility:</strong> They control object creation complexity, promote reusability, ensure proper instance management (Singleton), and decouple client code from concrete classes (Factory).</div>
+        </div>
+        <div class="qa-item">
+            <div class="qa-question">Q2. Explain the Singleton design pattern.</div>
+            <div class="qa-answer"><strong>Answer:</strong> Singleton ensures a class has only one instance and provides global access point. Implemented with private constructor, static instance variable, static getInstance() method. Used for database connections, logging, configuration managers to prevent resource exhaustion.</div>
+        </div>
+        <div class="qa-item">
+            <div class="qa-question">Q3. Describe the MVC architecture. What are the roles of its three components?</div>
+            <div class="qa-answer"><strong>Answer:</strong> MVC separates application into: <strong>Model</strong> (data + business logic), <strong>View</strong> (UI presentation), <strong>Controller</strong> (request handler, routes between Model and View). Promotes separation of concerns, maintainability, and testability.</div>
+        </div>
+        <div class="qa-item">
+            <div class="qa-question">Q4. Explain the flow of Struts 2 with a suitable block diagram. (Direct PYQ)</div>
+            <div class="qa-answer"><strong>Answer:</strong> Struts 2 flow: <strong>1.</strong> Client request → <strong>2.</strong> FilterDispatcher (Controller) intercepts → <strong>3.</strong> Interceptors (validation, etc.) → <strong>4.</strong> Action class executes business logic → <strong>5.</strong> Result renders JSP → <strong>6.</strong> Response sent. Framework based on MVC pattern.</div>
+        </div>
+        <div class="qa-item">
+            <div class="qa-question">Q5. How does Struts 2 differ from Struts 1? (Direct PYQ)</div>
+            <div class="qa-answer"><strong>Answer:</strong> <strong>Actions:</strong> Struts 1 extends framework classes; Struts 2 uses POJOs. <strong>Threading:</strong> Struts 1 Actions are singletons (thread-safe issues); Struts 2 creates new Action per request. <strong>Servlet Dependency:</strong> Struts 1 tightly coupled; Struts 2 decoupled, easier testing.</div>
+        </div>
+    </div>
+    <footer>📘 MCA Sem-2 Master Mentorship — Day 16: Design Patterns, MVC & Struts 2. Next: Day 17 — Spring Boot Basics & Web Security!</footer>
+</div>
+
+<script>
+    // Singleton Pattern Demo (simulated shared state)
+    let singletonCounter = { value: 0, instanceCount: 1 };
+    const counterDisplay = document.getElementById('counterDisplay');
+    const incrementBtn = document.getElementById('incrementBtn');
+    const resetSingletonBtn = document.getElementById('resetSingletonBtn');
+    
+    function updateSingletonDisplay() {
+        counterDisplay.innerHTML = `Singleton Instance Count: ${singletonCounter.value} (Only 1 instance exists)`;
+    }
+    
+    incrementBtn.addEventListener('click', () => {
+        singletonCounter.value++;
+        updateSingletonDisplay();
+    });
+    resetSingletonBtn.addEventListener('click', () => {
+        singletonCounter.value = 0;
+        updateSingletonDisplay();
+    });
+    updateSingletonDisplay();
+    
+    // Factory Pattern Demo
+    const circleBtn = document.getElementById('circleBtn');
+    const squareBtn = document.getElementById('squareBtn');
+    const triangleBtn = document.getElementById('triangleBtn');
+    const factoryResult = document.getElementById('factoryResult');
+    
+    function shapeFactory(shapeType) {
+        if (shapeType === 'circle') return { type: 'Circle', draw: () => '🔵 Drawing a Circle' };
+        if (shapeType === 'square') return { type: 'Square', draw: () => '⬛ Drawing a Square' };
+        if (shapeType === 'triangle') return { type: 'Triangle', draw: () => '🔺 Drawing a Triangle' };
+        return null;
+    }
+    
+    circleBtn.addEventListener('click', () => {
+        const shape = shapeFactory('circle');
+        factoryResult.innerHTML = `🏭 Factory created: <strong>${shape.type}</strong><br>📐 ${shape.draw()}<br><span style="color:#2c7a6b;">✅ Client doesn't know instantiation details!</span>`;
+    });
+    squareBtn.addEventListener('click', () => {
+        const shape = shapeFactory('square');
+        factoryResult.innerHTML = `🏭 Factory created: <strong>${shape.type}</strong><br>📐 ${shape.draw()}<br><span style="color:#2c7a6b;">✅ Encapsulated object creation.</span>`;
+    });
+    triangleBtn.addEventListener('click', () => {
+        const shape = shapeFactory('triangle');
+        factoryResult.innerHTML = `🏭 Factory created: <strong>${shape.type}</strong><br>📐 ${shape.draw()}<br><span style="color:#2c7a6b;">✅ Factory hides complexity.</span>`;
+    });
+    
+    // MVC Simulator
+    const simulateMVCBtn = document.getElementById('simulateMVCBtn');
+    const mvcLog = document.getElementById('mvcLog');
+    let mvcStep = 0;
+    const mvcSteps = [
+        "🌐 View: User clicks 'Submit' button → sends request to Controller",
+        "🎮 Controller (Servlet): Receives request, maps to appropriate handler",
+        "📊 Model: Processes data (e.g., validates login, queries database)",
+        "🎮 Controller receives Model result, selects appropriate View",
+        "🌐 View (JSP): Renders response with updated data → sent to browser"
+    ];
+    
+    simulateMVCBtn.addEventListener('click', () => {
+        mvcStep = 0;
+        function showStep() {
+            if (mvcStep < mvcSteps.length) {
+                mvcLog.innerHTML = `🔄 MVC Flow Step ${mvcStep+1}:<br>${mvcSteps[mvcStep]}`;
+                mvcStep++;
+                setTimeout(showStep, 800);
+            } else {
+                mvcLog.innerHTML = `✅ MVC Complete! Separation of concerns: Model (data), View (UI), Controller (routing).`;
+            }
+        }
+        showStep();
+    });
+    
+    // Struts 2 Flow Simulator
+    const stepStrutsBtn = document.getElementById('stepStrutsBtn');
+    const strutsStepLog = document.getElementById('strutsStepLog');
+    let strutsStep = 0;
+    const strutsSteps = [
+        "1️⃣ Client Browser → HTTP Request to server",
+        "2️⃣ FilterDispatcher (Controller) intercepts request, reads struts.xml",
+        "3️⃣ Interceptors stack executes (validation, file upload, logging)",
+        "4️⃣ Action class executes business logic (e.g., LoginAction.execute())",
+        "5️⃣ Action returns result code (success/error) → Result selects JSP",
+        "6️⃣ Response rendered → Client receives HTML page"
+    ];
+    
+    stepStrutsBtn.addEventListener('click', () => {
+        strutsStep = 0;
+        function showStrutsStep() {
+            if (strutsStep < strutsSteps.length) {
+                strutsStepLog.innerHTML = `⚡ Struts 2: ${strutsSteps[strutsStep]}`;
+                strutsStep++;
+                setTimeout(showStrutsStep, 900);
+            } else {
+                strutsStepLog.innerHTML = `✅ Struts 2 flow complete! Framework implements MVC pattern with Interceptors for cross-cutting concerns.`;
+            }
+        }
+        showStrutsStep();
+    });
+    
+    // Additional notes
+    const singletonPlayground = document.querySelector('.pattern-demo')?.parentElement;
+    if (singletonPlayground) {
+        const note = document.createElement('div');
+        note.className = 'example-block';
+        note.style.marginTop = '0.6rem';
+        note.style.fontSize = '0.7rem';
+        note.innerHTML = '📌 <strong>Singleton vs Factory:</strong> Singleton controls instance count (one). Factory abstracts object creation. Both are creational patterns.';
+        singletonPlayground.appendChild(note);
+    }
+</script>
+</body>
+</html>

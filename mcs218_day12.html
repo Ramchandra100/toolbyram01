@@ -1,0 +1,568 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>MCS-218 Day 12: Multiple Access Protocols | ALOHA | CSMA/CD | Cryptography Basics</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+            background: linear-gradient(135deg, #eef2f0 0%, #e2e8e2 100%);
+            color: #1e2f2a;
+            line-height: 1.5;
+            padding: 2rem 1.5rem;
+        }
+
+        .master-textbook {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        /* header */
+        .day-header {
+            background: linear-gradient(135deg, #2c5a4a 0%, #3f7a68 100%);
+            border-radius: 2rem 2rem 1.8rem 1.8rem;
+            padding: 1.8rem 2rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 12px 28px -12px rgba(0,0,0,0.3);
+        }
+        .day-header h1 {
+            font-size: 2rem;
+            font-weight: 700;
+            color: white;
+            letter-spacing: -0.3px;
+        }
+        .day-header h1 span {
+            background: #f4b942;
+            font-size: 1rem;
+            padding: 0.2rem 1rem;
+            border-radius: 40px;
+            margin-left: 0.8rem;
+            vertical-align: middle;
+            color: #1e2f1e;
+        }
+        .day-badge {
+            display: inline-block;
+            background: #f4b942cc;
+            padding: 0.25rem 1rem;
+            border-radius: 30px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            margin-top: 0.6rem;
+            color: #1e3a2a;
+        }
+        .day-header p {
+            color: #d4f0e0;
+            margin-top: 0.8rem;
+        }
+
+        /* topics grid */
+        .topics-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .topic-card {
+            background: white;
+            border-radius: 1.8rem;
+            overflow: hidden;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.08);
+            border: 1px solid #d4e0d0;
+        }
+
+        .topic-title {
+            background: #fafef7;
+            padding: 1rem 2rem;
+            border-bottom: 2px solid #e0ecd8;
+        }
+        .topic-title h2 {
+            font-size: 1.7rem;
+            font-weight: 600;
+            color: #2c7a6b;
+        }
+        .topic-title p {
+            color: #5b7c68;
+            font-size: 0.9rem;
+        }
+
+        .theory-body {
+            padding: 1.5rem 2rem;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+        }
+
+        .explain-text {
+            background: #ffffff;
+        }
+        .explain-text h3 {
+            font-size: 1.3rem;
+            font-weight: 600;
+            margin-bottom: 0.75rem;
+            color: #2c7a6b;
+            border-left: 5px solid #f4b942;
+            padding-left: 0.8rem;
+        }
+        .explain-text p, .explain-text li {
+            margin-bottom: 0.8rem;
+            color: #2c4a3a;
+        }
+        .explain-text ul, .explain-text ol {
+            padding-left: 1.5rem;
+            margin: 0.7rem 0;
+        }
+        .example-block {
+            background: #fef9e8;
+            border-radius: 1.2rem;
+            padding: 0.9rem 1.2rem;
+            margin: 1rem 0;
+            border-left: 4px solid #f4b942;
+        }
+        .formula {
+            background: #e0f0dc;
+            padding: 0.3rem 0.6rem;
+            border-radius: 8px;
+            font-family: monospace;
+            font-weight: 600;
+        }
+
+        /* playground widgets */
+        .playground {
+            background: #fafef7;
+            border-radius: 1.5rem;
+            padding: 1rem;
+            box-shadow: inset 0 0 0 1px #d8ecd8, 0 4px 12px rgba(0,0,0,0.02);
+        }
+        .playground h4 {
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: #2c7a6b;
+        }
+
+        /* ALOHA Simulator */
+        .aloha-sim {
+            background: #eef3e8;
+            border-radius: 1rem;
+            padding: 1rem;
+        }
+        .channel-visual {
+            background: #2c3e2a;
+            color: #b3ffcf;
+            padding: 0.6rem;
+            border-radius: 0.8rem;
+            font-family: monospace;
+            font-size: 0.7rem;
+            text-align: center;
+            margin: 0.5rem 0;
+        }
+        .slot-timeline {
+            display: flex;
+            gap: 2px;
+            flex-wrap: wrap;
+            justify-content: center;
+            margin: 0.5rem 0;
+        }
+        .slot {
+            width: 30px;
+            height: 30px;
+            background: #c0d0bc;
+            border-radius: 4px;
+            text-align: center;
+            font-size: 0.6rem;
+            line-height: 30px;
+        }
+        .slot.collision {
+            background: #e68a5e;
+        }
+        .slot.success {
+            background: #6ab04c;
+        }
+
+        /* CSMA/CD Simulator */
+        .csma-sim {
+            background: #eef3e8;
+            border-radius: 1rem;
+            padding: 1rem;
+        }
+
+        /* Cryptography Demo */
+        .crypto-demo {
+            background: #eef3e8;
+            border-radius: 1rem;
+            padding: 1rem;
+        }
+        .crypto-input {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+            margin: 0.5rem 0;
+        }
+        .crypto-input input {
+            flex: 1;
+            padding: 0.4rem;
+            border-radius: 40px;
+            border: 1px solid #c0cfb0;
+            font-family: monospace;
+        }
+
+        button {
+            background: #3e8a7a;
+            border: none;
+            padding: 0.4rem 1rem;
+            border-radius: 40px;
+            color: white;
+            font-weight: 500;
+            cursor: pointer;
+            font-family: inherit;
+            margin: 0.2rem;
+        }
+        button:hover {
+            background: #2c6e5e;
+        }
+
+        /* Q&A Section */
+        .qa-section {
+            background: white;
+            border-radius: 1.8rem;
+            margin-top: 2rem;
+            padding: 1.8rem 2rem;
+            border: 1px solid #d4e0d0;
+        }
+        .qa-section h2 {
+            font-size: 1.7rem;
+            font-weight: 700;
+            color: #2c7a6b;
+            border-left: 5px solid #f4b942;
+            padding-left: 1rem;
+            margin-bottom: 1.5rem;
+        }
+        .qa-item {
+            margin-bottom: 1.8rem;
+            border-bottom: 1px solid #e0ecd8;
+            padding-bottom: 1rem;
+        }
+        .qa-question {
+            font-weight: 700;
+            font-size: 1rem;
+            color: #2c7a6b;
+            margin-bottom: 0.5rem;
+        }
+        .qa-answer {
+            color: #2f5b48;
+            padding-left: 1rem;
+            border-left: 3px solid #f4b94280;
+        }
+
+        @media (max-width: 850px) {
+            .theory-body {
+                grid-template-columns: 1fr;
+                gap: 1.5rem;
+            }
+            body {
+                padding: 1rem;
+            }
+        }
+        footer {
+            text-align: center;
+            margin-top: 2rem;
+            font-size: 0.75rem;
+            color: #6f8e70;
+        }
+    </style>
+</head>
+<body>
+<div class="master-textbook">
+    <div class="day-header">
+        <h1>📡 MCS-218: Data Communication & Networks <span>Day 12</span></h1>
+        <div class="day-badge">📡 Multiple Access: ALOHA | CSMA/CD | 🔐 Cryptography Basics</div>
+        <p>Pure vs Slotted ALOHA • Carrier Sense • Collision Detection • Symmetric Encryption & Block Cipher</p>
+    </div>
+
+    <div class="topics-grid">
+        <!-- Topic 1: ALOHA Protocols -->
+        <div class="topic-card">
+            <div class="topic-title">
+                <h2>📡 1. Multiple Access: Pure ALOHA vs Slotted ALOHA</h2>
+                <p>Random access protocols — throughput, vulnerable period, efficiency</p>
+            </div>
+            <div class="theory-body">
+                <div class="explain-text">
+                    <h3>📖 Explain</h3>
+                    <p><strong>Pure ALOHA:</strong> Transmit anytime; if collision, wait random time & retransmit. Throughput S = G·e<sup>-2G</sup>, max ≈ 18% at G=0.5. Vulnerable period = 2T (T = frame time).</p>
+                    <p><strong>Slotted ALOHA:</strong> Time divided into slots; transmit only at slot start. Throughput S = G·e<sup>-G</sup>, max ≈ 36% at G=1. Vulnerable period = T.</p>
+                    <div class="example-block">
+                        📢 <strong>Analogy:</strong> Pure ALOHA = shouting anytime; Slotted ALOHA = shouting only on metronome ticks.
+                    </div>
+                </div>
+                <div class="playground">
+                    <h4>🎮 ALOHA Simulator</h4>
+                    <div class="aloha-sim">
+                        <div class="btn-group" style="display: flex; gap: 0.5rem; justify-content: center;">
+                            <button id="pureAlohaBtn">🟡 Pure ALOHA</button>
+                            <button id="slottedAlohaBtn">🟢 Slotted ALOHA</button>
+                        </div>
+                        <div id="alohaChannel" class="channel-visual">
+                            📡 Channel Status: Idle<br>
+                            Click a button to simulate transmissions
+                        </div>
+                        <div id="alohaStats" style="font-size:0.7rem; margin-top:0.5rem; text-align:center;">
+                            📊 Throughput formula: Pure: S = G·e<sup>-2G</sup> (max 18%) | Slotted: S = G·e<sup>-G</sup> (max 36%)
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Topic 2: CSMA/CD -->
+        <div class="topic-card">
+            <div class="topic-title">
+                <h2>🎧 2. CSMA & CSMA/CD (Carrier Sense Multiple Access)</h2>
+                <p>Listen before talk • Collision Detection • Binary Exponential Backoff</p>
+            </div>
+            <div class="theory-body">
+                <div class="explain-text">
+                    <h3>📖 Explain</h3>
+                    <p><strong>CSMA:</strong> Stations listen before transmitting. If channel busy, wait. Reduces collisions but doesn't eliminate them.</p>
+                    <p><strong>CSMA/CD:</strong> Adds Collision Detection. While transmitting, station listens for collisions. If detected, aborts immediately, waits random backoff (Binary Exponential Backoff), retries.</p>
+                    <div class="example-block">
+                        🎤 <strong>Analogy:</strong> Walkie-talkie: listen first (CS), if collision (screech), stop, wait random time, retry.
+                    </div>
+                </div>
+                <div class="playground">
+                    <h4>🎮 CSMA/CD Simulator</h4>
+                    <div class="csma-sim">
+                        <div id="csmaStatus" class="channel-visual">
+                            🔍 Channel idle. Ready to transmit.
+                        </div>
+                        <div class="btn-group" style="display: flex; gap: 0.5rem; justify-content: center; margin-top: 0.5rem;">
+                            <button id="transmitBtn">📤 Transmit Frame</button>
+                            <button id="simulateCollisionBtn" class="secondary">💥 Simulate Collision</button>
+                            <button id="resetCsmaBtn">⟳ Reset</button>
+                        </div>
+                        <div id="csmaLog" style="font-size:0.65rem; margin-top:0.5rem; background:#1e2f2a; color:#b3ffcf; padding:0.4rem; border-radius:0.5rem;">
+                            💡 Click Transmit to send data. CSMA/CD listens, sends, detects collisions.
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Topic 3: Cryptography Basics -->
+        <div class="topic-card">
+            <div class="topic-title">
+                <h2>🔐 3. Cryptography Basics | Symmetric Encryption & Block Cipher</h2>
+                <p>Plaintext → Ciphertext • Encryption/Decryption • Shared Secret Key</p>
+            </div>
+            <div class="theory-body">
+                <div class="explain-text">
+                    <h3>📖 Explain</h3>
+                    <p><strong>Cryptography:</strong> Science of secret writing. <strong>Encryption:</strong> Plaintext → Ciphertext using key. <strong>Decryption:</strong> Ciphertext → Plaintext.</p>
+                    <p><strong>Symmetric Key Cryptography:</strong> Same key used for encryption & decryption. <strong>Block Cipher:</strong> Encrypts fixed-size blocks (e.g., 64 bits) at a time (AES, DES).</p>
+                    <div class="example-block">
+                        🔑 <strong>Example:</strong> Caesar cipher (shift alphabet) is a simple symmetric cipher. Modern: AES-256.
+                    </div>
+                </div>
+                <div class="playground">
+                    <h4>🎮 Caesar Cipher Demo (Symmetric Encryption)</h4>
+                    <div class="crypto-demo">
+                        <div class="crypto-input">
+                            <input type="text" id="plaintextInput" placeholder="Enter plaintext (e.g., HELLO)" value="HELLO">
+                            <input type="number" id="shiftKey" placeholder="Shift (1-25)" value="3" min="1" max="25">
+                        </div>
+                        <div class="btn-group" style="display: flex; gap: 0.5rem; justify-content: center;">
+                            <button id="encryptBtn">🔒 Encrypt</button>
+                            <button id="decryptBtn">🔓 Decrypt</button>
+                        </div>
+                        <div id="cryptoResult" class="channel-visual" style="background:#2c3e2a; margin-top:0.5rem;">
+                            💡 Result will appear here
+                        </div>
+                        <div style="font-size:0.65rem; margin-top:0.5rem; text-align:center;">
+                            📌 Symmetric cipher: same key encrypts & decrypts. Block cipher processes fixed-size blocks.
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Exam-Style Q&A -->
+    <div class="qa-section">
+        <h2>📝 Exam-Style Questions & Answers (MCS-218 PYQ Pattern)</h2>
+        <div class="qa-item">
+            <div class="qa-question">Q1. Give an expression for finding the throughput of the system in pure ALOHA. (Direct PYQ)</div>
+            <div class="qa-answer"><strong>Answer:</strong> In Pure ALOHA, throughput S = G · e<sup>-2G</sup>, where G is the total arrival rate (load). Maximum throughput ≈ 18% at G = 0.5. Vulnerable period = 2 × frame transmission time.</div>
+        </div>
+        <div class="qa-item">
+            <div class="qa-question">Q2. Differentiate pure ALOHA with slotted ALOHA. (Direct PYQ)</div>
+            <div class="qa-answer"><strong>Answer:</strong> <strong>Transmission:</strong> Pure ALOHA allows any time; Slotted ALOHA allows only at slot boundaries. <strong>Vulnerable period:</strong> Pure = 2T, Slotted = T. <strong>Efficiency:</strong> Pure ~18%, Slotted ~36%. Slotted reduces collision probability.</div>
+        </div>
+        <div class="qa-item">
+            <div class="qa-question">Q3. Explain the mechanism of CSMA/CD.</div>
+            <div class="qa-answer"><strong>Answer:</strong> CSMA/CD: Station senses carrier before transmit. If idle, transmits while monitoring for collisions. If collision detected, aborts immediately, waits random backoff (Binary Exponential Backoff), then retries. Used in Ethernet.</div>
+        </div>
+        <div class="qa-item">
+            <div class="qa-question">Q4. Define cryptography, encryption, decryption, and block-cipher. (Direct PYQ)</div>
+            <div class="qa-answer"><strong>Answer:</strong> <strong>Cryptography:</strong> Science of secure communication. <strong>Encryption:</strong> Plaintext → Ciphertext using key. <strong>Decryption:</strong> Ciphertext → Plaintext. <strong>Block Cipher:</strong> Symmetric cipher encrypting fixed-size blocks (e.g., AES).</div>
+        </div>
+        <div class="qa-item">
+            <div class="qa-question">Q5. How does cryptography contribute to network security? (Direct PYQ)</div>
+            <div class="qa-answer"><strong>Answer:</strong> Cryptography provides: <strong>Confidentiality</strong> (data hidden), <strong>Authentication</strong> (identity verification), <strong>Integrity</strong> (no tampering), <strong>Non-repudiation</strong> (sender cannot deny). Used in SSL/TLS, VPNs, digital signatures.</div>
+        </div>
+    </div>
+    <footer>📘 MCA Sem-2 Master Mentorship — Day 12: Multiple Access Protocols & Cryptography. Next: Day 13 — Buffer Day: Review & Complex Topic Clarification!</footer>
+</div>
+
+<script>
+    // ----- ALOHA Simulator -----
+    let alohaMode = 'pure';
+    const alohaChannel = document.getElementById('alohaChannel');
+    
+    function simulateAloha(mode) {
+        alohaMode = mode;
+        const randomLoad = Math.random() * 1.5;
+        let throughput;
+        if (mode === 'pure') {
+            throughput = (randomLoad * Math.exp(-2 * randomLoad) * 100).toFixed(1);
+            alohaChannel.innerHTML = `📡 Pure ALOHA Simulation<br>Load G = ${randomLoad.toFixed(2)}<br>Throughput S = G·e⁻²ᴳ = ${throughput}%<br>Max theoretical: 18% (at G=0.5)<br>${Math.random() > 0.7 ? '⚠️ Collision occurred!' : '✅ Frame transmitted successfully'}`;
+        } else {
+            throughput = (randomLoad * Math.exp(-randomLoad) * 100).toFixed(1);
+            alohaChannel.innerHTML = `📡 Slotted ALOHA Simulation<br>Load G = ${randomLoad.toFixed(2)}<br>Throughput S = G·e⁻ᴳ = ${throughput}%<br>Max theoretical: 36% (at G=1)<br>${Math.random() > 0.6 ? '✅ Frame sent at slot boundary' : '⚠️ Collision in slot'}`;
+        }
+    }
+    
+    document.getElementById('pureAlohaBtn').addEventListener('click', () => simulateAloha('pure'));
+    document.getElementById('slottedAlohaBtn').addEventListener('click', () => simulateAloha('slotted'));
+    
+    // ----- CSMA/CD Simulator -----
+    let transmitting = false;
+    let collisionSimulated = false;
+    const csmaStatus = document.getElementById('csmaStatus');
+    const csmaLog = document.getElementById('csmaLog');
+    
+    function updateCsma(message, isError = false) {
+        csmaLog.innerHTML = message;
+        if (isError) csmaLog.style.color = '#ffaa88';
+        else csmaLog.style.color = '#b3ffcf';
+    }
+    
+    function transmit() {
+        if (transmitting) {
+            updateCsma('⚠️ Already transmitting! Wait for backoff...', true);
+            return;
+        }
+        transmitting = true;
+        csmaStatus.innerHTML = '🎧 Sensing carrier... Channel idle. Starting transmission.';
+        updateCsma('📤 Carrier sensed idle. Transmitting frame...');
+        setTimeout(() => {
+            if (collisionSimulated) {
+                csmaStatus.innerHTML = '💥 COLLISION DETECTED! Aborting transmission.';
+                updateCsma('💥 Collision! Stopping transmission. Starting Binary Exponential Backoff...', true);
+                transmitting = false;
+                collisionSimulated = false;
+                setTimeout(() => {
+                    csmaStatus.innerHTML = '🔍 Channel idle. Ready for next transmission (backoff complete).';
+                    updateCsma('✅ Backoff complete. Ready to retransmit.');
+                }, 1500);
+            } else {
+                csmaStatus.innerHTML = '✅ Transmission successful! Frame delivered.';
+                updateCsma('✅ Frame sent successfully. No collision detected.');
+                transmitting = false;
+                setTimeout(() => {
+                    csmaStatus.innerHTML = '🔍 Channel idle. Ready to transmit.';
+                }, 1000);
+            }
+        }, 1000);
+    }
+    
+    function simulateCollision() {
+        if (transmitting) {
+            collisionSimulated = true;
+            csmaStatus.innerHTML = '⚠️ Collision injected during transmission!';
+            updateCsma('💥 CSMA/CD detected collision. Aborting & starting backoff.', true);
+        } else {
+            updateCsma('⚠️ No active transmission. Start transmitting first, then simulate collision.', true);
+        }
+    }
+    
+    function resetCsma() {
+        transmitting = false;
+        collisionSimulated = false;
+        csmaStatus.innerHTML = '🔍 Channel idle. Ready to transmit.';
+        updateCsma('💡 Reset. Click Transmit to start CSMA/CD process.');
+    }
+    
+    document.getElementById('transmitBtn').addEventListener('click', transmit);
+    document.getElementById('simulateCollisionBtn').addEventListener('click', simulateCollision);
+    document.getElementById('resetCsmaBtn').addEventListener('click', resetCsma);
+    
+    // ----- Caesar Cipher Demo (Symmetric Encryption) -----
+    function caesarEncrypt(text, shift) {
+        shift = shift % 26;
+        return text.split('').map(char => {
+            if (char >= 'A' && char <= 'Z') {
+                return String.fromCharCode(((char.charCodeAt(0) - 65 + shift) % 26) + 65);
+            } else if (char >= 'a' && char <= 'z') {
+                return String.fromCharCode(((char.charCodeAt(0) - 97 + shift) % 26) + 97);
+            }
+            return char;
+        }).join('');
+    }
+    
+    function caesarDecrypt(text, shift) {
+        return caesarEncrypt(text, 26 - (shift % 26));
+    }
+    
+    const plaintextInput = document.getElementById('plaintextInput');
+    const shiftKey = document.getElementById('shiftKey');
+    const cryptoResult = document.getElementById('cryptoResult');
+    
+    document.getElementById('encryptBtn').addEventListener('click', () => {
+        const plain = plaintextInput.value;
+        const shift = parseInt(shiftKey.value) || 0;
+        const cipher = caesarEncrypt(plain, shift);
+        cryptoResult.innerHTML = `🔒 <strong>Encryption (Shift ${shift}):</strong><br>Plaintext: "${plain}"<br>Ciphertext: "${cipher}"<br><span style="font-size:0.65rem;">Symmetric cipher: same key (${shift}) decrypts.</span>`;
+    });
+    
+    document.getElementById('decryptBtn').addEventListener('click', () => {
+        const cipher = plaintextInput.value;
+        const shift = parseInt(shiftKey.value) || 0;
+        const plain = caesarDecrypt(cipher, shift);
+        cryptoResult.innerHTML = `🔓 <strong>Decryption (Shift ${shift}):</strong><br>Ciphertext: "${cipher}"<br>Plaintext: "${plain}"<br><span style="font-size:0.65rem;">Block cipher analogy: processes fixed-size blocks with symmetric key.</span>`;
+    });
+    
+    // Additional elaboration notes
+    const alohaPlayground = document.querySelector('.aloha-sim')?.parentElement;
+    if (alohaPlayground) {
+        const alohaNote = document.createElement('div');
+        alohaNote.className = 'example-block';
+        alohaNote.style.marginTop = '0.8rem';
+        alohaNote.style.fontSize = '0.7rem';
+        alohaNote.innerHTML = '📌 <strong>Exam Formula:</strong> Pure ALOHA: S = G·e<sup>-2G</sup> | Slotted ALOHA: S = G·e<sup>-G</sup>. Vulnerable period: Pure = 2T, Slotted = T.';
+        alohaPlayground.appendChild(alohaNote);
+    }
+    
+    const csmaPlayground = document.querySelector('.csma-sim')?.parentElement;
+    if (csmaPlayground) {
+        const csmaNote = document.createElement('div');
+        csmaNote.className = 'example-block';
+        csmaNote.style.marginTop = '0.6rem';
+        csmaNote.style.fontSize = '0.7rem';
+        csmaNote.innerHTML = '💡 <strong>Binary Exponential Backoff:</strong> After collision, backoff time = random(0, 2^k - 1) × slot time, where k = number of collisions. Used in Ethernet.';
+        csmaPlayground.appendChild(csmaNote);
+    }
+</script>
+</body>
+</html>

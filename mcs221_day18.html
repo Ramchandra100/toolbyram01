@@ -1,0 +1,536 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>MCS-221 Day 18: K-Nearest Neighbors (K-NN) | Decision Trees | Classification Algorithms</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+            background: linear-gradient(135deg, #eef2ef 0%, #e2e8e0 100%);
+            color: #1e2f2a;
+            line-height: 1.5;
+            padding: 2rem 1.5rem;
+        }
+
+        .master-textbook {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .day-header {
+            background: linear-gradient(135deg, #2c6e5e 0%, #3f8a78 100%);
+            border-radius: 2rem 2rem 1.8rem 1.8rem;
+            padding: 1.8rem 2rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 12px 28px -12px rgba(0,0,0,0.3);
+        }
+        .day-header h1 {
+            font-size: 2rem;
+            font-weight: 700;
+            color: white;
+        }
+        .day-header h1 span {
+            background: #f4b942;
+            font-size: 1rem;
+            padding: 0.2rem 1rem;
+            border-radius: 40px;
+            margin-left: 0.8rem;
+            vertical-align: middle;
+            color: #1e2f1e;
+        }
+        .day-badge {
+            background: #f4b942cc;
+            padding: 0.25rem 1rem;
+            border-radius: 30px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            margin-top: 0.6rem;
+            display: inline-block;
+            color: #1e3a2a;
+        }
+        .day-header p {
+            color: #d4f0e8;
+            margin-top: 0.8rem;
+        }
+
+        .topics-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .topic-card {
+            background: white;
+            border-radius: 1.8rem;
+            overflow: hidden;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.08);
+            border: 1px solid #d4e0d4;
+        }
+
+        .topic-title {
+            background: #fafef7;
+            padding: 1rem 2rem;
+            border-bottom: 2px solid #e0ecd8;
+        }
+        .topic-title h2 {
+            font-size: 1.7rem;
+            font-weight: 600;
+            color: #2c7a6b;
+        }
+        .topic-title p {
+            color: #5b7c68;
+            font-size: 0.9rem;
+        }
+
+        .theory-body {
+            padding: 1.5rem 2rem;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+        }
+
+        .explain-text {
+            background: #ffffff;
+        }
+        .explain-text h3 {
+            font-size: 1.3rem;
+            font-weight: 600;
+            margin-bottom: 0.75rem;
+            color: #2c7a6b;
+            border-left: 5px solid #f4b942;
+            padding-left: 0.8rem;
+        }
+        .explain-text p, .explain-text li {
+            margin-bottom: 0.8rem;
+            color: #2c4a3a;
+        }
+        .explain-text ul, .explain-text ol {
+            padding-left: 1.5rem;
+            margin: 0.7rem 0;
+        }
+        .example-block {
+            background: #fef9e8;
+            border-radius: 1.2rem;
+            padding: 0.9rem 1.2rem;
+            margin: 1rem 0;
+            border-left: 4px solid #f4b942;
+        }
+        .code-block {
+            background: #1e2f2a;
+            color: #b3ffcf;
+            padding: 0.6rem;
+            border-radius: 0.8rem;
+            font-family: 'Fira Code', monospace;
+            font-size: 0.7rem;
+            overflow-x: auto;
+            margin: 0.8rem 0;
+        }
+
+        .playground {
+            background: #fafef7;
+            border-radius: 1.5rem;
+            padding: 1rem;
+            box-shadow: inset 0 0 0 1px #d8ecd8, 0 4px 12px rgba(0,0,0,0.02);
+        }
+        .playground h4 {
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: #2c7a6b;
+        }
+
+        .knn-demo, .decision-tree-demo {
+            background: #eef3e8;
+            border-radius: 1rem;
+            padding: 1rem;
+        }
+        .points-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            justify-content: center;
+            margin: 0.8rem 0;
+        }
+        .point {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.6rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .apple { background: #e68a5e; color: white; }
+        .tomato { background: #d64b2c; color: white; }
+        .unknown { background: #9aa88a; color: white; border: 2px solid #f4b942; }
+        .k-slider {
+            margin: 0.8rem 0;
+            text-align: center;
+        }
+        .tree-visual {
+            background: #fff8e8;
+            border-radius: 0.8rem;
+            padding: 0.8rem;
+            font-family: monospace;
+            font-size: 0.7rem;
+            text-align: center;
+            margin: 0.5rem 0;
+        }
+
+        button {
+            background: #3e8a7a;
+            border: none;
+            padding: 0.4rem 1rem;
+            border-radius: 40px;
+            color: white;
+            font-weight: 500;
+            cursor: pointer;
+            font-family: inherit;
+            margin: 0.2rem;
+        }
+        button:hover {
+            background: #2c6e5e;
+        }
+
+        .qa-section {
+            background: white;
+            border-radius: 1.8rem;
+            margin-top: 2rem;
+            padding: 1.8rem 2rem;
+            border: 1px solid #d4e0d4;
+        }
+        .qa-section h2 {
+            font-size: 1.7rem;
+            font-weight: 700;
+            color: #2c7a6b;
+            border-left: 5px solid #f4b942;
+            padding-left: 1rem;
+            margin-bottom: 1.5rem;
+        }
+        .qa-item {
+            margin-bottom: 1.8rem;
+            border-bottom: 1px solid #e0ecd8;
+            padding-bottom: 1rem;
+        }
+        .qa-question {
+            font-weight: 700;
+            font-size: 1rem;
+            color: #2c7a6b;
+            margin-bottom: 0.5rem;
+        }
+        .qa-answer {
+            color: #2f5b48;
+            padding-left: 1rem;
+            border-left: 3px solid #f4b94280;
+        }
+
+        @media (max-width: 850px) {
+            .theory-body {
+                grid-template-columns: 1fr;
+                gap: 1.5rem;
+            }
+            body {
+                padding: 1rem;
+            }
+        }
+        footer {
+            text-align: center;
+            margin-top: 2rem;
+            font-size: 0.75rem;
+            color: #6f8e70;
+        }
+    </style>
+</head>
+<body>
+<div class="master-textbook">
+    <div class="day-header">
+        <h1>🌳 MCS-221: Data Warehousing & Data Mining <span>Day 18</span></h1>
+        <div class="day-badge">🤖 Classification Algorithms: K-NN (Lazy Learner) | Decision Trees (Eager Learner)</div>
+        <p>Supervised learning • Euclidean distance • Majority voting • Information Gain • WEKA: IBk & J48</p>
+    </div>
+
+    <div class="topics-grid">
+        <!-- Topic 1: K-Nearest Neighbors (K-NN) -->
+        <div class="topic-card">
+            <div class="topic-title">
+                <h2>📍 1. K-Nearest Neighbors (K-NN) Algorithm</h2>
+                <p>Lazy learner • Distance-based classification • Majority vote</p>
+            </div>
+            <div class="theory-body">
+                <div class="explain-text">
+                    <h3>📖 Explain</h3>
+                    <p><strong>K-NN</strong> is a supervised classification algorithm that classifies new data points based on the majority class among its 'K' closest neighbors using Euclidean distance.</p>
+                    <ul>
+                        <li><strong>Steps:</strong> Choose K, calculate distances, find K nearest, majority vote, assign class.</li>
+                        <li><strong>Lazy Learner:</strong> No training phase; computes at prediction time.</li>
+                    </ul>
+                    <div class="example-block">
+                        🍎 <strong>Example:</strong> Mystery fruit with K=5 → 4 tomatoes, 1 apple → classify as Tomato!<br>
+                        📐 <strong>Euclidean Distance:</strong> d = √[(x₂-x₁)² + (y₂-y₁)²]
+                    </div>
+                    <div class="code-block">
+                        WEKA Implementation: Classify → lazy → IBk (set K parameter)
+                    </div>
+                </div>
+                <div class="playground">
+                    <h4>🎮 K-NN Interactive Classifier</h4>
+                    <div class="knn-demo">
+                        <div class="points-container" id="knnPoints">
+                            <!-- Points will be rendered here -->
+                        </div>
+                        <div class="k-slider">
+                            <label>K Value: <span id="kValueDisplay">3</span></label>
+                            <input type="range" id="kSlider" min="1" max="7" value="3" step="1" style="width: 100%;">
+                        </div>
+                        <div id="knnResult" class="tree-visual" style="background:#1e2f2a; color:#b3ffcf;">
+                            💡 Click on the unknown point (?) to classify it using K-NN
+                        </div>
+                        <button id="resetKnnBtn">⟳ Reset Classification</button>
+                        <div style="font-size:0.65rem; margin-top:0.5rem;">🔵 Apple (orange) | 🍅 Tomato (red) | ❓ Unknown (gray)</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Topic 2: Decision Trees -->
+        <div class="topic-card">
+            <div class="topic-title">
+                <h2>🌲 2. Decision Tree Classifier (J48 / C4.5)</h2>
+                <p>Eager learner • Flowchart structure • Information Gain • Gini Index</p>
+            </div>
+            <div class="theory-body">
+                <div class="explain-text">
+                    <h3>📖 Explain</h3>
+                    <p><strong>Decision Trees</strong> build a flowchart-like model by recursively splitting data based on attribute values. Uses <strong>Information Gain</strong> (based on Entropy) to select the best splitting attribute.</p>
+                    <ul>
+                        <li><strong>Root Node:</strong> Starting point (entire dataset)</li>
+                        <li><strong>Internal Nodes:</strong> Tests on attributes</li>
+                        <li><strong>Leaf Nodes:</strong> Final class labels</li>
+                    </ul>
+                    <div class="example-block">
+                        🏦 <strong>Loan Approval Example:</strong><br>
+                        Root: "Has job?" → Yes → "Credit score > 700?" → Yes → Approve<br>
+                        → No → Reject
+                    </div>
+                    <div class="code-block">
+                        WEKA Implementation: Classify → trees → J48 (C4.5 algorithm)
+                    </div>
+                </div>
+                <div class="playground">
+                    <h4>🎮 Decision Tree Simulator (Play Tennis)</h4>
+                    <div class="decision-tree-demo">
+                        <div id="treeVisual" class="tree-visual">
+                            🌳 <strong>Decision Tree (Outlook → Humidity → Play)</strong><br>
+                            ├── Outlook = Sunny → Humidity<br>
+                            │   ├── Humidity = High → Play = No<br>
+                            │   └── Humidity = Normal → Play = Yes<br>
+                            ├── Outlook = Overcast → Play = Yes<br>
+                            └── Outlook = Rain → Wind<br>
+                                ├── Wind = Strong → Play = No<br>
+                                └── Wind = Weak → Play = Yes
+                        </div>
+                        <div style="margin: 0.8rem 0;">
+                            <label>Select Weather Conditions: </label>
+                            <select id="weatherSelect">
+                                <option value="sunny-high">Sunny, High Humidity</option>
+                                <option value="sunny-normal">Sunny, Normal Humidity</option>
+                                <option value="overcast">Overcast</option>
+                                <option value="rain-strong">Rain, Strong Wind</option>
+                                <option value="rain-weak">Rain, Weak Wind</option>
+                            </select>
+                            <button id="predictTreeBtn">🌳 Predict Play Tennis</button>
+                        </div>
+                        <div id="treePrediction" class="tree-visual" style="background:#1e2f2a; color:#b3ffcf;">
+                            💡 Select conditions and click Predict
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Exam-Style Q&A -->
+    <div class="qa-section">
+        <h2>📝 Exam-Style Questions & Answers (MCS-221 PYQ Pattern)</h2>
+        <div class="qa-item">
+            <div class="qa-question">Q1. Write and explain the K-NN classification algorithm in Data Mining. (Direct PYQ - 10 Marks)</div>
+            <div class="qa-answer"><strong>Answer:</strong> K-NN is a supervised classification algorithm. <strong>Steps:</strong> 1. Choose K. 2. Calculate Euclidean distance from new point to all training points. 3. Select K smallest distances. 4. Majority vote among K neighbors. 5. Assign class. It's a lazy learner — no training phase, computation at prediction time.</div>
+        </div>
+        <div class="qa-item">
+            <div class="qa-question">Q2. Discuss the advantages and disadvantages of the K-NN algorithm. (Direct PYQ)</div>
+            <div class="qa-answer"><strong>Answer:</strong> <strong>Advantages:</strong> Simple, no training time, handles multi-class. <strong>Disadvantages:</strong> Slow prediction (computes all distances), sensitive to noise, requires large memory, performance degrades with high dimensions.</div>
+        </div>
+        <div class="qa-item">
+            <div class="qa-question">Q3. Write and explain the Decision Tree Classifier algorithm with the help of an example. (Direct PYQ - 10 Marks)</div>
+            <div class="qa-answer"><strong>Answer:</strong> Decision Tree recursively splits data using attribute selection measures (Information Gain). <strong>Example:</strong> Play Tennis tree: Root = Outlook → Sunny branch tests Humidity, Overcast → Yes, Rain tests Wind. Each leaf gives final class. Interpretable and handles mixed data types.</div>
+        </div>
+        <div class="qa-item">
+            <div class="qa-question">Q4. Differentiate between "Eager Learners" and "Lazy Learners".</div>
+            <div class="qa-answer"><strong>Answer:</strong> <strong>Eager Learners (Decision Trees):</strong> Build model during training, fast prediction, require training time. <strong>Lazy Learners (K-NN):</strong> No training, store all data, prediction is slow (computes at query time).</div>
+        </div>
+        <div class="qa-item">
+            <div class="qa-question">Q5. What is "Information Gain" in the context of Decision Trees?</div>
+            <div class="qa-answer"><strong>Answer:</strong> Information Gain measures reduction in entropy after splitting on an attribute. Attributes with highest Information Gain are chosen as split nodes, creating the most efficient tree. Formula: IG = Entropy(parent) - Σ(weighted entropy of children).</div>
+        </div>
+    </div>
+    <footer>📘 MCA Sem-2 Master Mentorship — Day 18: K-NN & Decision Trees. Next: Day 19 — Association Rule Mining (ARM) & Text Mining!</footer>
+</div>
+
+<script>
+    // K-NN Simulation Data
+    const trainingPoints = [
+        { x: 100, y: 80, class: 'apple', label: '🍎' },
+        { x: 120, y: 100, class: 'apple', label: '🍎' },
+        { x: 80, y: 120, class: 'apple', label: '🍎' },
+        { x: 200, y: 180, class: 'tomato', label: '🍅' },
+        { x: 220, y: 200, class: 'tomato', label: '🍅' },
+        { x: 180, y: 220, class: 'tomato', label: '🍅' },
+        { x: 140, y: 160, class: 'tomato', label: '🍅' }
+    ];
+    
+    let unknownPoint = { x: 150, y: 150, class: 'unknown', label: '?' };
+    let currentK = 3;
+    let classified = false;
+    
+    const knnContainer = document.getElementById('knnPoints');
+    const kSlider = document.getElementById('kSlider');
+    const kValueDisplay = document.getElementById('kValueDisplay');
+    const knnResult = document.getElementById('knnResult');
+    const resetKnnBtn = document.getElementById('resetKnnBtn');
+    
+    function calculateEuclideanDistance(p1, p2) {
+        return Math.sqrt(Math.pow(p1.x - p2.x, 2) + Math.pow(p1.y - p2.y, 2));
+    }
+    
+    function classifyKNN() {
+        const distances = trainingPoints.map(point => ({
+            ...point,
+            distance: calculateEuclideanDistance(unknownPoint, point)
+        }));
+        distances.sort((a, b) => a.distance - b.distance);
+        const neighbors = distances.slice(0, currentK);
+        const appleCount = neighbors.filter(n => n.class === 'apple').length;
+        const tomatoCount = neighbors.filter(n => n.class === 'tomato').length;
+        
+        let result = `K = ${currentK}, Neighbors: ${neighbors.map(n => n.label).join(', ')}<br>`;
+        result += `🍎 Apples: ${appleCount} | 🍅 Tomatoes: ${tomatoCount}<br>`;
+        if (appleCount > tomatoCount) {
+            result += `✅ Classification: 🍎 APPLE (majority vote)`;
+            unknownPoint.class = 'apple';
+            unknownPoint.label = '🍎';
+        } else if (tomatoCount > appleCount) {
+            result += `✅ Classification: 🍅 TOMATO (majority vote)`;
+            unknownPoint.class = 'tomato';
+            unknownPoint.label = '🍅';
+        } else {
+            result += `⚠️ Tie! Consider odd K value.`;
+        }
+        knnResult.innerHTML = result;
+        classified = true;
+        renderKNN();
+    }
+    
+    function renderKNN() {
+        knnContainer.innerHTML = '';
+        trainingPoints.forEach(point => {
+            const div = document.createElement('div');
+            div.className = `point ${point.class}`;
+            div.style.width = '45px';
+            div.style.height = '45px';
+            div.innerHTML = point.label;
+            knnContainer.appendChild(div);
+        });
+        const unknownDiv = document.createElement('div');
+        unknownDiv.className = `point ${unknownPoint.class}`;
+        unknownDiv.style.width = '45px';
+        unknownDiv.style.height = '45px';
+        unknownDiv.innerHTML = unknownPoint.label;
+        unknownDiv.style.cursor = 'pointer';
+        unknownDiv.addEventListener('click', () => {
+            if (!classified) {
+                classifyKNN();
+            } else {
+                knnResult.innerHTML = '💡 Already classified! Click Reset to try again.';
+            }
+        });
+        knnContainer.appendChild(unknownDiv);
+    }
+    
+    function resetKNN() {
+        unknownPoint = { x: 150, y: 150, class: 'unknown', label: '?' };
+        classified = false;
+        renderKNN();
+        knnResult.innerHTML = '💡 Click on the unknown point (?) to classify it using K-NN';
+    }
+    
+    kSlider.addEventListener('input', (e) => {
+        currentK = parseInt(e.target.value);
+        kValueDisplay.textContent = currentK;
+        if (classified) {
+            resetKNN();
+        }
+    });
+    resetKnnBtn.addEventListener('click', resetKNN);
+    renderKNN();
+    
+    // Decision Tree Simulator
+    const weatherSelect = document.getElementById('weatherSelect');
+    const predictTreeBtn = document.getElementById('predictTreeBtn');
+    const treePrediction = document.getElementById('treePrediction');
+    
+    function predictTennis(condition) {
+        switch(condition) {
+            case 'sunny-high': return "❌ Play = NO (Sunny & High Humidity)";
+            case 'sunny-normal': return "✅ Play = YES (Sunny & Normal Humidity)";
+            case 'overcast': return "✅ Play = YES (Overcast)";
+            case 'rain-strong': return "❌ Play = NO (Rain & Strong Wind)";
+            case 'rain-weak': return "✅ Play = YES (Rain & Weak Wind)";
+            default: return "Select a weather condition";
+        }
+    }
+    
+    predictTreeBtn.addEventListener('click', () => {
+        const condition = weatherSelect.value;
+        const result = predictTennis(condition);
+        treePrediction.innerHTML = `🌳 Decision Tree Prediction: ${result}<br>📊 Path: ${getTreePath(condition)}`;
+    });
+    
+    function getTreePath(condition) {
+        const paths = {
+            'sunny-high': 'Root: Outlook = Sunny → Humidity = High → Play = No',
+            'sunny-normal': 'Root: Outlook = Sunny → Humidity = Normal → Play = Yes',
+            'overcast': 'Root: Outlook = Overcast → Play = Yes',
+            'rain-strong': 'Root: Outlook = Rain → Wind = Strong → Play = No',
+            'rain-weak': 'Root: Outlook = Rain → Wind = Weak → Play = Yes'
+        };
+        return paths[condition] || '';
+    }
+    
+    // Additional notes
+    const knnPlayground = document.querySelector('.knn-demo')?.parentElement;
+    if (knnPlayground) {
+        const note = document.createElement('div');
+        note.className = 'example-block';
+        note.style.marginTop = '0.6rem';
+        note.style.fontSize = '0.7rem';
+        note.innerHTML = '📌 <strong>WEKA Lab Tip:</strong> K-NN is called "IBk" (Instance-Based). Set K parameter in classifier options. For Decision Trees, use "J48" (C4.5 implementation).';
+        knnPlayground.appendChild(note);
+    }
+</script>
+</body>
+</html>

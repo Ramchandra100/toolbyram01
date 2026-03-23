@@ -1,0 +1,521 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>MCS-219 Day 4: OOAD | Structural Modeling · Class Diagrams · Association & Aggregation</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+            background: #f3f6fb;
+            color: #1e2f3a;
+            line-height: 1.5;
+            padding: 2rem 1.5rem;
+        }
+
+        .master-textbook {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        /* header */
+        .day-header {
+            background: linear-gradient(135deg, #1f4a5c 0%, #2e6b7c 100%);
+            border-radius: 2rem 2rem 1.8rem 1.8rem;
+            padding: 1.8rem 2rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 12px 28px -12px rgba(0,0,0,0.25);
+        }
+        .day-header h1 {
+            font-size: 2rem;
+            font-weight: 700;
+            color: white;
+            letter-spacing: -0.3px;
+        }
+        .day-header h1 span {
+            background: #f4b942;
+            font-size: 1rem;
+            padding: 0.2rem 1rem;
+            border-radius: 40px;
+            margin-left: 0.8rem;
+            vertical-align: middle;
+            color: #1e2f3a;
+        }
+        .day-badge {
+            display: inline-block;
+            background: #f4b942cc;
+            padding: 0.25rem 1rem;
+            border-radius: 30px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            margin-top: 0.6rem;
+            color: #1e3a44;
+        }
+        .day-header p {
+            color: #d4e9f2;
+            margin-top: 0.8rem;
+        }
+
+        /* topics grid */
+        .topics-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .topic-card {
+            background: white;
+            border-radius: 1.8rem;
+            overflow: hidden;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.05);
+            border: 1px solid #e2ecf3;
+        }
+
+        .topic-title {
+            background: #fbfefd;
+            padding: 1rem 2rem;
+            border-bottom: 2px solid #eef3f8;
+        }
+        .topic-title h2 {
+            font-size: 1.7rem;
+            font-weight: 600;
+            color: #2c7a6b;
+        }
+        .topic-title p {
+            color: #5b7c8c;
+            font-size: 0.9rem;
+        }
+
+        .theory-body {
+            padding: 1.5rem 2rem;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+        }
+
+        .explain-text {
+            background: #ffffff;
+        }
+        .explain-text h3 {
+            font-size: 1.3rem;
+            font-weight: 600;
+            margin-bottom: 0.75rem;
+            color: #2c7a6b;
+            border-left: 5px solid #f4b942;
+            padding-left: 0.8rem;
+        }
+        .explain-text p, .explain-text li {
+            margin-bottom: 0.8rem;
+            color: #2c4a5a;
+        }
+        .explain-text ul, .explain-text ol {
+            padding-left: 1.5rem;
+            margin: 0.7rem 0;
+        }
+        .example-block {
+            background: #fef9e8;
+            border-radius: 1.2rem;
+            padding: 0.9rem 1.2rem;
+            margin: 1rem 0;
+            border-left: 4px solid #f4b942;
+        }
+        .highlight-badge {
+            background: #e9f3f0;
+            padding: 0.1rem 0.4rem;
+            border-radius: 12px;
+            font-family: monospace;
+            font-size: 0.85rem;
+        }
+
+        /* playground widgets */
+        .playground {
+            background: #fafdfe;
+            border-radius: 1.5rem;
+            padding: 1rem;
+            box-shadow: inset 0 0 0 1px #e4eff6, 0 4px 12px rgba(0,0,0,0.02);
+        }
+        .playground h4 {
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: #2c7a6b;
+        }
+
+        /* UML Diagram Styling */
+        .uml-diagram {
+            background: #fef9ef;
+            border-radius: 1rem;
+            padding: 1rem;
+            font-family: 'Fira Code', monospace;
+            text-align: center;
+            margin-bottom: 1rem;
+        }
+        .class-box {
+            display: inline-block;
+            background: #fff5e6;
+            border: 2px solid #cbc29e;
+            border-radius: 12px;
+            padding: 0.6rem 1.2rem;
+            margin: 0.5rem;
+            min-width: 140px;
+            vertical-align: middle;
+        }
+        .class-name {
+            font-weight: 700;
+            border-bottom: 1px solid #d4c9a8;
+            margin-bottom: 0.3rem;
+            padding-bottom: 0.2rem;
+        }
+        .relationship-line {
+            display: inline-block;
+            font-size: 1.4rem;
+            margin: 0 0.5rem;
+            vertical-align: middle;
+        }
+        .multiplicity {
+            font-size: 0.7rem;
+            font-family: monospace;
+            background: #e0d6b8;
+            padding: 0.1rem 0.3rem;
+            border-radius: 12px;
+        }
+
+        /* interactive association builder */
+        .assoc-builder {
+            background: #eef3fa;
+            border-radius: 1rem;
+            padding: 1rem;
+        }
+        .multi-select {
+            display: flex;
+            gap: 0.5rem;
+            justify-content: center;
+            margin: 0.5rem 0;
+            flex-wrap: wrap;
+        }
+        .mult-badge {
+            background: #dce5ec;
+            border-radius: 40px;
+            padding: 0.2rem 0.8rem;
+            font-size: 0.7rem;
+            cursor: pointer;
+        }
+        .mult-badge.active {
+            background: #2c7a6b;
+            color: white;
+        }
+
+        /* aggregation interactive */
+        .agg-demo {
+            background: #eef3fa;
+            border-radius: 1rem;
+            padding: 1rem;
+        }
+
+        button {
+            background: #3e8a7a;
+            border: none;
+            padding: 0.4rem 1rem;
+            border-radius: 40px;
+            color: white;
+            font-weight: 500;
+            cursor: pointer;
+            font-family: inherit;
+        }
+        button:hover {
+            background: #1e6b5e;
+        }
+
+        /* Q&A Section */
+        .qa-section {
+            background: white;
+            border-radius: 1.8rem;
+            margin-top: 2rem;
+            padding: 1.8rem 2rem;
+            border: 1px solid #e2ecf3;
+        }
+        .qa-section h2 {
+            font-size: 1.7rem;
+            font-weight: 700;
+            color: #1e6b5e;
+            border-left: 5px solid #f4b942;
+            padding-left: 1rem;
+            margin-bottom: 1.5rem;
+        }
+        .qa-item {
+            margin-bottom: 1.8rem;
+            border-bottom: 1px solid #eaf0f5;
+            padding-bottom: 1rem;
+        }
+        .qa-question {
+            font-weight: 700;
+            font-size: 1rem;
+            color: #2c7a6b;
+            margin-bottom: 0.5rem;
+        }
+        .qa-answer {
+            color: #2f5b68;
+            padding-left: 1rem;
+            border-left: 3px solid #f4b94280;
+        }
+
+        @media (max-width: 850px) {
+            .theory-body {
+                grid-template-columns: 1fr;
+                gap: 1.5rem;
+            }
+            body {
+                padding: 1rem;
+            }
+        }
+        footer {
+            text-align: center;
+            margin-top: 2rem;
+            font-size: 0.75rem;
+            color: #6f8ea0;
+        }
+    </style>
+</head>
+<body>
+<div class="master-textbook">
+    <div class="day-header">
+        <h1>🏛️ MCS-219: Object-Oriented Analysis & Design <span>Day 4</span></h1>
+        <div class="day-badge">📐 Structural Modeling · Class Diagrams · Association & Aggregation</div>
+        <p>Static structure, relationships, multiplicity, whole-part hierarchies — with interactive UML builders</p>
+    </div>
+
+    <div class="topics-grid">
+        <!-- Topic 1: Structural Modeling & Class Diagrams -->
+        <div class="topic-card">
+            <div class="topic-title">
+                <h2>📊 1. Structural Modeling & Class Diagrams</h2>
+                <p>Static view of the system — classes, attributes, operations, and relationships</p>
+            </div>
+            <div class="theory-body">
+                <div class="explain-text">
+                    <h3>📖 Explain</h3>
+                    <p><strong>Structural Modeling</strong> captures the static features of a system: the objects, their types, and how they are related. The most common structural model is the <strong>Class Diagram</strong>, which shows classes, interfaces, and relationships like association, aggregation, and generalization.</p>
+                    <ul>
+                        <li>Class Diagram = blueprint of the system's structure.</li>
+                        <li>Does NOT show behavior over time (that is dynamic modeling).</li>
+                        <li>Essential for communicating design between stakeholders.</li>
+                    </ul>
+                    <div class="example-block">
+                        🎓 <strong>Student Registration System:</strong> Class diagram includes <code>Student</code>, <code>Course</code>, <code>Programme</code>, <code>University</code>. It shows rules like "one student can enroll in one programme".
+                    </div>
+                </div>
+                <div class="playground">
+                    <h4>🎮 Interactive Class Diagram Preview</h4>
+                    <div class="uml-diagram">
+                        <div style="display: flex; justify-content: center; flex-wrap: wrap; gap: 1rem;">
+                            <div class="class-box">
+                                <div class="class-name">Student</div>
+                                <div style="font-size:0.7rem;">- id: int<br>- name: String</div>
+                            </div>
+                            <div class="class-box">
+                                <div class="class-name">Course</div>
+                                <div style="font-size:0.7rem;">- code: String<br>- title: String</div>
+                            </div>
+                            <div class="class-box">
+                                <div class="class-name">Programme</div>
+                                <div style="font-size:0.7rem;">- progName: String</div>
+                            </div>
+                        </div>
+                        <div style="margin-top: 0.6rem; font-size:0.7rem;">🔗 Relationships: Association, Aggregation, etc.</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Topic 2: Association Relationship (with multiplicity builder) -->
+        <div class="topic-card">
+            <div class="topic-title">
+                <h2>🔗 2. Association Relationship</h2>
+                <p>Structural connection between classes — multiplicity, roles, and navigation</p>
+            </div>
+            <div class="theory-body">
+                <div class="explain-text">
+                    <h3>📖 Explain</h3>
+                    <p><strong>Association</strong> is a relationship where objects of one class are connected to objects of another class to communicate or exchange data. It can have:</p>
+                    <ul>
+                        <li><strong>Name:</strong> e.g., "works-for"</li>
+                        <li><strong>Multiplicity:</strong> defines how many instances are linked (1, 0..*, 1..*, etc.)</li>
+                        <li><strong>Role:</strong> optional role names</li>
+                    </ul>
+                    <div class="example-block">
+                        🏫 <strong>Example:</strong> <code>School</code> <strong>1..*</strong> works-for <strong>1</strong> <code>University</code><br>
+                        Many schools can be associated with one university.
+                    </div>
+                </div>
+                <div class="playground">
+                    <h4>🎮 Association Builder (Multiplicity)</h4>
+                    <div class="assoc-builder">
+                        <div style="display: flex; justify-content: space-around; align-items: center; flex-wrap: wrap;">
+                            <div class="class-box" style="background:#fff2e0;">🏫 School</div>
+                            <span style="font-size:1.5rem;">⇄</span>
+                            <div class="class-box" style="background:#fff2e0;">🏛️ University</div>
+                        </div>
+                        <div style="text-align: center; margin: 0.5rem 0;"><strong>Multiplicity (School side → University)</strong></div>
+                        <div class="multi-select" id="multiSelector">
+                            <span data-multi="1" class="mult-badge">1 (exactly one)</span>
+                            <span data-multi="0..*" class="mult-badge active">0..* (zero or many)</span>
+                            <span data-multi="1..*" class="mult-badge">1..* (one or many)</span>
+                            <span data-multi="0..1" class="mult-badge">0..1 (optional)</span>
+                        </div>
+                        <div id="assocDescription" style="background:#e2e9f0; border-radius: 1rem; padding: 0.6rem; margin-top: 0.6rem; font-size:0.8rem;">
+                            🔹 <strong>Current Association:</strong> School [0..*] <strong>works-for</strong> University [1]. Many schools can be associated with a single university.
+                        </div>
+                        <p style="font-size:0.65rem; margin-top:0.5rem;">💡 Multiplicity defines how many instances participate in the relationship.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Topic 3: Aggregation Relationship (whole-part) -->
+        <div class="topic-card">
+            <div class="topic-title">
+                <h2>🧩 3. Aggregation Relationship</h2>
+                <p>Special association: "whole-part" hierarchy (hollow diamond)</p>
+            </div>
+            <div class="theory-body">
+                <div class="explain-text">
+                    <h3>📖 Explain</h3>
+                    <p><strong>Aggregation</strong> is a specialized form of association representing a <strong>whole-part</strong> relationship. The "whole" contains the "parts", but parts can exist independently. Graphically: a line with a <strong>hollow diamond</strong> attached to the whole class.</p>
+                    <ul>
+                        <li>Example: <strong>University</strong> (whole) contains <strong>Schools</strong> (parts).</li>
+                        <li>Parts can survive without the whole (weak containment).</li>
+                    </ul>
+                    <div class="example-block">
+                        📄 <strong>Document & Paragraphs:</strong> A Word Document is made up of Paragraphs. If document is deleted, paragraphs may still exist in some contexts? In UML aggregation, parts are loosely coupled.
+                    </div>
+                </div>
+                <div class="playground">
+                    <h4>🎮 Aggregation Visualizer</h4>
+                    <div class="agg-demo">
+                        <div style="display: flex; align-items: center; justify-content: center; gap: 0.3rem; flex-wrap: wrap;">
+                            <div class="class-box" style="background:#f7efda; border:2px solid #a9b89e;">🏛️ University (Whole)</div>
+                            <span style="font-size: 1.6rem;">◇—</span>
+                            <div class="class-box" style="background:#f7efda;">📚 School (Part)</div>
+                            <span style="font-size: 1.6rem;">◇—</span>
+                            <div class="class-box" style="background:#f7efda;">🏫 Department (Part)</div>
+                        </div>
+                        <div style="margin-top: 0.8rem; background:#fff3e0; border-radius: 12px; padding:0.5rem; text-align:center;">
+                            <strong>Hollow Diamond = Aggregation</strong><br>
+                            <span style="font-size:0.7rem;">University is the whole, Schools/Departments are parts (parts can exist independently).</span>
+                        </div>
+                        <div id="aggregationNote" style="margin-top:0.8rem; font-size:0.75rem; background:#eaf1e8; border-radius: 1rem; padding:0.5rem;">
+                            📌 Example: IGNOU University aggregates many Schools (School of Computer Science, School of Management). Schools can exist even if the whole changes? In aggregation, parts have their own lifecycle.
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Exam-Style Q&A (5 elaborated PYQ-style) -->
+    <div class="qa-section">
+        <h2>📝 Exam-Style Questions & Answers (Check Your Progress)</h2>
+        <div class="qa-item">
+            <div class="qa-question">Q1. What is a Class Diagram?</div>
+            <div class="qa-answer"><strong>Answer:</strong> A Class Diagram is a structural UML diagram that depicts the logical structure of an object-oriented system. It provides a static view by illustrating classes, interfaces, attributes, operations, and relationships such as association, aggregation, generalization, and dependency. It serves as a blueprint for system design and is widely used in analysis and design phases.</div>
+        </div>
+        <div class="qa-item">
+            <div class="qa-question">Q2. Define Association in UML. How is it graphically represented?</div>
+            <div class="qa-answer"><strong>Answer:</strong> Association is a structural relationship indicating that objects of one class are connected to objects of another class, allowing them to communicate or exchange data. Graphically, it is represented as a <strong>solid line</strong> connecting two classes, often accompanied by multiplicity (e.g., 1, 0..*), role names, and an optional association name. For example, a line between <code>Student</code> and <code>Course</code> with multiplicity "1..*" and name "enrolls-in".</div>
+        </div>
+        <div class="qa-item">
+            <div class="qa-question">Q3. What is "Multiplicity" in an association?</div>
+            <div class="qa-answer"><strong>Answer:</strong> Multiplicity defines the number of instances of one class that can be linked to a single instance of the other class. Common notations: <strong>1</strong> (exactly one), <strong>0..1</strong> (zero or one), <strong>0..*</strong> (zero or many), <strong>1..*</strong> (one or many). For instance, in a <code>University</code> and <code>School</code> association, multiplicity "1..*" on the School side means one University can have many Schools.</div>
+        </div>
+        <div class="qa-item">
+            <div class="qa-question">Q4. Explain Aggregation with the help of a suitable example.</div>
+            <div class="qa-answer"><strong>Answer:</strong> Aggregation is a specialized form of association that represents a "whole-part" hierarchy. It is denoted by a solid line with a <strong>hollow diamond</strong> attached to the whole class. For example, a <code>Car</code> (whole) aggregates <code>Wheel</code> (parts). Wheels can be created independently and still belong to the car, but the relationship indicates composition of parts. Another example: <code>University</code> (whole) and <code>School</code> (part). The hollow diamond emphasizes that the part can exist without the whole.</div>
+        </div>
+        <div class="qa-item">
+            <div class="qa-question">Q5. How does a normal Association differ from Aggregation?</div>
+            <div class="qa-answer"><strong>Answer:</strong> A normal Association is a generic connection between classes where both classes are conceptually independent (e.g., <code>Customer</code> and <code>Order</code>). Aggregation is a stronger form implying a "whole-part" relationship with a clear containment (e.g., <code>Team</code> and <code>Player</code>). Aggregation uses a hollow diamond at the whole side, while association uses a plain line. Moreover, aggregation suggests that the part belongs to the whole, but the part can survive the whole's destruction (weak containment).</div>
+        </div>
+    </div>
+    <footer>📘 MCA Sem-2 Master Mentorship — Day 4: Structural modeling, class diagrams, association & aggregation. Interact with multiplicity and aggregation visualizers to solidify UML concepts.</footer>
+</div>
+
+<script>
+    // Multiplicity interactive for Association
+    const multiSpans = document.querySelectorAll('#multiSelector .mult-badge');
+    const assocDesc = document.getElementById('assocDescription');
+    let selectedMulti = '0..*'; // default
+
+    function updateAssociationDescription() {
+        let schoolMultiplicity = selectedMulti;
+        let universityMultiplicity = '1'; // fixed for university side
+        let description = '';
+        if (schoolMultiplicity === '1') {
+            description = `🔹 <strong>Current Association:</strong> School [1] <strong>works-for</strong> University [1]. Exactly one school is associated with one university (one-to-one).`;
+        } else if (schoolMultiplicity === '0..*') {
+            description = `🔹 <strong>Current Association:</strong> School [0..*] <strong>works-for</strong> University [1]. Many schools can be linked to one university (optional).`;
+        } else if (schoolMultiplicity === '1..*') {
+            description = `🔹 <strong>Current Association:</strong> School [1..*] <strong>works-for</strong> University [1]. One or more schools must be associated with a university.`;
+        } else if (schoolMultiplicity === '0..1') {
+            description = `🔹 <strong>Current Association:</strong> School [0..1] <strong>works-for</strong> University [1]. At most one school per university (optional one-to-one).`;
+        }
+        assocDesc.innerHTML = description;
+    }
+
+    multiSpans.forEach(span => {
+        span.addEventListener('click', () => {
+            multiSpans.forEach(s => s.classList.remove('active'));
+            span.classList.add('active');
+            selectedMulti = span.getAttribute('data-multi');
+            updateAssociationDescription();
+        });
+    });
+    updateAssociationDescription();
+
+    // Additional elaboration tooltip for aggregation (interactive note)
+    const aggBlock = document.querySelector('.agg-demo');
+    if (aggBlock) {
+        const extraElab = document.createElement('div');
+        extraElab.className = 'example-block';
+        extraElab.style.marginTop = '0.8rem';
+        extraElab.style.fontSize = '0.7rem';
+        extraElab.innerHTML = '🧠 <strong>Elaboration:</strong> Aggregation vs. Composition: In aggregation (hollow diamond), parts can exist independently of the whole. For example, a School can exist before being part of a University. In composition (filled diamond), parts are destroyed with the whole.';
+        aggBlock.appendChild(extraElab);
+    }
+
+    // Association playground additional detail: show a role name example
+    const assocPlayground = document.querySelector('.assoc-builder');
+    if (assocPlayground) {
+        const roleNote = document.createElement('div');
+        roleNote.style.fontSize = '0.7rem';
+        roleNote.style.marginTop = '0.4rem';
+        roleNote.style.background = '#e2e9f0';
+        roleNote.style.borderRadius = '12px';
+        roleNote.style.padding = '0.4rem';
+        roleNote.innerHTML = '🏷️ Association can also have role names: e.g., "employer" (University) and "employee" (School).';
+        assocPlayground.appendChild(roleNote);
+    }
+
+    // Static diagram elaboration: add note about structural modeling in the first playground
+    const firstPlayground = document.querySelector('.topic-card:first-child .playground');
+    if (firstPlayground) {
+        const structNote = document.createElement('div');
+        structNote.className = 'example-block';
+        structNote.style.marginTop = '0.8rem';
+        structNote.style.fontSize = '0.7rem';
+        structNote.innerHTML = '📐 <strong>Structural Modeling:</strong> Focuses on the "what" of a system — classes, attributes, and relationships. Class diagrams are the heart of structural modeling in UML.';
+        firstPlayground.appendChild(structNote);
+    }
+</script>
+</body>
+</html>

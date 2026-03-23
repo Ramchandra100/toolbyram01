@@ -1,0 +1,558 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>MCS-218 Day 10: Switching & Routing | Circuit vs Packet | Dijkstra's Algorithm</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+            background: linear-gradient(135deg, #e8f0f5 0%, #dce6ed 100%);
+            color: #1e2f3a;
+            line-height: 1.5;
+            padding: 2rem 1.5rem;
+        }
+
+        .master-textbook {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        /* header */
+        .day-header {
+            background: linear-gradient(135deg, #1f5a6e 0%, #2f7a8c 100%);
+            border-radius: 2rem 2rem 1.8rem 1.8rem;
+            padding: 1.8rem 2rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 12px 28px -12px rgba(0,0,0,0.3);
+        }
+        .day-header h1 {
+            font-size: 2rem;
+            font-weight: 700;
+            color: white;
+            letter-spacing: -0.3px;
+        }
+        .day-header h1 span {
+            background: #f4b942;
+            font-size: 1rem;
+            padding: 0.2rem 1rem;
+            border-radius: 40px;
+            margin-left: 0.8rem;
+            vertical-align: middle;
+            color: #1e2f3a;
+        }
+        .day-badge {
+            display: inline-block;
+            background: #f4b942cc;
+            padding: 0.25rem 1rem;
+            border-radius: 30px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            margin-top: 0.6rem;
+            color: #1e3a44;
+        }
+        .day-header p {
+            color: #d4e9f2;
+            margin-top: 0.8rem;
+        }
+
+        /* topics grid */
+        .topics-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .topic-card {
+            background: white;
+            border-radius: 1.8rem;
+            overflow: hidden;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.08);
+            border: 1px solid #d4e0e8;
+        }
+
+        .topic-title {
+            background: #fafefd;
+            padding: 1rem 2rem;
+            border-bottom: 2px solid #e0ecef;
+        }
+        .topic-title h2 {
+            font-size: 1.7rem;
+            font-weight: 600;
+            color: #2c7a8c;
+        }
+        .topic-title p {
+            color: #5b7c8c;
+            font-size: 0.9rem;
+        }
+
+        .theory-body {
+            padding: 1.5rem 2rem;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+        }
+
+        .explain-text {
+            background: #ffffff;
+        }
+        .explain-text h3 {
+            font-size: 1.3rem;
+            font-weight: 600;
+            margin-bottom: 0.75rem;
+            color: #2c7a8c;
+            border-left: 5px solid #f4b942;
+            padding-left: 0.8rem;
+        }
+        .explain-text p, .explain-text li {
+            margin-bottom: 0.8rem;
+            color: #2c4a5a;
+        }
+        .explain-text ul, .explain-text ol {
+            padding-left: 1.5rem;
+            margin: 0.7rem 0;
+        }
+        .example-block {
+            background: #fef9e8;
+            border-radius: 1.2rem;
+            padding: 0.9rem 1.2rem;
+            margin: 1rem 0;
+            border-left: 4px solid #f4b942;
+        }
+        .highlight {
+            background: #e0ecf0;
+            padding: 0.1rem 0.3rem;
+            border-radius: 8px;
+            font-family: monospace;
+        }
+
+        /* playground widgets */
+        .playground {
+            background: #fafefd;
+            border-radius: 1.5rem;
+            padding: 1rem;
+            box-shadow: inset 0 0 0 1px #d8e8ef, 0 4px 12px rgba(0,0,0,0.02);
+        }
+        .playground h4 {
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: #2c7a8c;
+        }
+
+        /* Switching Simulator */
+        .switching-sim {
+            background: #eef3f7;
+            border-radius: 1rem;
+            padding: 1rem;
+        }
+        .switch-status {
+            background: #1e2f3a;
+            color: #b3e4f0;
+            padding: 0.8rem;
+            border-radius: 1rem;
+            font-family: monospace;
+            font-size: 0.75rem;
+            margin: 0.8rem 0;
+        }
+        .btn-group {
+            display: flex;
+            gap: 0.8rem;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin: 0.8rem 0;
+        }
+        .switch-btn {
+            background: #3e8a9e;
+            border: none;
+            padding: 0.5rem 1.2rem;
+            border-radius: 40px;
+            color: white;
+            font-weight: 600;
+            cursor: pointer;
+        }
+        .switch-btn.active {
+            background: #f4b942;
+            color: #1e2f3a;
+        }
+
+        /* Dijkstra Graph Visualizer */
+        .graph-container {
+            background: #eef3f7;
+            border-radius: 1rem;
+            padding: 1rem;
+        }
+        .graph-svg {
+            background: #fffaf0;
+            border-radius: 1rem;
+            margin-bottom: 0.8rem;
+            text-align: center;
+        }
+        .dijkstra-result {
+            background: #1e2f3a;
+            color: #b3e4f0;
+            padding: 0.6rem;
+            border-radius: 1rem;
+            font-family: monospace;
+            font-size: 0.7rem;
+            margin-top: 0.5rem;
+        }
+        button {
+            background: #3e8a9e;
+            border: none;
+            padding: 0.4rem 1rem;
+            border-radius: 40px;
+            color: white;
+            font-weight: 500;
+            cursor: pointer;
+            font-family: inherit;
+            margin: 0.2rem;
+        }
+        button:hover {
+            background: #2c6e7e;
+        }
+
+        /* Q&A Section */
+        .qa-section {
+            background: white;
+            border-radius: 1.8rem;
+            margin-top: 2rem;
+            padding: 1.8rem 2rem;
+            border: 1px solid #d4e0e8;
+        }
+        .qa-section h2 {
+            font-size: 1.7rem;
+            font-weight: 700;
+            color: #2c7a8c;
+            border-left: 5px solid #f4b942;
+            padding-left: 1rem;
+            margin-bottom: 1.5rem;
+        }
+        .qa-item {
+            margin-bottom: 1.8rem;
+            border-bottom: 1px solid #e0ecef;
+            padding-bottom: 1rem;
+        }
+        .qa-question {
+            font-weight: 700;
+            font-size: 1rem;
+            color: #2c7a8c;
+            margin-bottom: 0.5rem;
+        }
+        .qa-answer {
+            color: #2f5b68;
+            padding-left: 1rem;
+            border-left: 3px solid #f4b94280;
+        }
+
+        @media (max-width: 850px) {
+            .theory-body {
+                grid-template-columns: 1fr;
+                gap: 1.5rem;
+            }
+            body {
+                padding: 1rem;
+            }
+        }
+        footer {
+            text-align: center;
+            margin-top: 2rem;
+            font-size: 0.75rem;
+            color: #6f8ea0;
+        }
+    </style>
+</head>
+<body>
+<div class="master-textbook">
+    <div class="day-header">
+        <h1>🌐 MCS-218: Data Communication & Networks <span>Day 10</span></h1>
+        <div class="day-badge">🔀 Switching: Circuit vs Packet | 📍 Routing Algorithms: Dijkstra's Algorithm</div>
+        <p>Dedicated paths vs packet forwarding • Link State Routing • Shortest path calculation</p>
+    </div>
+
+    <div class="topics-grid">
+        <!-- Topic 1: Circuit Switching vs Packet Switching -->
+        <div class="topic-card">
+            <div class="topic-title">
+                <h2>🔌 1. Switching: Circuit vs. Packet</h2>
+                <p>Dedicated path reservation vs. store-and-forward packet delivery</p>
+            </div>
+            <div class="theory-body">
+                <div class="explain-text">
+                    <h3>📖 Explain</h3>
+                    <p><strong>Circuit Switching:</strong> A dedicated physical path is established before transmission. Resources reserved for entire session. Used in traditional telephone networks. Pros: Guaranteed bandwidth, constant delay. Cons: Inefficient for bursty data.</p>
+                    <p><strong>Packet Switching:</strong> Data is divided into packets, each routed independently. No dedicated path. Used in the Internet. Pros: Efficient bandwidth utilization, fault-tolerant. Cons: Variable delay, packets may arrive out of order.</p>
+                    <div class="example-block">
+                        📞 <strong>Example:</strong><br>
+                        • Circuit Switching: Landline phone call — dedicated line reserved even during silence.<br>
+                        • Packet Switching: Sending an email — packets take different routes, reassembled at destination.
+                    </div>
+                </div>
+                <div class="playground">
+                    <h4>🎮 Interactive Switching Simulator</h4>
+                    <div class="switching-sim">
+                        <div class="btn-group">
+                            <button id="circuitBtn" class="switch-btn">🔌 Circuit Switching</button>
+                            <button id="packetBtn" class="switch-btn">📦 Packet Switching</button>
+                        </div>
+                        <div id="switchDemo" class="switch-status">
+                            💡 Click a switching type to see simulation
+                        </div>
+                        <div style="font-size:0.7rem; text-align:center; margin-top:0.5rem;">
+                            🔹 Circuit: dedicated path → constant bandwidth<br>
+                            🔸 Packet: packets travel independently → shared links
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Topic 2: Dijkstra's Algorithm (Shortest Path) -->
+        <div class="topic-card">
+            <div class="topic-title">
+                <h2>📍 2. Dijkstra's Algorithm (Link State Routing)</h2>
+                <p>Finding shortest path from source to all nodes — used in OSPF</p>
+            </div>
+            <div class="theory-body">
+                <div class="explain-text">
+                    <h3>📖 Explain</h3>
+                    <p><strong>Dijkstra's Algorithm</strong> computes the shortest path from a source node to all other nodes in a weighted graph. Steps:</p>
+                    <ol>
+                        <li>Initialize distances: source = 0, all others = ∞.</li>
+                        <li>Mark all nodes unvisited. Current = source.</li>
+                        <li>For each neighbor, calculate tentative distance = current distance + edge weight. Update if smaller.</li>
+                        <li>Mark current as visited. Pick unvisited node with smallest distance as new current.</li>
+                        <li>Repeat until all nodes visited.</li>
+                    </ol>
+                    <div class="example-block">
+                        🚇 <strong>Analogy:</strong> Like a GPS map — finds fastest route by evaluating all possible paths, always choosing the lowest cumulative cost.
+                    </div>
+                </div>
+                <div class="playground">
+                    <h4>🎮 Dijkstra's Algorithm Visualizer</h4>
+                    <div class="graph-container">
+                        <div id="graphVisual" class="graph-svg" style="min-height: 180px; padding: 0.5rem;">
+                            <!-- Simple ASCII graph representation -->
+                            <div style="font-family: monospace; font-size: 0.7rem; text-align: center;">
+                                Network Topology (Edge Weights):<br>
+                                A --2-- B --3-- D<br>
+                                |       |       |<br>
+                                4       1       2<br>
+                                |       |       |<br>
+                                C --5-- E --2-- F<br>
+                            </div>
+                        </div>
+                        <div class="btn-group">
+                            <button id="runDijkstraBtn">🚀 Run Dijkstra from A</button>
+                            <button id="resetGraphBtn" class="secondary">⟳ Reset</button>
+                        </div>
+                        <div id="dijkstraOutput" class="dijkstra-result">
+                            💡 Click "Run Dijkstra from A" to calculate shortest paths.
+                        </div>
+                        <div style="font-size:0.65rem; margin-top:0.5rem; text-align:center;">
+                            📐 Algorithm finds least-cost path to every node. Used in OSPF routing protocol.
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Exam-Style Q&A (5 PYQ) -->
+    <div class="qa-section">
+        <h2>📝 Exam-Style Questions & Answers (IGNOU PYQ Pattern)</h2>
+        <div class="qa-item">
+            <div class="qa-question">Q1. Explain the difference between circuit switching and packet switching. (Direct PYQ)</div>
+            <div class="qa-answer"><strong>Answer:</strong> <strong>Path:</strong> Circuit switching establishes dedicated physical path before transmission; packet switching uses no dedicated path. <strong>Data:</strong> Circuit sends continuous stream; packet sends data as packets. <strong>Resources:</strong> Circuit reserves bandwidth (waste if idle); packet shares dynamically (efficient). <strong>Delay:</strong> Circuit has setup delay, no queuing; packet has no setup delay, may have queuing delays.</div>
+        </div>
+        <div class="qa-item">
+            <div class="qa-question">Q2. Give an example where circuit switching should be applied. (Direct PYQ)</div>
+            <div class="qa-answer"><strong>Answer:</strong> Circuit switching is ideal for real-time voice communication, such as the Public Switched Telephone Network (PSTN). Voice requires constant, uninterrupted bandwidth with minimal delay, which circuit switching guarantees once the call is established.</div>
+        </div>
+        <div class="qa-item">
+            <div class="qa-question">Q3. Explain the working of Dijkstra's algorithm. (Direct PYQ)</div>
+            <div class="qa-answer"><strong>Answer:</strong> Dijkstra's algorithm finds shortest path from source to all nodes. Steps: (1) Set source distance=0, others=∞, all unvisited. (2) From current node, update neighbor distances if new path is shorter. (3) Mark current visited, select unvisited node with smallest distance. (4) Repeat until all visited. It ensures optimal paths in non-negative weighted graphs.</div>
+        </div>
+        <div class="qa-item">
+            <div class="qa-question">Q4. Describe the concept of link state routing and its significance. (Direct PYQ)</div>
+            <div class="qa-answer"><strong>Answer:</strong> Link State Routing: Each router floods information about its directly connected links to all routers in the network. Every router builds a complete topology map and runs Dijkstra's algorithm to compute shortest paths. <strong>Significance:</strong> Fast convergence, loop-free, used in OSPF. Highly scalable and reliable for large networks.</div>
+        </div>
+        <div class="qa-item">
+            <div class="qa-question">Q5. Why is packet switching strictly preferred over circuit switching for computer networks (the Internet)?</div>
+            <div class="qa-answer"><strong>Answer:</strong> Computer data is "bursty" — periods of activity followed by silence. Circuit switching would waste reserved bandwidth during idle periods. Packet switching dynamically shares bandwidth among multiple users, maximizing utilization. It also provides fault tolerance (packets can reroute around failures) and is more cost-effective for scalable networks.</div>
+        </div>
+    </div>
+    <footer>📘 MCA Sem-2 Master Mentorship — Day 10: Switching & Routing. Next: Day 11 — OOAD Dynamic Modeling: Use Case Diagrams & DFDs!</footer>
+</div>
+
+<script>
+    // ----- Switching Simulator -----
+    const circuitBtn = document.getElementById('circuitBtn');
+    const packetBtn = document.getElementById('packetBtn');
+    const switchDemo = document.getElementById('switchDemo');
+    
+    circuitBtn.addEventListener('click', () => {
+        circuitBtn.classList.add('active');
+        packetBtn.classList.remove('active');
+        switchDemo.innerHTML = `🔌 <strong>Circuit Switching Simulation:</strong><br>
+        📞 Call initiated: Dedicated path established between Sender and Receiver.<br>
+        ⚡ Bandwidth reserved exclusively for this connection.<br>
+        🔇 Even during silent moments, no other data can use this circuit.<br>
+        ✅ Guaranteed constant delay, but inefficient for bursty data.<br>
+        📍 Example: Traditional telephone network (PSTN).`;
+    });
+    
+    packetBtn.addEventListener('click', () => {
+        packetBtn.classList.add('active');
+        circuitBtn.classList.remove('active');
+        switchDemo.innerHTML = `📦 <strong>Packet Switching Simulation:</strong><br>
+        ✉️ Message split into packets: [P1] [P2] [P3].<br>
+        🚀 Each packet takes independent path through the network.<br>
+        🔀 Packets may arrive out of order, reassembled at destination.<br>
+        📊 Network links shared efficiently — no wasted bandwidth.<br>
+        🌐 Example: The Internet (IP routing).`;
+    });
+    
+    // Set default active
+    circuitBtn.classList.add('active');
+    
+    // ----- Dijkstra's Algorithm Simulator (Network Graph) -----
+    // Graph: nodes A, B, C, D, E, F with edges and weights
+    const graph = {
+        A: { B: 2, C: 4 },
+        B: { A: 2, D: 3, E: 1 },
+        C: { A: 4, E: 5 },
+        D: { B: 3, F: 2 },
+        E: { B: 1, C: 5, F: 2 },
+        F: { D: 2, E: 2 }
+    };
+    
+    const nodes = ['A', 'B', 'C', 'D', 'E', 'F'];
+    const outputDiv = document.getElementById('dijkstraOutput');
+    
+    function dijkstra(source) {
+        const distances = {};
+        const previous = {};
+        const unvisited = new Set(nodes);
+        
+        // Initialize distances
+        nodes.forEach(node => {
+            distances[node] = Infinity;
+            previous[node] = null;
+        });
+        distances[source] = 0;
+        
+        while (unvisited.size > 0) {
+            // Find node with smallest distance
+            let current = null;
+            let minDist = Infinity;
+            unvisited.forEach(node => {
+                if (distances[node] < minDist) {
+                    minDist = distances[node];
+                    current = node;
+                }
+            });
+            
+            if (current === null) break;
+            unvisited.delete(current);
+            
+            // Update neighbors
+            const neighbors = graph[current];
+            for (const [neighbor, weight] of Object.entries(neighbors)) {
+                if (unvisited.has(neighbor)) {
+                    const alt = distances[current] + weight;
+                    if (alt < distances[neighbor]) {
+                        distances[neighbor] = alt;
+                        previous[neighbor] = current;
+                    }
+                }
+            }
+        }
+        
+        return { distances, previous };
+    }
+    
+    function reconstructPath(previous, target) {
+        const path = [];
+        let current = target;
+        while (current !== null) {
+            path.unshift(current);
+            current = previous[current];
+        }
+        return path;
+    }
+    
+    function displayResults() {
+        const { distances, previous } = dijkstra('A');
+        let html = `📍 <strong>Shortest Paths from Source A (Dijkstra's Algorithm):</strong><br>`;
+        for (let node of nodes) {
+            const path = reconstructPath(previous, node);
+            html += `• To ${node}: distance = ${distances[node]} | Path: ${path.join(' → ')}<br>`;
+        }
+        html += `<span style="color:#b3ffcf;">✅ Algorithm complete. Finds globally optimal least-cost routes.</span>`;
+        outputDiv.innerHTML = html;
+    }
+    
+    function resetDisplay() {
+        outputDiv.innerHTML = `💡 Click "Run Dijkstra from A" to calculate shortest paths from source node A to all destinations.`;
+    }
+    
+    document.getElementById('runDijkstraBtn').addEventListener('click', displayResults);
+    document.getElementById('resetGraphBtn').addEventListener('click', resetDisplay);
+    
+    // Additional elaboration notes
+    const switchingPlayground = document.querySelector('.switching-sim')?.parentElement;
+    if (switchingPlayground) {
+        const switchNote = document.createElement('div');
+        switchNote.className = 'example-block';
+        switchNote.style.marginTop = '0.8rem';
+        switchNote.style.fontSize = '0.7rem';
+        switchNote.innerHTML = '📌 <strong>Real-world:</strong> Modern networks use packet switching (Internet). Circuit switching still used in voice networks (VoIP uses packet switching now). Hybrid approaches exist for quality of service.';
+        switchingPlayground.appendChild(switchNote);
+    }
+    
+    const dijkstraPlayground = document.querySelector('.graph-container')?.parentElement;
+    if (dijkstraPlayground) {
+        const dijkstraNote = document.createElement('div');
+        dijkstraNote.className = 'example-block';
+        dijkstraNote.style.marginTop = '0.6rem';
+        dijkstraNote.style.fontSize = '0.7rem';
+        dijkstraNote.innerHTML = '💡 <strong>Dijkstra Complexity:</strong> O(V²) with simple implementation, O(E log V) with priority queue. Used in OSPF (Open Shortest Path First) — the most common interior gateway protocol.';
+        dijkstraPlayground.appendChild(dijkstraNote);
+    }
+    
+    // Add graph visualization enhancement
+    const graphVisual = document.getElementById('graphVisual');
+    if (graphVisual) {
+        const enhancedGraph = document.createElement('div');
+        enhancedGraph.style.fontFamily = 'monospace';
+        enhancedGraph.style.fontSize = '0.7rem';
+        enhancedGraph.style.backgroundColor = '#fff8e8';
+        enhancedGraph.style.padding = '0.8rem';
+        enhancedGraph.style.borderRadius = '0.8rem';
+        enhancedGraph.style.marginTop = '0.5rem';
+        enhancedGraph.innerHTML = `
+            <strong>Network Graph with Weights:</strong><br>
+            A ──2── B ──3── D<br>
+            │        │        │<br>
+            4        1        2<br>
+            │        │        │<br>
+            C ──5── E ──2── F<br>
+            <span style="color:#2c7a8c;">📐 Edge weights represent cost (delay/distance).</span>
+        `;
+        graphVisual.appendChild(enhancedGraph);
+    }
+</script>
+</body>
+</html>

@@ -1,0 +1,532 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>MCS Buffer Day 13: High-Weightage Review | Data Link Sublayers | Fact Constellation | Hibernate</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+            background: linear-gradient(135deg, #f0f2ef 0%, #e4e8e0 100%);
+            color: #1e2f2a;
+            line-height: 1.5;
+            padding: 2rem 1.5rem;
+        }
+
+        .master-textbook {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        /* header */
+        .buffer-header {
+            background: linear-gradient(135deg, #4a6a5e 0%, #5e8a7a 100%);
+            border-radius: 2rem 2rem 1.8rem 1.8rem;
+            padding: 1.8rem 2rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 12px 28px -12px rgba(0,0,0,0.3);
+        }
+        .buffer-header h1 {
+            font-size: 2rem;
+            font-weight: 700;
+            color: white;
+            letter-spacing: -0.3px;
+        }
+        .buffer-header h1 span {
+            background: #f4b942;
+            font-size: 1rem;
+            padding: 0.2rem 1rem;
+            border-radius: 40px;
+            margin-left: 0.8rem;
+            vertical-align: middle;
+            color: #1e2f1e;
+        }
+        .buffer-badge {
+            display: inline-block;
+            background: #f4b942cc;
+            padding: 0.25rem 1rem;
+            border-radius: 30px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            margin-top: 0.6rem;
+            color: #1e3a2a;
+        }
+        .buffer-header p {
+            color: #d4f0e0;
+            margin-top: 0.8rem;
+        }
+
+        /* topics grid */
+        .topics-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .topic-card {
+            background: white;
+            border-radius: 1.8rem;
+            overflow: hidden;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.08);
+            border: 1px solid #d4e0d0;
+        }
+
+        .topic-title {
+            background: #fafef7;
+            padding: 1rem 2rem;
+            border-bottom: 2px solid #e0ecd8;
+        }
+        .topic-title h2 {
+            font-size: 1.7rem;
+            font-weight: 600;
+            color: #2c7a6b;
+        }
+        .topic-title p {
+            color: #5b7c68;
+            font-size: 0.9rem;
+        }
+
+        .theory-body {
+            padding: 1.5rem 2rem;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+        }
+
+        .explain-text {
+            background: #ffffff;
+        }
+        .explain-text h3 {
+            font-size: 1.3rem;
+            font-weight: 600;
+            margin-bottom: 0.75rem;
+            color: #2c7a6b;
+            border-left: 5px solid #f4b942;
+            padding-left: 0.8rem;
+        }
+        .explain-text p, .explain-text li {
+            margin-bottom: 0.8rem;
+            color: #2c4a3a;
+        }
+        .explain-text ul, .explain-text ol {
+            padding-left: 1.5rem;
+            margin: 0.7rem 0;
+        }
+        .example-block {
+            background: #fef9e8;
+            border-radius: 1.2rem;
+            padding: 0.9rem 1.2rem;
+            margin: 1rem 0;
+            border-left: 4px solid #f4b942;
+        }
+        .highlight {
+            background: #e0f0dc;
+            padding: 0.1rem 0.3rem;
+            border-radius: 8px;
+            font-family: monospace;
+        }
+
+        /* playground widgets */
+        .playground {
+            background: #fafef7;
+            border-radius: 1.5rem;
+            padding: 1rem;
+            box-shadow: inset 0 0 0 1px #d8ecd8, 0 4px 12px rgba(0,0,0,0.02);
+        }
+        .playground h4 {
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: #2c7a6b;
+        }
+
+        /* Data Link Sublayers Visual */
+        .sublayer-diagram {
+            background: #eef3e8;
+            border-radius: 1rem;
+            padding: 1rem;
+            text-align: center;
+        }
+        .layer-box {
+            background: #fff8e8;
+            border: 2px solid #c0cfb0;
+            border-radius: 0.8rem;
+            padding: 0.6rem;
+            margin: 0.5rem;
+            display: inline-block;
+            width: 160px;
+        }
+        .arrow-down {
+            font-size: 1.2rem;
+            margin: 0.2rem;
+        }
+
+        /* Fact Constellation Visual */
+        .schema-viz {
+            background: #eef3e8;
+            border-radius: 1rem;
+            padding: 1rem;
+            min-height: 200px;
+        }
+        .fact-table {
+            background: #f4b94230;
+            border: 2px solid #f4b942;
+            border-radius: 0.8rem;
+            padding: 0.4rem;
+            margin: 0.3rem;
+            display: inline-block;
+        }
+        .dim-table {
+            background: #c0e0c0;
+            border: 1px solid #6a9e6a;
+            border-radius: 0.6rem;
+            padding: 0.3rem;
+            margin: 0.2rem;
+            display: inline-block;
+            font-size: 0.7rem;
+        }
+
+        /* Hibernate Visual */
+        .orm-demo {
+            background: #eef3e8;
+            border-radius: 1rem;
+            padding: 1rem;
+        }
+        .code-comparison {
+            display: flex;
+            gap: 0.8rem;
+            flex-wrap: wrap;
+            font-family: monospace;
+            font-size: 0.65rem;
+        }
+        .code-block {
+            background: #1e2f2a;
+            color: #b3ffcf;
+            padding: 0.6rem;
+            border-radius: 0.8rem;
+            flex: 1;
+        }
+
+        button {
+            background: #3e8a7a;
+            border: none;
+            padding: 0.4rem 1rem;
+            border-radius: 40px;
+            color: white;
+            font-weight: 500;
+            cursor: pointer;
+            font-family: inherit;
+            margin: 0.2rem;
+        }
+        button:hover {
+            background: #2c6e5e;
+        }
+
+        /* Q&A Section */
+        .qa-section {
+            background: white;
+            border-radius: 1.8rem;
+            margin-top: 2rem;
+            padding: 1.8rem 2rem;
+            border: 1px solid #d4e0d0;
+        }
+        .qa-section h2 {
+            font-size: 1.7rem;
+            font-weight: 700;
+            color: #2c7a6b;
+            border-left: 5px solid #f4b942;
+            padding-left: 1rem;
+            margin-bottom: 1.5rem;
+        }
+        .qa-item {
+            margin-bottom: 1.8rem;
+            border-bottom: 1px solid #e0ecd8;
+            padding-bottom: 1rem;
+        }
+        .qa-question {
+            font-weight: 700;
+            font-size: 1rem;
+            color: #2c7a6b;
+            margin-bottom: 0.5rem;
+        }
+        .qa-answer {
+            color: #2f5b48;
+            padding-left: 1rem;
+            border-left: 3px solid #f4b94280;
+        }
+
+        @media (max-width: 850px) {
+            .theory-body {
+                grid-template-columns: 1fr;
+                gap: 1.5rem;
+            }
+            body {
+                padding: 1rem;
+            }
+        }
+        footer {
+            text-align: center;
+            margin-top: 2rem;
+            font-size: 0.75rem;
+            color: #6f8e70;
+        }
+        .review-note {
+            background: #e8f0e5;
+            border-radius: 1rem;
+            padding: 1rem;
+            margin-top: 1rem;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+<div class="master-textbook">
+    <div class="buffer-header">
+        <h1>🔄 Buffer Day 13: High-Weightage Review <span>Consolidation</span></h1>
+        <div class="buffer-badge">📚 Data Link Sublayers | Fact Constellation Schema | Hibernate ORM</div>
+        <p>Revisiting complex PYQ topics from MCS-218, MCS-221 & MCS-220 — strengthening foundations for exams</p>
+    </div>
+
+    <div class="topics-grid">
+        <!-- Topic 1: Data Link Layer Sublayers (LLC & MAC) -->
+        <div class="topic-card">
+            <div class="topic-title">
+                <h2>🔌 1. Data Link Layer Sublayers (MCS-218)</h2>
+                <p>Logical Link Control (LLC) • Media Access Control (MAC)</p>
+            </div>
+            <div class="theory-body">
+                <div class="explain-text">
+                    <h3>📖 Explain</h3>
+                    <p><strong>LLC (Logical Link Control):</strong> Upper sublayer. Provides multiplexing (multiple network protocols), flow control, and error control (ARQ). Interfaces with Network Layer.</p>
+                    <p><strong>MAC (Media Access Control):</strong> Lower sublayer. Handles physical addressing (MAC addresses), channel access (CSMA/CD, ALOHA), and framing. Interfaces with Physical Layer.</p>
+                    <div class="example-block">
+                        📮 <strong>Post Office Analogy:</strong><br>
+                        • LLC = Manager: sorts mail, ensures delivery (error control).<br>
+                        • MAC = Driver: knows physical routes, avoids traffic (collision detection).
+                    </div>
+                </div>
+                <div class="playground">
+                    <h4>🎮 Data Link Sublayer Visualizer</h4>
+                    <div class="sublayer-diagram">
+                        <div class="layer-box">
+                            <strong>📡 Network Layer</strong><br>
+                            (IP, etc.)
+                        </div>
+                        <div class="arrow-down">↓</div>
+                        <div class="layer-box" style="background:#f4b94220; border-color:#f4b942;">
+                            <strong>🔷 LLC Sublayer</strong><br>
+                            Multiplexing | Flow Control | Error Control (ARQ)
+                        </div>
+                        <div class="arrow-down">↓</div>
+                        <div class="layer-box" style="background:#6ab04c20; border-color:#6ab04c;">
+                            <strong>🔶 MAC Sublayer</strong><br>
+                            Physical Addressing | CSMA/CD | Channel Access
+                        </div>
+                        <div class="arrow-down">↓</div>
+                        <div class="layer-box">
+                            <strong>⚡ Physical Layer</strong><br>
+                            Bits, Cables, Signals
+                        </div>
+                    </div>
+                    <div style="font-size:0.7rem; margin-top:0.5rem; text-align:center;">
+                        💡 LLC = upper sublayer (software logic) | MAC = lower sublayer (hardware interface)
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Topic 2: Fact Constellation Schema (Galaxy Schema) -->
+        <div class="topic-card">
+            <div class="topic-title">
+                <h2>🌟 2. Fact Constellation Schema (MCS-221)</h2>
+                <p>Multiple Fact Tables • Shared Dimensions • Enterprise Data Warehousing</p>
+            </div>
+            <div class="theory-body">
+                <div class="explain-text">
+                    <h3>📖 Explain</h3>
+                    <p><strong>Fact Constellation (Galaxy Schema):</strong> Complex warehouse with <strong>multiple fact tables</strong> sharing common dimension tables. Enables cross-functional analysis (e.g., Sales + Shipping facts sharing Time & Product dimensions).</p>
+                    <ul>
+                        <li><strong>Star Schema:</strong> 1 fact table.</li>
+                        <li><strong>Snowflake:</strong> 1 fact + normalized dimensions.</li>
+                        <li><strong>Fact Constellation:</strong> Multiple facts + shared dimensions.</li>
+                    </ul>
+                    <div class="example-block">
+                        🏢 <strong>Retail Example:</strong><br>
+                        Sales_Fact & Shipping_Fact both share Time_Dim and Product_Dim — forms a "constellation" of stars.
+                    </div>
+                </div>
+                <div class="playground">
+                    <h4>🎮 Fact Constellation Visualizer</h4>
+                    <div class="schema-viz" id="schemaViz">
+                        <div style="text-align:center;">
+                            <div class="fact-table"><strong>📊 Sales_Fact</strong><br>Revenue, Quantity</div>
+                            <div class="fact-table"><strong>📦 Shipping_Fact</strong><br>Cost, Delivery_Time</div>
+                            <br>
+                            <div class="dim-table">🗓️ Time_Dim<br>(Day, Month, Year)</div>
+                            <div class="dim-table">📦 Product_Dim<br>(ID, Name, Category)</div>
+                            <div class="dim-table">🏪 Store_Dim<br>(Location, Manager)</div>
+                            <div class="dim-table">🚚 Carrier_Dim</div>
+                        </div>
+                        <div style="font-size:0.65rem; margin-top:0.5rem; text-align:center;">
+                            ✅ Shared dimensions connect multiple fact tables — enterprise-wide analysis
+                        </div>
+                    </div>
+                    <button id="toggleSchemaBtn" style="margin-top:0.5rem;">🔄 Compare: Star vs Constellation</button>
+                    <div id="schemaCompare" style="font-size:0.65rem; margin-top:0.5rem; background:#eef3e8; border-radius:0.5rem; padding:0.4rem; display:none;">
+                        <strong>Star Schema:</strong> Single fact (Sales_Fact) + dimensions.<br>
+                        <strong>Fact Constellation:</strong> Multiple facts (Sales_Fact, Shipping_Fact) sharing Time, Product — more flexible for enterprise.
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Topic 3: Hibernate Framework (ORM) -->
+        <div class="topic-card">
+            <div class="topic-title">
+                <h2>💾 3. Hibernate Framework (MCS-220)</h2>
+                <p>Object-Relational Mapping • load() vs get() • Session vs JDBC</p>
+            </div>
+            <div class="theory-body">
+                <div class="explain-text">
+                    <h3>📖 Explain</h3>
+                    <p><strong>Hibernate</strong> is an ORM framework that maps Java classes to database tables. Eliminates manual JDBC/SQL coding. Developer works with objects; Hibernate generates SQL automatically.</p>
+                    <ul>
+                        <li><strong>get():</strong> Eager loading — hits DB immediately, returns null if not found.</li>
+                        <li><strong>load():</strong> Lazy loading — returns proxy, hits DB only when accessed; throws ObjectNotFoundException if missing.</li>
+                    </ul>
+                    <div class="example-block">
+                        🚀 <strong>Without Hibernate (JDBC):</strong> <code>String sql = "INSERT INTO Student VALUES ('Amit')";</code><br>
+                        ✅ <strong>With Hibernate:</strong> <code>session.save(studentObject);</code>
+                    </div>
+                </div>
+                <div class="playground">
+                    <h4>🎮 Hibernate ORM Demo</h4>
+                    <div class="orm-demo">
+                        <div class="code-comparison">
+                            <div class="code-block">
+                                <strong>❌ JDBC (Manual SQL)</strong><br>
+                                String sql = "INSERT INTO Student (name, roll) VALUES ('Rahul', 101)";<br>
+                                stmt.executeUpdate(sql);
+                            </div>
+                            <div class="code-block">
+                                <strong>✅ Hibernate (ORM)</strong><br>
+                                Student s = new Student();<br>
+                                s.setName("Rahul");<br>
+                                s.setRoll(101);<br>
+                                session.save(s); // Auto-generates SQL
+                            </div>
+                        </div>
+                        <div style="margin-top: 0.8rem; background:#eef3e8; border-radius:0.8rem; padding:0.5rem; font-size:0.7rem;">
+                            <strong>load() vs get():</strong><br>
+                            • <code>get()</code> → immediate DB hit → returns null if not found<br>
+                            • <code>load()</code> → returns proxy → lazy loading → throws ObjectNotFoundException
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Exam-Style Q&A (5 PYQ) -->
+    <div class="qa-section">
+        <h2>📝 Exam-Style Questions & Answers (Buffer Day Review)</h2>
+        <div class="qa-item">
+            <div class="qa-question">Q1. Enlist the sublayers of the data link layer. What are the key functions of these sublayers? (Direct PYQ)</div>
+            <div class="qa-answer"><strong>Answer:</strong> <strong>LLC (Logical Link Control):</strong> Upper sublayer — multiplexing network protocols, flow control, error control (ARQ). <strong>MAC (Media Access Control):</strong> Lower sublayer — physical addressing (MAC addresses), channel access control (CSMA/CD, ALOHA), framing.</div>
+        </div>
+        <div class="qa-item">
+            <div class="qa-question">Q2. Describe the Fact Constellation schema. How is it different from the Snowflake schema? (Direct PYQ)</div>
+            <div class="qa-answer"><strong>Answer:</strong> Fact Constellation (Galaxy Schema) contains <strong>multiple fact tables</strong> sharing common dimension tables, enabling complex enterprise analysis. <strong>Difference:</strong> Snowflake schema has only one central fact table with normalized dimensions; Fact Constellation has multiple facts with shared dimensions.</div>
+        </div>
+        <div class="qa-item">
+            <div class="qa-question">Q3. Mention the advantages and limitations of the Fact Constellation schema.</div>
+            <div class="qa-answer"><strong>Answer:</strong> <strong>Advantages:</strong> Cross-functional analysis, reduced redundancy, flexible for enterprise-wide modeling. <strong>Limitations:</strong> Complex design, difficult maintenance, complex queries, higher development cost.</div>
+        </div>
+        <div class="qa-item">
+            <div class="qa-question">Q4. What is the Hibernate framework in Java? What is its utility? (Direct PYQ)</div>
+            <div class="qa-answer"><strong>Answer:</strong> Hibernate is an open-source ORM (Object-Relational Mapping) framework that maps Java classes to database tables. <strong>Utility:</strong> Eliminates manual JDBC/SQL coding, handles object persistence automatically, supports caching, lazy loading, and database independence.</div>
+        </div>
+        <div class="qa-item">
+            <div class="qa-question">Q5. Differentiate between load() and get() methods in Hibernate. (Direct PYQ)</div>
+            <div class="qa-answer"><strong>Answer:</strong> <strong>get():</strong> Eager loading — hits database immediately, returns null if object not found. <strong>load():</strong> Lazy loading — returns proxy object, loads only when accessed; throws ObjectNotFoundException if entity doesn't exist. Use load() when sure entity exists for performance.</div>
+        </div>
+    </div>
+
+    <div class="review-note">
+        🧠 <strong>Buffer Day Complete!</strong> You've reviewed high-weightage topics from Networks, Data Mining, and Web Technologies. These concepts frequently appear in IGNOU exams. Ready for Day 14: Collaboration/Sequence Diagrams & System Synchronization!
+    </div>
+    <footer>📘 MCA Sem-2 Master Mentorship — Day 13: Buffer Day Review. Consolidate, revise, and build confidence for the remaining sessions.</footer>
+</div>
+
+<script>
+    // Toggle Schema Comparison
+    const toggleBtn = document.getElementById('toggleSchemaBtn');
+    const compareDiv = document.getElementById('schemaCompare');
+    let schemaCompareVisible = false;
+    
+    toggleBtn.addEventListener('click', () => {
+        if (schemaCompareVisible) {
+            compareDiv.style.display = 'none';
+            toggleBtn.textContent = '🔄 Compare: Star vs Constellation';
+        } else {
+            compareDiv.style.display = 'block';
+            toggleBtn.textContent = '🔽 Hide Comparison';
+        }
+        schemaCompareVisible = !schemaCompareVisible;
+    });
+    
+    // Add interactive highlight for Data Link sublayers
+    const llcBox = document.querySelector('.layer-box:nth-child(3)');
+    const macBox = document.querySelector('.layer-box:nth-child(5)');
+    
+    if (llcBox && macBox) {
+        llcBox.addEventListener('mouseenter', () => llcBox.style.transform = 'scale(1.02)');
+        llcBox.addEventListener('mouseleave', () => llcBox.style.transform = 'scale(1)');
+        macBox.addEventListener('mouseenter', () => macBox.style.transform = 'scale(1.02)');
+        macBox.addEventListener('mouseleave', () => macBox.style.transform = 'scale(1)');
+    }
+    
+    // Additional elaboration notes
+    const dlPlayground = document.querySelector('.sublayer-diagram')?.parentElement;
+    if (dlPlayground) {
+        const dlNote = document.createElement('div');
+        dlNote.className = 'example-block';
+        dlNote.style.marginTop = '0.8rem';
+        dlNote.style.fontSize = '0.7rem';
+        dlNote.innerHTML = '📌 <strong>Exam Tip:</strong> LLC provides multiplexing (allowing IP, IPX over same link). MAC provides physical addressing — 48-bit MAC addresses burned into NICs.';
+        dlPlayground.appendChild(dlNote);
+    }
+    
+    const schemaPlayground = document.querySelector('.schema-viz')?.parentElement;
+    if (schemaPlayground) {
+        const schemaNote = document.createElement('div');
+        schemaNote.className = 'example-block';
+        schemaNote.style.marginTop = '0.6rem';
+        schemaNote.style.fontSize = '0.7rem';
+        schemaNote.innerHTML = '💡 <strong>Fact Constellation:</strong> Also called Galaxy Schema. Used in enterprise data warehouses with multiple business processes (Sales, Inventory, Shipping).';
+        schemaPlayground.appendChild(schemaNote);
+    }
+    
+    const hibernatePlayground = document.querySelector('.orm-demo')?.parentElement;
+    if (hibernatePlayground) {
+        const hibernateNote = document.createElement('div');
+        hibernateNote.className = 'example-block';
+        hibernateNote.style.marginTop = '0.6rem';
+        hibernateNote.style.fontSize = '0.7rem';
+        hibernateNote.innerHTML = '🔑 <strong>Hibernate Core:</strong> SessionFactory → Session → Transaction. Annotations (@Entity, @Id) map classes to tables. First-level cache improves performance.';
+        hibernatePlayground.appendChild(hibernateNote);
+    }
+</script>
+</body>
+</html>

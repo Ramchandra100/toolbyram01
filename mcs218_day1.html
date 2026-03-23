@@ -1,0 +1,669 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MCS-218: Data Transmission & Signals | Interactive Textbook</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+            background: linear-gradient(135deg, #0a0f1a 0%, #0f172a 100%);
+            color: #e2e8f0;
+            line-height: 1.5;
+            padding: 2rem 1.5rem;
+        }
+
+        .textbook-container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        /* Header */
+        .concept-header {
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+            border-radius: 1.5rem;
+            padding: 2rem 2rem;
+            margin-bottom: 2rem;
+            border: 1px solid #334155;
+            box-shadow: 0 20px 35px -12px rgba(0,0,0,0.3);
+        }
+        .concept-header h1 {
+            font-size: 2.2rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #60a5fa, #a78bfa);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            margin-bottom: 0.5rem;
+        }
+        .concept-header .day-badge {
+            display: inline-block;
+            background: #3b82f6;
+            padding: 0.25rem 0.75rem;
+            border-radius: 2rem;
+            font-size: 0.75rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+        }
+        .concept-header p {
+            color: #94a3b8;
+            font-size: 1rem;
+        }
+
+        /* Grid Layout */
+        .content-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        /* Cards */
+        .card {
+            background: #0f172a;
+            border-radius: 1.5rem;
+            border: 1px solid #334155;
+            overflow: hidden;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 24px -8px rgba(0,0,0,0.4);
+        }
+        .card-header {
+            background: #1e293b;
+            padding: 1.2rem 1.5rem;
+            border-bottom: 2px solid #3b82f6;
+        }
+        .card-header h2 {
+            font-size: 1.4rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        .card-content {
+            padding: 1.5rem;
+        }
+
+        /* Transmission Mode Visualizer */
+        .mode-visualizer {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+        .mode-item {
+            background: #1e293b;
+            border-radius: 1rem;
+            padding: 1rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            border: 2px solid transparent;
+        }
+        .mode-item.active {
+            border-color: #3b82f6;
+            background: #1e2a3a;
+        }
+        .mode-item:hover {
+            background: #2d3a4e;
+        }
+        .mode-title {
+            font-weight: 700;
+            font-size: 1.1rem;
+            margin-bottom: 0.75rem;
+        }
+        .mode-diagram {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 0.5rem;
+            font-family: 'Fira Code', monospace;
+            font-size: 0.85rem;
+        }
+        .device {
+            background: #0f172a;
+            padding: 0.5rem 0.75rem;
+            border-radius: 0.5rem;
+            text-align: center;
+            border: 1px solid #475569;
+        }
+        .arrow {
+            font-size: 1.2rem;
+            flex: 1;
+            text-align: center;
+        }
+        .arrow-simplex { color: #60a5fa; }
+        .arrow-half { color: #f59e0b; }
+        .arrow-full { color: #10b981; }
+        .mode-desc {
+            font-size: 0.8rem;
+            color: #94a3b8;
+            margin-top: 0.5rem;
+        }
+
+        /* Signal Canvas */
+        .signal-canvas {
+            background: #0a0f14;
+            border-radius: 1rem;
+            padding: 1rem;
+            margin-bottom: 1rem;
+        }
+        canvas {
+            background: #0a0f14;
+            border-radius: 0.5rem;
+            width: 100%;
+            height: auto;
+            border: 1px solid #334155;
+        }
+        .signal-controls {
+            display: flex;
+            gap: 0.75rem;
+            margin-top: 1rem;
+            flex-wrap: wrap;
+        }
+        .btn {
+            padding: 0.6rem 1.2rem;
+            border-radius: 2rem;
+            font-weight: 600;
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            border: none;
+            font-family: inherit;
+        }
+        .btn-primary {
+            background: #3b82f6;
+            color: white;
+        }
+        .btn-primary:hover {
+            background: #2563eb;
+            transform: scale(1.02);
+        }
+        .btn-secondary {
+            background: #475569;
+            color: white;
+        }
+        .btn-secondary:hover {
+            background: #334155;
+        }
+        .btn-success {
+            background: #10b981;
+            color: white;
+        }
+
+        /* Code Breakdown */
+        .code-breakdown {
+            background: #0f172a;
+            border-radius: 1.5rem;
+            border: 1px solid #334155;
+            margin: 1.5rem 0;
+            overflow: hidden;
+        }
+        .code-header {
+            background: #1e293b;
+            padding: 1rem 1.5rem;
+            border-bottom: 1px solid #334155;
+        }
+        .code-header h3 {
+            font-size: 1.2rem;
+            font-weight: 600;
+        }
+        pre {
+            margin: 0;
+            padding: 1.5rem;
+            overflow-x: auto;
+            font-family: 'Fira Code', monospace;
+            font-size: 0.8rem;
+            line-height: 1.6;
+            background: #0a0f14;
+            color: #e2e8f0;
+        }
+        .comment { color: #6b9e7c; }
+        .keyword { color: #f472b6; }
+        .string { color: #a3e635; }
+        .function { color: #7dd3fc; }
+
+        /* Exercise Section */
+        .exercise-card {
+            background: linear-gradient(135deg, #1e1b2e 0%, #0f172a 100%);
+            border: 1px solid #8b5cf6;
+        }
+        .question {
+            background: #1e293b;
+            padding: 1rem;
+            border-radius: 1rem;
+            margin-bottom: 1rem;
+        }
+        .question p {
+            font-weight: 600;
+            margin-bottom: 0.75rem;
+        }
+        .answer-input {
+            width: 100%;
+            padding: 0.75rem;
+            background: #0f172a;
+            border: 1px solid #475569;
+            border-radius: 0.75rem;
+            color: #e2e8f0;
+            font-family: inherit;
+            margin-bottom: 0.75rem;
+            resize: vertical;
+        }
+        .feedback {
+            font-size: 0.85rem;
+            padding: 0.5rem;
+            border-radius: 0.5rem;
+            margin-top: 0.5rem;
+        }
+        .feedback.correct {
+            background: #10b98120;
+            color: #6ee7b7;
+            border-left: 3px solid #10b981;
+        }
+        .feedback.incorrect {
+            background: #ef444420;
+            color: #fca5a5;
+            border-left: 3px solid #ef4444;
+        }
+
+        @media (max-width: 900px) {
+            .content-grid {
+                grid-template-columns: 1fr;
+            }
+            body {
+                padding: 1rem;
+            }
+        }
+
+        footer {
+            text-align: center;
+            padding: 2rem;
+            color: #64748b;
+            font-size: 0.8rem;
+        }
+        .status-badge {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            border-radius: 2rem;
+            font-size: 0.7rem;
+            font-weight: 600;
+        }
+    </style>
+</head>
+<body>
+<div class="textbook-container">
+    <!-- Header -->
+    <div class="concept-header">
+        <span class="day-badge">📡 DAY 1 | MCS-218</span>
+        <h1>Data Transmission Basics & Signal Theory</h1>
+        <p>Understanding how data flows: Transmission Modes • Analog vs. Digital Signals • Real-world applications</p>
+    </div>
+
+    <div class="content-grid">
+        <!-- LEFT COLUMN: Transmission Modes Theory + Visualizer -->
+        <div class="card">
+            <div class="card-header">
+                <h2>📡 Transmission Modes</h2>
+            </div>
+            <div class="card-content">
+                <p style="margin-bottom: 1rem;">Data communication requires a <strong>protocol</strong> and a <strong>channel</strong>. Data flows in three distinct modes:</p>
+                
+                <div class="mode-visualizer" id="modeVisualizer">
+                    <div class="mode-item" data-mode="simplex">
+                        <div class="mode-title">🔹 Simplex Mode</div>
+                        <div class="mode-diagram">
+                            <span class="device">📤 Sender</span>
+                            <span class="arrow arrow-simplex">————————→</span>
+                            <span class="device">📥 Receiver</span>
+                        </div>
+                        <div class="mode-desc">One-way communication only. Radio broadcast, keyboard → computer.</div>
+                    </div>
+                    <div class="mode-item" data-mode="half">
+                        <div class="mode-title">🔸 Half-Duplex Mode</div>
+                        <div class="mode-diagram">
+                            <span class="device">🔄 Device A</span>
+                            <span class="arrow arrow-half">◄────────►</span>
+                            <span class="device">🔄 Device B</span>
+                        </div>
+                        <div class="mode-desc">Both directions, but ONE at a time. Walkie-talkie, CB radio.</div>
+                    </div>
+                    <div class="mode-item" data-mode="full">
+                        <div class="mode-title">🔹 Full-Duplex Mode</div>
+                        <div class="mode-diagram">
+                            <span class="device">📞 Phone A</span>
+                            <span class="arrow arrow-full">◄════════►</span>
+                            <span class="device">📞 Phone B</span>
+                        </div>
+                        <div class="mode-desc">Simultaneous two-way communication. Telephone, modern Ethernet.</div>
+                    </div>
+                </div>
+                <div id="modeStatus" style="margin-top: 1rem; padding: 0.75rem; background: #1e293b; border-radius: 0.75rem; text-align: center; font-size: 0.85rem;">
+                    💡 Click any mode above to see detailed explanation
+                </div>
+            </div>
+        </div>
+
+        <!-- RIGHT COLUMN: Analog vs Digital Signals + Interactive Canvas -->
+        <div class="card">
+            <div class="card-header">
+                <h2>📊 Analog vs. Digital Signals</h2>
+            </div>
+            <div class="card-content">
+                <div class="signal-canvas">
+                    <canvas id="signalCanvas" width="500" height="200" style="width:100%; height:auto; max-width:500px; aspect-ratio:500/200"></canvas>
+                    <div class="signal-controls">
+                        <button class="btn btn-primary" id="analogBtn">🌊 Analog Signal (Continuous)</button>
+                        <button class="btn btn-secondary" id="digitalBtn">📊 Digital Signal (Discrete)</button>
+                        <button class="btn btn-success" id="animateBtn">▶️ Animate</button>
+                    </div>
+                    <p style="font-size: 0.75rem; margin-top: 0.75rem; color: #94a3b8;">
+                        <strong>Analog:</strong> Smooth, infinite values • Susceptible to noise<br>
+                        <strong>Digital:</strong> Discrete 0/1 levels • Noise-resistant • Used by computers
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Code Breakdown: Signal Generation Logic -->
+    <div class="code-breakdown">
+        <div class="code-header">
+            <h3>📝 Code Breakdown: Signal Visualization Engine</h3>
+        </div>
+        <pre><code><span class="comment">// JavaScript simulation of Analog vs Digital signals</span>
+<span class="comment">// This demonstrates how computers represent continuous vs discrete waveforms</span>
+
+<span class="keyword">class</span> <span class="function">SignalVisualizer</span> {
+    <span class="comment">// Analog: smooth sine wave - infinite possible values</span>
+    drawAnalog(ctx, width, height, time) {
+        <span class="keyword">for</span> (let x = 0; x < width; x++) {
+            <span class="comment">// y = sin(frequency * x + phase) - continuous function</span>
+            let y = Math.sin(x * 0.03 + time) * 40 + height/2;
+            ctx.lineTo(x, y);
+        }
+    }
+    
+    <span class="comment">// Digital: square wave - only HIGH/LOW states (binary)</span>
+    drawDigital(ctx, width, height, time) {
+        <span class="keyword">for</span> (let x = 0; x < width; x++) {
+            <span class="comment">// Binary logic: either 0 or 1 (no intermediate states)</span>
+            let value = Math.sin(x * 0.1 + time) > 0 ? 1 : 0;
+            let y = value === 1 ? height/4 : height*3/4;
+            ctx.lineTo(x, y);
+        }
+    }
+}
+<span class="comment">// Digital signals resist noise because thresholds are clear.</span>
+<span class="comment">// Analog signals degrade with interference - noise adds uncertainty.</span></code></pre>
+    </div>
+
+    <!-- Exercise Section: Interactive Progress Check -->
+    <div class="card exercise-card">
+        <div class="card-header">
+            <h2>📝 Check Your Progress (IGNOU Exam Pattern)</h2>
+        </div>
+        <div class="card-content">
+            <div class="question">
+                <p>❓ <strong>Question 1:</strong> If you are connecting two computers to exchange files where both computers need to send and receive data, but the communication channel can only handle traffic in one direction at a given instant, which transmission mode are you using?</p>
+                <input type="text" id="q1Input" class="answer-input" placeholder="Type your answer... (Simplex / Half-Duplex / Full-Duplex)">
+                <button class="btn btn-secondary" id="checkQ1Btn">Check Answer</button>
+                <div id="q1Feedback" class="feedback"></div>
+            </div>
+            
+            <div class="question">
+                <p>❓ <strong>Question 2:</strong> Why are digital signals generally preferred over analog signals for computer networking and data storage?</p>
+                <textarea id="q2Input" class="answer-input" rows="3" placeholder="Explain in your own words..."></textarea>
+                <button class="btn btn-secondary" id="checkQ2Btn">Check Answer</button>
+                <div id="q2Feedback" class="feedback"></div>
+            </div>
+            
+            <div style="margin-top: 1rem; padding: 0.75rem; background: #1e293b; border-radius: 0.75rem;">
+                <p style="font-size: 0.85rem;">💡 <strong>Learning Tip:</strong> In computer networks (and your MCSL-222/223 labs), all data is ultimately converted to <strong>digital signals (binary)</strong> for processing, storage, and transmission over modern networks. Noise resistance is key!</p>
+            </div>
+        </div>
+    </div>
+    
+    <footer>
+        🖧 MCS-218: Data Communication & Computer Networks | Interactive Textbook — Master Mentorship Day 1<br>
+        🎓 IGNOU MCA Sem-2 | Visual Learning Experience
+    </footer>
+</div>
+
+<script>
+    // ==================== TRANSMISSION MODES INTERACTIVITY ====================
+    const modeItems = document.querySelectorAll('.mode-item');
+    const modeStatusDiv = document.getElementById('modeStatus');
+    
+    const modeDetails = {
+        simplex: {
+            title: '📡 Simplex Mode',
+            detail: 'One-way communication only. The sender always transmits, receiver always receives. Examples: Radio broadcasting, TV transmission, computer keyboard (keyboard → CPU).',
+            realWorld: '🏭 Application: Traditional broadcast systems, sensors that only send data.'
+        },
+        half: {
+            title: '🔄 Half-Duplex Mode',
+            detail: 'Two-way communication but NOT simultaneous. Devices take turns transmitting. Examples: Walkie-talkie, CB radio, early Ethernet (10Base2).',
+            realWorld: '📻 Application: Push-to-talk systems, some wireless protocols where collision detection matters.'
+        },
+        full: {
+            title: '📞 Full-Duplex Mode',
+            detail: 'Simultaneous two-way communication. Both devices can send and receive at the same time. Examples: Telephone networks, modern Ethernet (switched), fiber optics.',
+            realWorld: '🌐 Application: Modern internet, VoIP calls, high-speed data centers.'
+        }
+    };
+    
+    function updateModeExplanation(mode) {
+        const info = modeDetails[mode];
+        if (info) {
+            modeStatusDiv.innerHTML = `
+                <strong>${info.title}</strong><br>
+                ${info.detail}<br>
+                <span style="color: #60a5fa; font-size: 0.8rem;">${info.realWorld}</span>
+            `;
+        }
+        // Update active styling
+        modeItems.forEach(item => {
+            item.classList.remove('active');
+            if (item.dataset.mode === mode) {
+                item.classList.add('active');
+            }
+        });
+    }
+    
+    modeItems.forEach(item => {
+        item.addEventListener('click', () => {
+            const mode = item.dataset.mode;
+            updateModeExplanation(mode);
+        });
+    });
+    // Set default active
+    updateModeExplanation('simplex');
+    
+    // ==================== SIGNAL VISUALIZATION ====================
+    const canvas = document.getElementById('signalCanvas');
+    const ctx = canvas.getContext('2d');
+    let signalType = 'analog';
+    let animationId = null;
+    let phase = 0;
+    
+    function setCanvasSize() {
+        const container = canvas.parentElement;
+        const width = Math.min(500, container.clientWidth - 20);
+        canvas.width = width;
+        canvas.height = 200;
+    }
+    window.addEventListener('resize', () => {
+        setCanvasSize();
+        drawSignal();
+    });
+    
+    function drawAnalog() {
+        const w = canvas.width;
+        const h = canvas.height;
+        ctx.clearRect(0, 0, w, h);
+        ctx.beginPath();
+        ctx.strokeStyle = '#60a5fa';
+        ctx.lineWidth = 2;
+        
+        for (let x = 0; x <= w; x++) {
+            // Sine wave: continuous smooth curve
+            const t = (x / w) * Math.PI * 4 + phase;
+            const y = h/2 + Math.sin(t) * (h/3);
+            if (x === 0) ctx.moveTo(x, y);
+            else ctx.lineTo(x, y);
+        }
+        ctx.stroke();
+        
+        // Draw threshold guides
+        ctx.beginPath();
+        ctx.strokeStyle = '#475569';
+        ctx.lineWidth = 0.5;
+        ctx.setLineDash([5, 5]);
+        ctx.moveTo(0, h/2);
+        ctx.lineTo(w, h/2);
+        ctx.stroke();
+        ctx.setLineDash([]);
+    }
+    
+    function drawDigital() {
+        const w = canvas.width;
+        const h = canvas.height;
+        ctx.clearRect(0, 0, w, h);
+        ctx.beginPath();
+        ctx.strokeStyle = '#10b981';
+        ctx.lineWidth = 2.5;
+        
+        let lastY = null;
+        for (let x = 0; x <= w; x++) {
+            // Digital: discrete levels (HIGH or LOW)
+            const t = (x / w) * Math.PI * 4 + phase;
+            const value = Math.sin(t) > 0 ? 1 : 0;
+            const y = value === 1 ? h/4 : (h * 3/4);
+            
+            if (x === 0) {
+                ctx.moveTo(x, y);
+            } else if (lastY !== y) {
+                ctx.lineTo(x, lastY);
+                ctx.moveTo(x, lastY);
+                ctx.lineTo(x, y);
+            } else {
+                ctx.lineTo(x, y);
+            }
+            lastY = y;
+        }
+        ctx.stroke();
+        
+        // Draw digital reference lines
+        ctx.beginPath();
+        ctx.strokeStyle = '#475569';
+        ctx.setLineDash([5, 5]);
+        ctx.moveTo(0, h/4);
+        ctx.lineTo(w, h/4);
+        ctx.moveTo(0, h * 3/4);
+        ctx.lineTo(w, h * 3/4);
+        ctx.stroke();
+        ctx.setLineDash([]);
+    }
+    
+    function drawSignal() {
+        if (signalType === 'analog') {
+            drawAnalog();
+        } else {
+            drawDigital();
+        }
+    }
+    
+    function animate() {
+        phase += 0.05;
+        drawSignal();
+        animationId = requestAnimationFrame(animate);
+    }
+    
+    function stopAnimation() {
+        if (animationId) {
+            cancelAnimationFrame(animationId);
+            animationId = null;
+        }
+        phase = 0;
+        drawSignal();
+    }
+    
+    document.getElementById('analogBtn').addEventListener('click', () => {
+        signalType = 'analog';
+        stopAnimation();
+        drawSignal();
+    });
+    
+    document.getElementById('digitalBtn').addEventListener('click', () => {
+        signalType = 'digital';
+        stopAnimation();
+        drawSignal();
+    });
+    
+    document.getElementById('animateBtn').addEventListener('click', () => {
+        if (animationId) {
+            stopAnimation();
+        } else {
+            phase = 0;
+            animate();
+        }
+    });
+    
+    setCanvasSize();
+    drawSignal();
+    
+    // ==================== EXERCISE INTERACTIVE CHECK ====================
+    function checkQuestion1() {
+        const input = document.getElementById('q1Input').value.trim().toLowerCase();
+        const feedback = document.getElementById('q1Feedback');
+        const correctAnswer = 'half-duplex';
+        const acceptable = ['half-duplex', 'half duplex', 'halfduplex', 'half'];
+        
+        if (acceptable.some(opt => input.includes(opt)) || input === correctAnswer) {
+            feedback.innerHTML = '✅ Correct! Half-Duplex mode allows two-way communication but only one direction at a time — perfect for file exchange where channel handles one transmission at an instant.';
+            feedback.className = 'feedback correct';
+        } else if (input === '') {
+            feedback.innerHTML = '💡 Hint: The mode where both devices can send/receive but NOT simultaneously. Think walkie-talkie!';
+            feedback.className = 'feedback incorrect';
+        } else {
+            feedback.innerHTML = `❌ Not quite. The correct answer is <strong>Half-Duplex</strong>. Both computers need to exchange files, but the channel only allows one direction at a time → that's the definition of Half-Duplex.`;
+            feedback.className = 'feedback incorrect';
+        }
+    }
+    
+    function checkQuestion2() {
+        const input = document.getElementById('q2Input').value.trim().toLowerCase();
+        const feedback = document.getElementById('q2Feedback');
+        
+        const keywords = ['noise', 'resistant', 'discrete', 'binary', 'error', 'reliable', '0 and 1', 'digital', 'storage', 'interference'];
+        let matched = keywords.filter(kw => input.includes(kw)).length;
+        
+        if (input.length > 15 && matched >= 2) {
+            feedback.innerHTML = '✅ Excellent! Digital signals are preferred because they are more resistant to noise, easier to regenerate, less error-prone, and computers natively work with binary (0/1) logic. They maintain integrity over long distances.';
+            feedback.className = 'feedback correct';
+        } else if (input.length === 0) {
+            feedback.innerHTML = '💡 Try answering: Think about noise immunity, binary nature of computers, and reliability in storage.';
+            feedback.className = 'feedback incorrect';
+        } else {
+            feedback.innerHTML = '⚠️ Good attempt! Key reasons: Digital signals resist noise/ interference, are easier to regenerate without degradation, computers process binary data, and they offer error detection. Expand your answer for full marks!';
+            feedback.className = 'feedback incorrect';
+        }
+    }
+    
+    document.getElementById('checkQ1Btn').addEventListener('click', checkQuestion1);
+    document.getElementById('checkQ2Btn').addEventListener('click', checkQuestion2);
+    
+    // Add enter key support for Q1
+    document.getElementById('q1Input').addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') checkQuestion1();
+    });
+</script>
+</body>
+</html>

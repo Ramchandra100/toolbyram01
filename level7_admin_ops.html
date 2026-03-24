@@ -1,0 +1,526 @@
+Here is an interactive HTML document that presents Level 7: Remote Support & Admin Privileges (UAC) as a modern, engaging textbook with visual UAC prompts, remote support etiquette, and interactive quizzes.
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+  <title>Level 7: Remote Support & UAC | Admin Privileges | Interactive Textbook</title>
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,600;14..32,700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <!-- Font Awesome 6 -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <!-- Animate.css -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      background: #f4f7fd;
+      font-family: 'Inter', sans-serif;
+      color: #0a2540;
+      line-height: 1.5;
+      scroll-behavior: smooth;
+    }
+
+    .textbook-container {
+      max-width: 1280px;
+      margin: 0 auto;
+      padding: 2rem 1.5rem 4rem;
+    }
+
+    /* Hero */
+    .hero {
+      background: linear-gradient(135deg, #2c3e66 0%, #1e2a4a 100%);
+      border-radius: 2rem;
+      padding: 2rem 2rem 2rem 2.5rem;
+      margin-bottom: 2.5rem;
+      color: white;
+      box-shadow: 0 20px 35px -12px rgba(0,0,0,0.25);
+      position: relative;
+      overflow: hidden;
+    }
+    .hero::after {
+      content: "🖥️🔐";
+      font-size: 9rem;
+      opacity: 0.08;
+      position: absolute;
+      bottom: -1rem;
+      right: 0.5rem;
+      pointer-events: none;
+    }
+    .hero-badge {
+      background: #4a6a9e;
+      display: inline-block;
+      padding: 0.25rem 1rem;
+      border-radius: 40px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      margin-bottom: 1rem;
+    }
+    .hero h1 {
+      font-size: 2.7rem;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      margin-bottom: 0.5rem;
+    }
+    .hero p {
+      font-size: 1.2rem;
+      opacity: 0.9;
+      max-width: 70%;
+    }
+    @media (max-width: 700px) {
+      .hero p { max-width: 100%; }
+      .hero h1 { font-size: 2rem; }
+      .hero { padding: 1.5rem; }
+    }
+
+    /* Cards */
+    .section-card {
+      background: white;
+      border-radius: 1.75rem;
+      padding: 1.8rem 2rem;
+      margin-bottom: 2rem;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.03), 0 2px 4px rgba(0,0,0,0.05);
+      border: 1px solid #e2e8f0;
+      transition: box-shadow 0.2s;
+    }
+    .section-card:hover {
+      box-shadow: 0 20px 30px -12px rgba(0,0,0,0.1);
+    }
+    .section-title {
+      font-size: 1.7rem;
+      font-weight: 700;
+      margin-bottom: 1.2rem;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      border-left: 5px solid #4a6a9e;
+      padding-left: 1rem;
+    }
+    .section-title i {
+      color: #4a6a9e;
+      font-size: 1.6rem;
+    }
+
+    /* Remote Tools Grid */
+    .remote-tools {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1rem;
+      margin: 1rem 0;
+    }
+    .tool-badge {
+      background: #eef2fa;
+      border-radius: 2rem;
+      padding: 0.4rem 1.2rem;
+      font-weight: 500;
+      font-size: 0.9rem;
+    }
+    .etiquette-card {
+      background: #e8f0fe;
+      border-left: 6px solid #f4b942;
+      border-radius: 1rem;
+      padding: 1rem 1.2rem;
+      margin: 1rem 0;
+    }
+    .uac-simulator {
+      background: #2d2f36;
+      border-radius: 1.2rem;
+      padding: 1.5rem;
+      color: #f0f0f0;
+      margin: 1.2rem 0;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+    }
+    .shield-icon {
+      background: #f0b342;
+      width: 48px;
+      height: 48px;
+      border-radius: 12px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.8rem;
+      color: #2c3e66;
+    }
+    .uac-prompt {
+      background: #3a3d44;
+      border-radius: 0.8rem;
+      padding: 1rem;
+      margin: 0.8rem 0;
+    }
+    .two-columns {
+      display: flex;
+      gap: 2rem;
+      flex-wrap: wrap;
+      margin: 1rem 0;
+    }
+    .principle-card {
+      flex: 1;
+      background: #f9fbfe;
+      border-radius: 1rem;
+      padding: 1.2rem;
+      border: 1px solid #e0e8f0;
+    }
+    .btn-primary {
+      background: #4a6a9e;
+      color: white;
+      border: none;
+      padding: 0.7rem 1.4rem;
+      border-radius: 2rem;
+      font-weight: 600;
+      font-size: 0.9rem;
+      cursor: pointer;
+      transition: 0.2s;
+    }
+    .btn-primary:hover {
+      background: #345180;
+      transform: scale(0.98);
+    }
+    .quiz-area {
+      background: linear-gradient(120deg, #f5f8ff, #edf2fa);
+      border-radius: 1.5rem;
+      padding: 1.8rem;
+    }
+    .quiz-question {
+      background: white;
+      border-radius: 1rem;
+      padding: 1rem 1.2rem;
+      margin-bottom: 1rem;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+      cursor: pointer;
+      border: 1px solid #cfdfe8;
+      transition: all 0.2s;
+    }
+    .quiz-question:hover {
+      border-color: #4a6a9e;
+      background: #ffffff;
+    }
+    .quiz-q-text {
+      font-weight: 700;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .quiz-answer {
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.4s ease-out;
+      background: #f5f9fe;
+      border-radius: 0.8rem;
+      margin-top: 0.5rem;
+      padding: 0 0.8rem;
+    }
+    .quiz-answer.show {
+      max-height: 280px;
+      padding: 0.8rem;
+      margin-top: 0.8rem;
+    }
+    .yt-card {
+      background: #f1f5f9;
+      border-radius: 1rem;
+      padding: 0.7rem 1.2rem;
+      display: inline-flex;
+      align-items: center;
+      gap: 12px;
+      text-decoration: none;
+      color: #1e4663;
+      font-weight: 500;
+      transition: all 0.2s;
+      border: 1px solid #cbdde6;
+      margin-right: 1rem;
+      margin-bottom: 0.5rem;
+    }
+    .yt-card i {
+      font-size: 1.5rem;
+      color: #ff0000;
+    }
+    .yt-card:hover {
+      background: #ffffff;
+      border-color: #4a6a9e;
+      box-shadow: 0 5px 12px rgba(0,0,0,0.05);
+    }
+    footer {
+      text-align: center;
+      margin-top: 2rem;
+      color: #4b6a7c;
+      font-size: 0.85rem;
+    }
+    hr {
+      margin: 1rem 0;
+      border-color: #d4e2ec;
+    }
+    code, .cmd {
+      background: #eef2fa;
+      padding: 0.2rem 0.5rem;
+      border-radius: 8px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.85rem;
+    }
+    .shield-badge {
+      background: #fef5e6;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 0.3rem 0.9rem;
+      border-radius: 30px;
+      font-weight: 600;
+      font-size: 0.8rem;
+    }
+    @media (max-width: 680px) {
+      .textbook-container { padding: 1rem; }
+      .section-card { padding: 1.2rem; }
+    }
+  </style>
+</head>
+<body>
+<div class="textbook-container">
+  <div class="hero animate__animated animate__fadeInUp">
+    <div class="hero-badge"><i class="fas fa-desktop"></i> Level 7 · Admin & Remote Ops</div>
+    <h1>Remote Support & Admin Privileges (UAC)</h1>
+    <p>Master remote tools, the Principle of Least Privilege, and UAC bypass — securely empower users.</p>
+  </div>
+
+  <!-- PART 1: Magic of Remote Support -->
+  <div class="section-card animate__animated animate__fadeInUp">
+    <div class="section-title">
+      <i class="fas fa-chalkboard-user"></i>
+      <span>Part 1: The Magic of Remote Support</span>
+    </div>
+    <p>Your desk is the command center. Instead of walking across campus, use Remote Desktop software:</p>
+    <div class="remote-tools">
+      <span class="tool-badge"><i class="fas fa-network-wired"></i> AnyDesk</span>
+      <span class="tool-badge"><i class="fas fa-users"></i> TeamViewer</span>
+      <span class="tool-badge"><i class="fas fa-shield-alt"></i> Dameware</span>
+      <span class="tool-badge"><i class="fas fa-window-maximize"></i> Microsoft RDP</span>
+    </div>
+    <div class="etiquette-card">
+      <i class="fas fa-phone-alt" style="font-size: 1.5rem; float: right;"></i>
+      <i class="fas fa-hand-peace"></i> <strong>The Etiquette Rule:</strong> Always call or message the user before connecting! A mouse moving by itself is terrifying if unexpected.
+    </div>
+    <div class="info-card" style="background:#f0f4fa; padding:1rem; border-radius:1rem;">
+      <i class="fas fa-info-circle"></i> <strong>How it works:</strong> Get the computer's hostname (e.g., <code>ANITA-PC</code>) or IP address → type into remote tool → see their screen, move mouse, fix issues instantly.
+    </div>
+  </div>
+
+  <!-- PART 2: Principle of Least Privilege -->
+  <div class="section-card animate__animated animate__fadeInUp">
+    <div class="section-title">
+      <i class="fas fa-user-shield"></i>
+      <span>Part 2: The "Principle of Least Privilege"</span>
+    </div>
+    <div class="two-columns">
+      <div class="principle-card">
+        <i class="fas fa-user" style="font-size: 2rem;"></i>
+        <h3>Standard Users (Officers)</h3>
+        <p>✅ Browse web, Office, print<br>❌ Install software, change network settings, disable antivirus</p>
+      </div>
+      <div class="principle-card">
+        <i class="fas fa-crown" style="font-size: 2rem;"></i>
+        <h3>Admin Accounts (IT)</h3>
+        <p>Elevated privileges — only for installing, configuring, troubleshooting.<br><strong>Never given to regular users.</strong></p>
+      </div>
+    </div>
+    <div class="golden-rule" style="background:#eef3fc; border-left:6px solid #e67e22; padding:1rem; border-radius:1rem;">
+      <i class="fas fa-shield-virus"></i> <strong>Security Golden Rule:</strong> Users should have absolute minimum permissions needed for daily job. Prevents malware, accidental damage, and unauthorized changes.
+    </div>
+  </div>
+
+  <!-- PART 3: Bypassing the Block (UAC) -->
+  <div class="section-card animate__animated animate__fadeInUp">
+    <div class="section-title">
+      <i class="fas fa-shield-alt"></i>
+      <span>Part 3: Bypassing the Block — UAC</span>
+    </div>
+    <div class="uac-simulator">
+      <div style="display: flex; align-items: center; gap: 1rem; flex-wrap: wrap;">
+        <div class="shield-icon"><i class="fas fa-shield-alt"></i></div>
+        <div><strong style="font-size: 1.1rem;">User Account Control</strong><br>Do you want to allow this app to make changes to your device?</div>
+      </div>
+      <div class="uac-prompt">
+        <i class="fas fa-file-alt"></i> Program: <strong>AutoCAD_Viewer.exe</strong><br>
+        <i class="fas fa-user"></i> Verified Publisher: IRICEN Software<br>
+        <div style="margin-top: 0.8rem;">
+          <span class="shield-badge"><i class="fas fa-shield-alt"></i> Admin credentials required</span>
+        </div>
+      </div>
+      <div style="display: flex; gap: 0.8rem; justify-content: flex-end;">
+        <span style="background:#4a6a9e; padding:0.3rem 1rem; border-radius: 6px;">Yes (Enter Admin)</span>
+        <span style="background:#5a5e66; padding:0.3rem 1rem; border-radius: 6px;">No</span>
+      </div>
+      <p style="margin-top: 1rem; font-size: 0.85rem;"><i class="fas fa-eye"></i> Blue & Yellow Shield icon = UAC elevation required.</p>
+    </div>
+    <div class="two-columns" style="margin-top: 1rem;">
+      <div class="principle-card">
+        <i class="fas fa-sync-alt"></i> <strong>Your Mission:</strong>
+        <ol style="margin-left: 1rem; margin-top: 0.5rem;">
+          <li>Connect via Remote Support</li>
+          <li>Double-click the installer</li>
+          <li>When UAC prompts, enter <strong>your IT Admin credentials</strong></li>
+          <li>Software installs — user never learns your password</li>
+        </ol>
+      </div>
+      <div class="principle-card">
+        <i class="fas fa-lock"></i> <strong>Why this matters:</strong>
+        <p>System stays secure. User remains standard user. Admin password never shared. Malware can't install without elevation.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- WHERE TO LEARN MORE -->
+  <div class="section-card">
+    <div class="section-title">
+      <i class="fab fa-youtube"></i>
+      <span>Learn More: Remote Support & UAC Security</span>
+    </div>
+    <div>
+      <a href="#" id="kevtechRemote" class="yt-card" target="_blank"><i class="fab fa-youtube"></i> Kevtech IT Support · Remote Support Tools</a>
+      <a href="#" id="networkchuckAdmin" class="yt-card" target="_blank"><i class="fab fa-youtube"></i> NetworkChuck · Stop using Local Admin (Security risks)</a>
+    </div>
+    <div style="background:#eef2fa; border-radius: 1rem; padding: 1rem; margin-top: 1rem;">
+      <i class="fas fa-laptop-code"></i> <strong>Hands-On Practice:</strong> On your personal Windows PC, right-click any program → select "Run as Administrator" → observe the UAC prompt (if your account has a password). Familiarize yourself with the exact shield icon and dimmed screen behavior.
+    </div>
+  </div>
+
+  <!-- INTERACTIVE QUIZ: LEVEL 7 -->
+  <div class="section-card quiz-area">
+    <div class="section-title" style="border-left-color: #e67e22;">
+      <i class="fas fa-brain"></i>
+      <span>Quick Quiz: Level 7 (Remote Support & UAC)</span>
+    </div>
+    <p><strong>Test your remote support and security knowledge.</strong> Click any question to reveal the answer.</p>
+    
+    <div id="quizLevel7">
+      <!-- Q1: Principle of Least Privilege -->
+      <div class="quiz-question" data-answer="Users should only have the bare minimum permissions needed to perform their job — no more. Reduces security risk and prevents accidental damage.">
+        <div class="quiz-q-text">
+          <span><i class="far fa-question-circle"></i> <strong>Q1:</strong> What is the "Principle of Least Privilege"?</span>
+          <i class="fas fa-chevron-down"></i>
+        </div>
+        <div class="quiz-answer">
+          <p><i class="fas fa-check-circle" style="color:#2e7d32;"></i> <strong>Answer:</strong> Users get only the minimum access required for their job — no admin rights, reducing malware risk and system instability.</p>
+        </div>
+      </div>
+      <!-- Q2: UAC definition -->
+      <div class="quiz-question" data-answer="User Account Control — Windows security feature that prompts for admin credentials before sensitive changes/installations.">
+        <div class="quiz-q-text">
+          <span><i class="far fa-question-circle"></i> <strong>Q2:</strong> What does UAC stand for, and what does it do?</span>
+          <i class="fas fa-chevron-down"></i>
+        </div>
+        <div class="quiz-answer">
+          <p><i class="fas fa-check-circle" style="color:#2e7d32;"></i> <strong>Answer:</strong> User Account Control — prompts for admin credentials to prevent unauthorized system changes.</p>
+        </div>
+      </div>
+      <!-- Q3: User asks for admin password -->
+      <div class="quiz-question" data-answer="Politely decline. Explain company policy prohibits sharing admin credentials. Offer to remotely install approved software for them using your admin rights.">
+        <div class="quiz-q-text">
+          <span><i class="far fa-question-circle"></i> <strong>Q3:</strong> A user asks for permanent admin password to install software. Correct response?</span>
+          <i class="fas fa-chevron-down"></i>
+        </div>
+        <div class="quiz-answer">
+          <p><i class="fas fa-check-circle" style="color:#2e7d32;"></i> <strong>Answer:</strong> Decline, citing security policy. Remotely install the software using your admin credentials via UAC prompt.</p>
+        </div>
+      </div>
+      <!-- Q4: Remote connection etiquette -->
+      <div class="quiz-question" data-answer="Call or message them first! Let them know you're about to connect so you don't interrupt work or startle them.">
+        <div class="quiz-q-text">
+          <span><i class="far fa-question-circle"></i> <strong>Q4:</strong> Before initiating remote desktop connection, what's the most important professional courtesy?</span>
+          <i class="fas fa-chevron-down"></i>
+        </div>
+        <div class="quiz-answer">
+          <p><i class="fas fa-check-circle" style="color:#2e7d32;"></i> <strong>Answer:</strong> Communicate first — call, chat, or message to announce the connection.</p>
+        </div>
+      </div>
+      <!-- Q5: Shield icon visual clue -->
+      <div class="quiz-question" data-answer="A small blue and yellow (or solid shield) icon layered over the program's icon — indicates the file will trigger UAC admin prompt.">
+        <div class="quiz-q-text">
+          <span><i class="far fa-question-circle"></i> <strong>Q5:</strong> What visual clue tells you opening a file will trigger a UAC admin prompt?</span>
+          <i class="fas fa-chevron-down"></i>
+        </div>
+        <div class="quiz-answer">
+          <p><i class="fas fa-check-circle" style="color:#2e7d32;"></i> <strong>Answer:</strong> Blue & yellow shield icon overlay on the program's icon — requires elevation.</p>
+        </div>
+      </div>
+    </div>
+    <div style="margin-top: 1.5rem; display: flex; justify-content: flex-end;">
+      <button id="resetQuizBtn7" class="btn-primary"><i class="fas fa-sync-alt"></i> Collapse All Answers</button>
+    </div>
+    <hr>
+    <p><i class="fas fa-check-double"></i> <strong>Level 7 Complete — You're Now a Security-Conscious Remote Engineer!</strong> You understand least privilege, UAC elevation, remote tools etiquette, and how to securely install software without sharing admin credentials. Ready for real-world helpdesk scenarios.</p>
+  </div>
+  <footer>
+    <i class="fas fa-shield-alt"></i> Level 7: Remote Support & UAC — Never share admin passwords, always communicate before remote connect, trust the shield.
+  </footer>
+</div>
+
+<script>
+  // Accordion quiz for Level 7
+  const quizLevel7Items = document.querySelectorAll('#quizLevel7 .quiz-question');
+  
+  function toggleAnswerAdmin(questionDiv) {
+    const answerDiv = questionDiv.querySelector('.quiz-answer');
+    if (!answerDiv) return;
+    answerDiv.classList.toggle('show');
+    const icon = questionDiv.querySelector('.fas.fa-chevron-down');
+    if (icon) {
+      if (answerDiv.classList.contains('show')) {
+        icon.style.transform = 'rotate(180deg)';
+      } else {
+        icon.style.transform = 'rotate(0deg)';
+      }
+    }
+  }
+  
+  quizLevel7Items.forEach(q => {
+    q.addEventListener('click', (e) => {
+      e.stopPropagation();
+      toggleAnswerAdmin(q);
+    });
+    const icon = q.querySelector('.fas.fa-chevron-down');
+    if (icon) icon.style.transition = 'transform 0.2s';
+  });
+  
+  const resetBtn7 = document.getElementById('resetQuizBtn7');
+  if (resetBtn7) {
+    resetBtn7.addEventListener('click', () => {
+      quizLevel7Items.forEach(q => {
+        const ansDiv = q.querySelector('.quiz-answer');
+        if (ansDiv && ansDiv.classList.contains('show')) {
+          ansDiv.classList.remove('show');
+          const icon = q.querySelector('.fas.fa-chevron-down');
+          if (icon) icon.style.transform = 'rotate(0deg)';
+        }
+      });
+    });
+  }
+  
+  // YouTube Links
+  const kevtechRemote = document.getElementById('kevtechRemote');
+  const netchuckAdmin = document.getElementById('networkchuckAdmin');
+  if (kevtechRemote) {
+    kevtechRemote.href = "https://www.youtube.com/results?search_query=Kevtech+IT+Support+Remote+Support+Tools+Helpdesk";
+    kevtechRemote.setAttribute('title', 'Kevtech remote support tools');
+  }
+  if (netchuckAdmin) {
+    netchuckAdmin.href = "https://www.youtube.com/results?search_query=NetworkChuck+stop+using+local+admin";
+    netchuckAdmin.setAttribute('title', 'NetworkChuck local admin security risks');
+  }
+  
+  console.log("%c🛡️ Level 7: Remote Support & UAC Loaded | Least Privilege + Shield Elevation", "color: #4a6a9e; font-size: 13px; font-weight: bold;");
+  console.log("💡 Never share admin password. Use remote tools + UAC to elevate securely.");
+  
+  const extraStyle = document.createElement('style');
+  extraStyle.textContent = `
+    .quiz-question .fas.fa-chevron-down { transition: transform 0.25s ease; }
+    .quiz-answer { transition: max-height 0.35s cubic-bezier(0.2, 0.9, 0.4, 1.1), padding 0.2s; }
+    .info-card, .principle-card { transition: transform 0.2s; }
+  `;
+  document.head.appendChild(extraStyle);
+</script>
+</body>
+</html>
+```

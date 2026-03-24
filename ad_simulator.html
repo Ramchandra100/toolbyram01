@@ -1,324 +1,524 @@
+Here is an interactive HTML document that presents Level 3: Active Directory as a modern, engaging textbook with interactive quizzes and visual metaphors.
+```html
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Active Directory Simulator - Level 3</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=Segoe+UI:wght@400;600&display=swap');
-        body { font-family: 'Segoe UI', sans-serif; }
-        
-        /* Win32 UI Style */
-        .win32-border { border: 1px solid #a0a0a0; }
-        .win32-header { background: linear-gradient(to bottom, #f0f0f0, #e0e0e0); }
-        .win32-selection { background-color: #cce8ff; border: 1px solid #99d1ff; }
-        .folder-open { transform: rotate(90deg); }
-        
-        .tree-line { border-left: 1px dotted #999; margin-left: 8px; padding-left: 12px; }
-        
-        /* Mobile adjustments */
-        .tap-target { padding: 12px; } /* Larger touch targets for mobile */
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+  <title>Level 3: Active Directory | The Admin Layer | Interactive Textbook</title>
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,600;14..32,700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <!-- Font Awesome 6 -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <!-- Animate.css -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      background: #f1f4f9;
+      font-family: 'Inter', sans-serif;
+      color: #0a1c2f;
+      line-height: 1.5;
+      scroll-behavior: smooth;
+    }
+
+    .textbook-container {
+      max-width: 1280px;
+      margin: 0 auto;
+      padding: 2rem 1.5rem 4rem;
+    }
+
+    /* Hero */
+    .hero {
+      background: linear-gradient(135deg, #1e3a5f 0%, #0f2b42 100%);
+      border-radius: 2rem;
+      padding: 2rem 2rem 2rem 2.5rem;
+      margin-bottom: 2.5rem;
+      color: white;
+      box-shadow: 0 20px 35px -12px rgba(0,0,0,0.25);
+      position: relative;
+      overflow: hidden;
+    }
+    .hero::after {
+      content: "👥🔑";
+      font-size: 9rem;
+      opacity: 0.08;
+      position: absolute;
+      bottom: -1rem;
+      right: 0.5rem;
+      pointer-events: none;
+    }
+    .hero-badge {
+      background: #2c6e9e;
+      display: inline-block;
+      padding: 0.25rem 1rem;
+      border-radius: 40px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      letter-spacing: 0.3px;
+      margin-bottom: 1rem;
+    }
+    .hero h1 {
+      font-size: 2.7rem;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      margin-bottom: 0.5rem;
+    }
+    .hero p {
+      font-size: 1.2rem;
+      opacity: 0.9;
+      max-width: 70%;
+    }
+    @media (max-width: 700px) {
+      .hero p { max-width: 100%; }
+      .hero h1 { font-size: 2rem; }
+      .hero { padding: 1.5rem; }
+    }
+
+    /* Cards */
+    .section-card {
+      background: white;
+      border-radius: 1.75rem;
+      padding: 1.8rem 2rem;
+      margin-bottom: 2rem;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.03), 0 2px 4px rgba(0,0,0,0.05);
+      border: 1px solid #e2e8f0;
+      transition: box-shadow 0.2s;
+    }
+    .section-card:hover {
+      box-shadow: 0 20px 30px -12px rgba(0,0,0,0.1);
+    }
+    .section-title {
+      font-size: 1.7rem;
+      font-weight: 700;
+      margin-bottom: 1.2rem;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      border-left: 5px solid #2c6e9e;
+      padding-left: 1rem;
+    }
+    .section-title i {
+      color: #2c6e9e;
+      font-size: 1.6rem;
+    }
+    .two-columns {
+      display: flex;
+      gap: 2rem;
+      flex-wrap: wrap;
+      margin: 1rem 0;
+    }
+    .concept-card {
+      flex: 1;
+      background: #fafcff;
+      border-radius: 1.25rem;
+      padding: 1.3rem 1.5rem;
+      border: 1px solid #dce5f0;
+      transition: transform 0.2s;
+    }
+    .concept-card:hover {
+      transform: translateY(-3px);
+      background: #ffffff;
+      box-shadow: 0 10px 20px -8px rgba(0,0,0,0.08);
+    }
+    .hotel-analogy {
+      background: linear-gradient(120deg, #eef4ff, #e6f0fa);
+      border-radius: 1.2rem;
+      padding: 1.2rem 1.5rem;
+      margin: 1rem 0;
+      border-left: 6px solid #f4b942;
+    }
+    .aduc-tab {
+      background: #1e2a36;
+      color: white;
+      border-radius: 1rem;
+      padding: 1rem 1.4rem;
+      font-family: monospace;
+      margin: 1rem 0;
+    }
+    .unlock-steps {
+      background: #eef3fc;
+      border-radius: 1rem;
+      padding: 1rem 1.2rem;
+      margin: 0.8rem 0;
+    }
+    .step {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin: 0.7rem 0;
+      font-size: 0.95rem;
+    }
+    .step-num {
+      background: #2c6e9e;
+      color: white;
+      width: 26px;
+      height: 26px;
+      border-radius: 50%;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: bold;
+      font-size: 0.8rem;
+    }
+    .warning-check {
+      background: #fff6e0;
+      border-left: 5px solid #e68a2e;
+      padding: 1rem;
+      border-radius: 0.8rem;
+      margin: 1rem 0;
+    }
+    .btn-primary {
+      background: #2c6e9e;
+      color: white;
+      border: none;
+      padding: 0.7rem 1.4rem;
+      border-radius: 2rem;
+      font-weight: 600;
+      font-size: 0.9rem;
+      cursor: pointer;
+      transition: 0.2s;
+    }
+    .btn-primary:hover {
+      background: #1f5480;
+      transform: scale(0.98);
+    }
+    .quiz-area {
+      background: linear-gradient(120deg, #f5f9ff, #ecf3fa);
+      border-radius: 1.5rem;
+      padding: 1.8rem;
+    }
+    .quiz-question {
+      background: white;
+      border-radius: 1rem;
+      padding: 1rem 1.2rem;
+      margin-bottom: 1rem;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+      cursor: pointer;
+      border: 1px solid #cfdfe8;
+      transition: all 0.2s;
+    }
+    .quiz-question:hover {
+      border-color: #2c6e9e;
+      background: #ffffff;
+    }
+    .quiz-q-text {
+      font-weight: 700;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .quiz-answer {
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.4s ease-out;
+      background: #f5f9fe;
+      border-radius: 0.8rem;
+      margin-top: 0.5rem;
+      padding: 0 0.8rem;
+    }
+    .quiz-answer.show {
+      max-height: 220px;
+      padding: 0.8rem;
+      margin-top: 0.8rem;
+    }
+    .yt-card {
+      background: #f1f5f9;
+      border-radius: 1rem;
+      padding: 0.7rem 1.2rem;
+      display: inline-flex;
+      align-items: center;
+      gap: 12px;
+      text-decoration: none;
+      color: #1e4663;
+      font-weight: 500;
+      transition: all 0.2s;
+      border: 1px solid #cbdde6;
+      margin-right: 1rem;
+      margin-bottom: 0.5rem;
+    }
+    .yt-card i {
+      font-size: 1.5rem;
+      color: #ff0000;
+    }
+    .yt-card:hover {
+      background: #ffffff;
+      border-color: #2c6e9e;
+      box-shadow: 0 5px 12px rgba(0,0,0,0.05);
+    }
+    footer {
+      text-align: center;
+      margin-top: 2rem;
+      color: #4b6a7c;
+      font-size: 0.85rem;
+    }
+    hr {
+      margin: 1rem 0;
+      border-color: #d4e2ec;
+    }
+    .badge-icon {
+      background: #e3f0f7;
+      border-radius: 30px;
+      padding: 0.2rem 0.9rem;
+      font-size: 0.75rem;
+      font-weight: 600;
+    }
+    code, .cmd-code {
+      background: #eef2fa;
+      padding: 0.2rem 0.5rem;
+      border-radius: 8px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.85rem;
+    }
+    @media (max-width: 680px) {
+      .textbook-container { padding: 1rem; }
+      .section-card { padding: 1.2rem; }
+    }
+  </style>
 </head>
-<body class="bg-[#f0f0f0] h-screen flex flex-col overflow-hidden text-sm select-none">
+<body>
+<div class="textbook-container">
+  <div class="hero animate__animated animate__fadeInUp">
+    <div class="hero-badge"><i class="fas fa-shield-alt"></i> Level 3 · Active Directory</div>
+    <h1>The "Admin" Layer: Active Directory</h1>
+    <p>Master the master guest list. Unlock accounts, reset passwords, and navigate ADUC like a pro.</p>
+  </div>
 
-    <!-- Top Bar (Mocking a Server Window) -->
-    <div class="bg-white border-b border-gray-300 p-2 flex items-center justify-between shadow-sm z-10">
-        <div class="flex items-center gap-2">
-            <div class="bg-blue-600 text-white p-1 rounded font-bold text-xs">AD</div>
-            <div>
-                <h1 class="font-bold text-gray-700 leading-tight">Active Directory Users and Computers</h1>
-                <p class="text-[10px] text-gray-500">Server: DC01.IRICEN.LOCAL</p>
-            </div>
-        </div>
-        <div class="bg-yellow-100 text-yellow-800 text-xs px-2 py-1 rounded border border-yellow-200 animate-pulse">
-            Ticket #402: Rajesh locked out
-        </div>
+  <!-- PART 1: WHAT IS AD -->
+  <div class="section-card animate__animated animate__fadeInUp">
+    <div class="section-title">
+      <i class="fas fa-database"></i>
+      <span>Part 1: What is Active Directory (AD)?</span>
     </div>
-
-    <!-- Main Content Area -->
-    <div class="flex-1 flex flex-col md:flex-row overflow-hidden">
-
-        <!-- LEFT PANEL: Organizational Units (Tree) -->
-        <div class="w-full md:w-64 bg-white border-r border-gray-300 flex flex-col shrink-0 md:h-full h-1/3 overflow-y-auto">
-            <div class="p-2 bg-gray-50 border-b border-gray-200 text-xs text-gray-500 font-bold uppercase tracking-wider">
-                Structure
-            </div>
-            
-            <div class="p-2 space-y-1">
-                <!-- Root -->
-                <div class="flex items-center gap-2 cursor-pointer" onclick="toggleTree('root')">
-                    <svg class="w-4 h-4 text-gray-400 transition-transform" id="arrow-root" fill="currentColor" viewBox="0 0 20 20"><path d="M6 6L14 10L6 14V6Z"/></svg>
-                    <svg class="w-4 h-4 text-blue-800" fill="currentColor" viewBox="0 0 20 20"><path d="M2 5a2 2 0 012-2h12a2 2 0 012 2v10a2 2 0 01-2 2H4a2 2 0 01-2-2V5z"/></svg>
-                    <span class="font-bold text-gray-700">iricen.local</span>
-                </div>
-
-                <!-- Children of Root -->
-                <div id="tree-root" class="hidden tree-line space-y-2">
-                    
-                    <!-- Builtin -->
-                    <div class="flex items-center gap-2 cursor-pointer opacity-70">
-                        <svg class="w-4 h-4 text-transparent" fill="none" viewBox="0 0 20 20"></svg>
-                        <svg class="w-4 h-4 text-yellow-500" fill="currentColor" viewBox="0 0 20 20"><path d="M2 6a2 2 0 012-2h5l2 2h5a2 2 0 012 2v6a2 2 0 01-2 2H4a2 2 0 01-2-2V6z"/></svg>
-                        <span>Builtin</span>
-                    </div>
-
-                    <!-- IRICEN Users (Expandable) -->
-                    <div>
-                        <div class="flex items-center gap-2 cursor-pointer py-1" onclick="toggleTree('users'); loadUsers('all')">
-                            <svg class="w-4 h-4 text-gray-400 transition-transform" id="arrow-users" fill="currentColor" viewBox="0 0 20 20"><path d="M6 6L14 10L6 14V6Z"/></svg>
-                            <svg class="w-4 h-4 text-yellow-500" fill="currentColor" viewBox="0 0 20 20"><path d="M2 6a2 2 0 012-2h5l2 2h5a2 2 0 012 2v6a2 2 0 01-2 2H4a2 2 0 01-2-2V6z"/></svg>
-                            <span class="font-semibold text-gray-700">IRICEN_Users</span>
-                        </div>
-
-                        <!-- Departments -->
-                        <div id="tree-users" class="hidden tree-line space-y-1 mt-1">
-                            <div onclick="loadUsers('admin')" class="flex items-center gap-2 cursor-pointer py-2 hover:bg-blue-50 rounded pl-2">
-                                <svg class="w-4 h-4 text-yellow-500" fill="currentColor" viewBox="0 0 20 20"><path d="M2 6a2 2 0 012-2h5l2 2h5a2 2 0 012 2v6a2 2 0 01-2 2H4a2 2 0 01-2-2V6z"/></svg>
-                                <span>Admin_Dept</span>
-                            </div>
-                            <div onclick="loadUsers('civil')" class="flex items-center gap-2 cursor-pointer py-2 hover:bg-blue-50 rounded pl-2">
-                                <svg class="w-4 h-4 text-yellow-500" fill="currentColor" viewBox="0 0 20 20"><path d="M2 6a2 2 0 012-2h5l2 2h5a2 2 0 012 2v6a2 2 0 01-2 2H4a2 2 0 01-2-2V6z"/></svg>
-                                <span>Civil_Eng_Dept</span>
-                            </div>
-                            <div onclick="loadUsers('it')" class="flex items-center gap-2 cursor-pointer py-2 hover:bg-blue-50 rounded pl-2">
-                                <svg class="w-4 h-4 text-yellow-500" fill="currentColor" viewBox="0 0 20 20"><path d="M2 6a2 2 0 012-2h5l2 2h5a2 2 0 012 2v6a2 2 0 01-2 2H4a2 2 0 01-2-2V6z"/></svg>
-                                <span>IT_Support</span>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Computers -->
-                    <div class="flex items-center gap-2 cursor-pointer opacity-70">
-                        <svg class="w-4 h-4 text-transparent" fill="none" viewBox="0 0 20 20"></svg>
-                        <svg class="w-4 h-4 text-yellow-500" fill="currentColor" viewBox="0 0 20 20"><path d="M2 6a2 2 0 012-2h5l2 2h5a2 2 0 012 2v6a2 2 0 01-2 2H4a2 2 0 01-2-2V6z"/></svg>
-                        <span>Computers</span>
-                    </div>
-
-                </div>
-            </div>
-        </div>
-
-        <!-- RIGHT PANEL: User List -->
-        <div class="flex-1 bg-white flex flex-col md:h-full h-2/3">
-            <!-- Toolbar -->
-            <div class="bg-[#fcfcfc] border-b border-gray-300 p-2 flex gap-4 text-gray-500 shadow-sm">
-                <div class="flex gap-2">
-                    <button class="hover:bg-gray-200 p-1 rounded" title="Create User"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"></path></svg></button>
-                    <button class="hover:bg-gray-200 p-1 rounded" title="Refresh"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg></button>
-                </div>
-                <div class="border-l border-gray-300"></div>
-                <div id="current-path" class="text-xs flex items-center">iricen.local / ...</div>
-            </div>
-
-            <!-- Table Header -->
-            <div class="grid grid-cols-3 p-2 bg-gray-100 border-b border-gray-300 text-xs font-bold text-gray-600">
-                <div>Name</div>
-                <div>Type</div>
-                <div>Description</div>
-            </div>
-
-            <!-- List Content -->
-            <div id="user-list" class="flex-1 overflow-y-auto bg-white p-1">
-                <div class="p-8 text-center text-gray-400 italic">
-                    Select a Department folder on the left to view users.
-                </div>
-            </div>
-            
-            <!-- Bottom Status Bar -->
-            <div class="bg-gray-50 border-t border-gray-300 p-1 text-[10px] text-gray-500 flex justify-between">
-                <span id="item-count">0 objects</span>
-                <span>IRICEN\Administrator</span>
-            </div>
-        </div>
+    <div class="hotel-analogy">
+      <i class="fas fa-hotel" style="font-size: 1.8rem; float: right; opacity: 0.6;"></i>
+      <h3><i class="fas fa-key"></i> The Master Guest List & Keycard System</h3>
+      <p>Think of AD like a massive hotel (IRICEN). Every employee is on the <strong>central guest list</strong>. The <strong>Server</strong> holds the database: every username & password.</p>
+      <div class="two-columns" style="margin-top: 0.5rem;">
+        <div><i class="fas fa-home"></i> <strong>At Home (Workgroup):</strong> Laptop is boss. Local account stored only on that device.</div>
+        <div><i class="fas fa-building"></i> <strong>At IRICEN (Domain):</strong> Server is boss. PC asks AD: <em>"Is this person on the list? Keycard valid?"</em></div>
+      </div>
     </div>
+    <p><i class="fas fa-check-circle" style="color:#2c6e9e;"></i> <strong>Result:</strong> Any computer in the domain — any officer logs in with their central credentials. Centralized management = IT hero.</p>
+  </div>
 
-    <!-- MODAL: Password Reset -->
-    <div id="reset-modal" class="hidden fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
-        <div class="bg-white rounded shadow-2xl w-full max-w-sm overflow-hidden animate-[scaleIn_0.2s_ease-out]">
-            <!-- Modal Header -->
-            <div class="bg-white p-3 border-b border-gray-200 flex justify-between items-center">
-                <h3 class="font-bold text-gray-800 text-sm">Reset Password - <span id="modal-username">User</span></h3>
-                <button onclick="closeModal()" class="text-gray-400 hover:text-red-500 text-lg leading-none">&times;</button>
-            </div>
-            
-            <!-- Modal Body -->
-            <div class="p-4 bg-[#f0f0f0] text-sm">
-                <div class="space-y-4">
-                    <div class="space-y-1">
-                        <label class="block text-gray-600 text-xs">New password:</label>
-                        <input type="password" class="w-full border border-gray-300 p-1.5 rounded focus:border-blue-500 outline-none shadow-sm" placeholder="••••••••">
-                    </div>
-                    
-                    <div class="space-y-1">
-                        <label class="block text-gray-600 text-xs">Confirm password:</label>
-                        <input type="password" class="w-full border border-gray-300 p-1.5 rounded focus:border-blue-500 outline-none shadow-sm" placeholder="••••••••">
-                    </div>
+  <!-- PART 2: ADUC TOOL & OUs -->
+  <div class="section-card animate__animated animate__fadeInUp">
+    <div class="section-title">
+      <i class="fas fa-tools"></i>
+      <span>Part 2: The Tool - ADUC & Organizational Units</span>
+    </div>
+    <div class="aduc-tab">
+      <i class="fas fa-window-maximize"></i> <strong>Active Directory Users and Computers (ADUC)</strong><br>
+      <span style="font-size: 0.85rem;">The central console for managing users, groups, and OUs.</span>
+    </div>
+    <p><strong>Organizational Units (OUs)</strong> — folders inside AD that organize users by department:</p>
+    <div style="background:#f8fafc; border-radius: 1rem; padding: 0.8rem 1rem; margin: 0.8rem 0; display: flex; flex-wrap: wrap; gap: 1rem;">
+      <span><i class="fas fa-folder-open"></i> Civil_Engineering</span>
+      <span><i class="fas fa-folder-open"></i> Administration</span>
+      <span><i class="fas fa-folder-open"></i> IT_Support</span>
+      <span><i class="fas fa-folder-open"></i> Finance</span>
+    </div>
+    <p>OUs keep thousands of users neat, manageable, and make applying policies simple.</p>
+  </div>
 
-                    <div class="border-t border-gray-200 pt-3 space-y-2">
-                        <label class="flex items-center gap-2 cursor-pointer">
-                            <input type="checkbox" checked class="rounded border-gray-300 text-blue-600">
-                            <span>User must change password at next logon</span>
-                        </label>
-                        <label class="flex items-center gap-2 cursor-pointer bg-red-50 p-1 rounded border border-red-100">
-                            <input type="checkbox" id="unlock-check" class="rounded border-gray-300 text-blue-600">
-                            <span class="font-bold text-red-700">Unlock the user's account</span>
-                        </label>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Modal Footer -->
-            <div class="bg-gray-100 p-3 border-t border-gray-200 flex justify-end gap-2">
-                <button onclick="performReset()" class="px-4 py-1.5 bg-blue-600 hover:bg-blue-700 text-white rounded shadow-sm text-xs font-semibold transition">OK</button>
-                <button onclick="closeModal()" class="px-4 py-1.5 bg-white hover:bg-gray-50 border border-gray-300 text-gray-700 rounded shadow-sm text-xs transition">Cancel</button>
-            </div>
+  <!-- PART 3: DAILY MISSIONS (UNLOCK & RESET) -->
+  <div class="section-card animate__animated animate__fadeInUp">
+    <div class="section-title">
+      <i class="fas fa-unlock-alt"></i>
+      <span>Part 3: Your Daily Mission - Unlocks & Resets</span>
+    </div>
+    <p>~40% of tickets are password-related. Users get locked after 3-5 wrong attempts (security feature).</p>
+    
+    <div class="two-columns">
+      <div class="concept-card">
+        <h3><i class="fas fa-lock"></i> 🔓 Unlock Account</h3>
+        <div class="unlock-steps">
+          <div class="step"><span class="step-num">1</span> Open ADUC → Search for user (e.g., Rajesh Kumar)</div>
+          <div class="step"><span class="step-num">2</span> Right-click → <strong>Properties</strong></div>
+          <div class="step"><span class="step-num">3</span> Go to <strong>Account</strong> tab</div>
+          <div class="step"><span class="step-num">4</span> Check: <strong>"Unlock account. This account is currently locked..."</strong></div>
+          <div class="step"><span class="step-num">5</span> Apply → Done!</div>
         </div>
+      </div>
+      <div class="concept-card">
+        <h3><i class="fas fa-key"></i> 🔑 Reset Password</h3>
+        <div class="unlock-steps">
+          <div class="step"><span class="step-num">1</span> Right-click user → <strong>Reset Password</strong></div>
+          <div class="step"><span class="step-num">2</span> Type temporary password (e.g., <code>Iricen@2026</code>)</div>
+          <div class="step"><span class="step-num">3</span> ⚡ <strong>CRITICAL:</strong> Check <strong>"User must change password at next logon"</strong></div>
+          <div class="step"><span class="step-num">4</span> Click OK → user creates their own private password.</div>
+        </div>
+        <div class="warning-check">
+          <i class="fas fa-shield-alt"></i> <strong>Security Golden Rule:</strong> Never let a user keep a password you set. Always force change at next logon.
+        </div>
+      </div>
     </div>
-
-    <!-- Success Toast -->
-    <div id="toast" class="fixed bottom-4 left-1/2 -translate-x-1/2 bg-green-600 text-white px-4 py-2 rounded shadow-lg text-sm font-semibold opacity-0 transition-opacity pointer-events-none z-50">
-        Password changed successfully!
+    <div class="hotel-analogy" style="margin-top: 0.2rem;">
+      <i class="fas fa-clock"></i> <strong>Pro Tip:</strong> After unlocking, tell the user to wait 1-2 minutes for replication if multiple domain controllers exist.
     </div>
+  </div>
 
-    <script>
-        // --- DATA ---
-        const users = {
-            'admin': [
-                { name: 'System Administrator', type: 'User', desc: 'Built-in account', locked: false },
-                { name: 'Suresh Patil', type: 'User', desc: 'Head Admin', locked: false }
-            ],
-            'civil': [
-                { name: 'Rajesh Kumar', type: 'User', desc: 'Junior Engineer', locked: true },
-                { name: 'Anita Desai', type: 'User', desc: 'Senior Engineer', locked: false },
-                { name: 'Civil_Guest', type: 'User', desc: 'Guest Login', locked: false }
-            ],
-            'it': [
-                { name: 'You (Res Engineer)', type: 'User', desc: 'IT Support', locked: false },
-                { name: 'Manager_IT', type: 'User', desc: 'IT Head', locked: false }
-            ]
-        };
+  <!-- WHERE TO LEARN MORE + HANDS-ON -->
+  <div class="section-card">
+    <div class="section-title">
+      <i class="fab fa-youtube"></i>
+      <span>Learn More & Practice AD</span>
+    </div>
+    <p>Visual repetition is key — see real ADUC interfaces and workflows.</p>
+    <div>
+      <a href="#" id="kevtechAdLink" class="yt-card" target="_blank"><i class="fab fa-youtube"></i> Kevtech IT Support · AD for Helpdesk</a>
+      <a href="#" id="jobskillshareLink" class="yt-card" target="_blank"><i class="fab fa-youtube"></i> Jobskillshare · AD Password Reset & Unlock</a>
+    </div>
+    <div style="background:#eef2fa; border-radius: 1rem; padding: 1rem; margin-top: 1rem;">
+      <i class="fas fa-brain"></i> <strong>Mental Practice:</strong><br>
+      ✅ The Golden Rule of AD: <strong>Always force a password change</strong> after reset.<br>
+      ✅ Visualize the Account tab: where you find the unlock checkbox.<br>
+      ✅ Remember: Domain vs Workgroup — the server is the authority.
+    </div>
+  </div>
 
-        // --- TREE LOGIC ---
-        function toggleTree(id) {
-            const el = document.getElementById('tree-' + id);
-            const arrow = document.getElementById('arrow-' + id);
-            
-            if (el.classList.contains('hidden')) {
-                el.classList.remove('hidden');
-                arrow.style.transform = 'rotate(90deg)';
-            } else {
-                el.classList.add('hidden');
-                arrow.style.transform = 'rotate(0deg)';
-            }
+  <!-- INTERACTIVE QUIZ: LEVEL 3 -->
+  <div class="section-card quiz-area">
+    <div class="section-title" style="border-left-color: #e68a2e;">
+      <i class="fas fa-brain"></i>
+      <span>Quick Quiz: Level 3 (Active Directory)</span>
+    </div>
+    <p><strong>Test your AD knowledge.</strong> Click any question to reveal the answer — real-world scenarios.</p>
+    
+    <div id="quizLevel3">
+      <!-- Q1 -->
+      <div class="quiz-question" data-answer="A home laptop verifies your password locally (workgroup). An office computer in a domain asks the Active Directory Server to verify credentials centrally.">
+        <div class="quiz-q-text">
+          <span><i class="far fa-question-circle"></i> <strong>Q1:</strong> Main difference between logging into a home laptop vs office computer connected to AD?</span>
+          <i class="fas fa-chevron-down"></i>
+        </div>
+        <div class="quiz-answer">
+          <p><i class="fas fa-check-circle" style="color:#2e7d32;"></i> <strong>Answer:</strong> Home laptop = local verification (workgroup). Office computer = central verification by Active Directory Server.</p>
+        </div>
+      </div>
+      <!-- Q2 -->
+      <div class="quiz-question" data-answer="Active Directory Users and Computers — the MMC snap-in used to manage users, groups, OUs, and unlock/reset accounts.">
+        <div class="quiz-q-text">
+          <span><i class="far fa-question-circle"></i> <strong>Q2:</strong> What does the acronym "ADUC" stand for?</span>
+          <i class="fas fa-chevron-down"></i>
+        </div>
+        <div class="quiz-answer">
+          <p><i class="fas fa-check-circle" style="color:#2e7d32;"></i> <strong>Answer:</strong> Active Directory Users and Computers — the primary admin tool.</p>
+        </div>
+      </div>
+      <!-- Q3 -->
+      <div class="quiz-question" data-answer="The 'Account' tab. Inside user Properties, the Account tab contains the 'Unlock account' checkbox.">
+        <div class="quiz-q-text">
+          <span><i class="far fa-question-circle"></i> <strong>Q3:</strong> User typed wrong password 5 times → account locked. Which tab in AD Properties do you click to unlock?</span>
+          <i class="fas fa-chevron-down"></i>
+        </div>
+        <div class="quiz-answer">
+          <p><i class="fas fa-check-circle" style="color:#2e7d32;"></i> <strong>Answer:</strong> The <strong>Account</strong> tab. You'll find the "Unlock account" checkbox there.</p>
+        </div>
+      </div>
+      <!-- Q4 -->
+      <div class="quiz-question" data-answer="'User must change password at next logon' — forces them to create a private password immediately after using the temporary one.">
+        <div class="quiz-q-text">
+          <span><i class="far fa-question-circle"></i> <strong>Q4:</strong> You reset a user's password to `Temp123!`. Most important checkbox before clicking OK?</span>
+          <i class="fas fa-chevron-down"></i>
+        </div>
+        <div class="quiz-answer">
+          <p><i class="fas fa-check-circle" style="color:#2e7d32;"></i> <strong>Answer:</strong> "User must change password at next logon" — ensures only user knows final password.</p>
+        </div>
+      </div>
+      <!-- Q5 -->
+      <div class="quiz-question" data-answer="Organizational Units (OUs) — containers inside AD that group users by department (e.g., Civil_Engineering, IT_Support).">
+        <div class="quiz-q-text">
+          <span><i class="far fa-question-circle"></i> <strong>Q5:</strong> What are the folders inside AD that organize users by department called?</span>
+          <i class="fas fa-chevron-down"></i>
+        </div>
+        <div class="quiz-answer">
+          <p><i class="fas fa-check-circle" style="color:#2e7d32;"></i> <strong>Answer:</strong> Organizational Units (OUs) — they help structure users for management and policy application.</p>
+        </div>
+      </div>
+    </div>
+    <div style="margin-top: 1.5rem; display: flex; justify-content: flex-end;">
+      <button id="resetQuizBtn3" class="btn-primary"><i class="fas fa-sync-alt"></i> Collapse All Answers</button>
+    </div>
+    <hr>
+    <p><i class="fas fa-chalkboard-user"></i> <strong>Level 3 Complete:</strong> You now know the core AD tasks: unlock, reset, and navigate OUs. Level 4 will dive into Group Policies and more.</p>
+  </div>
+  <footer>
+    <i class="fas fa-shield-alt"></i> Level 3: Active Directory — Centralized identity management. Unlock, reset, and secure.
+  </footer>
+</div>
+
+<script>
+  // Accordion quiz logic for Level 3
+  const quizLevel3Items = document.querySelectorAll('#quizLevel3 .quiz-question');
+  
+  function toggleAnswerAD(questionDiv) {
+    const answerDiv = questionDiv.querySelector('.quiz-answer');
+    if (!answerDiv) return;
+    answerDiv.classList.toggle('show');
+    const icon = questionDiv.querySelector('.fas.fa-chevron-down');
+    if (icon) {
+      if (answerDiv.classList.contains('show')) {
+        icon.style.transform = 'rotate(180deg)';
+      } else {
+        icon.style.transform = 'rotate(0deg)';
+      }
+    }
+  }
+  
+  quizLevel3Items.forEach(q => {
+    q.addEventListener('click', (e) => {
+      e.stopPropagation();
+      toggleAnswerAD(q);
+    });
+    const icon = q.querySelector('.fas.fa-chevron-down');
+    if (icon) icon.style.transition = 'transform 0.2s';
+  });
+  
+  const resetBtn3 = document.getElementById('resetQuizBtn3');
+  if (resetBtn3) {
+    resetBtn3.addEventListener('click', () => {
+      quizLevel3Items.forEach(q => {
+        const ansDiv = q.querySelector('.quiz-answer');
+        if (ansDiv && ansDiv.classList.contains('show')) {
+          ansDiv.classList.remove('show');
+          const icon = q.querySelector('.fas.fa-chevron-down');
+          if (icon) icon.style.transform = 'rotate(0deg)';
         }
-
-        // --- LIST LOGIC ---
-        let currentLockedUser = null;
-
-        function loadUsers(dept) {
-            const list = document.getElementById('user-list');
-            const path = document.getElementById('current-path');
-            const count = document.getElementById('item-count');
-            
-            list.innerHTML = ''; // Clear
-            path.innerText = `iricen.local / IRICEN_Users / ${dept.toUpperCase()}`;
-            
-            let data = [];
-            if (dept === 'all') {
-                 // combine all
-                 Object.values(users).forEach(arr => data.push(...arr));
-            } else {
-                data = users[dept] || [];
-            }
-            
-            count.innerText = `${data.length} objects`;
-
-            if (data.length === 0) {
-                list.innerHTML = '<div class="p-4 text-gray-400">Folder is empty.</div>';
-                return;
-            }
-
-            data.forEach(u => {
-                const row = document.createElement('div');
-                // Styling based on locked status
-                const lockedClass = u.locked ? 'text-red-600 font-bold bg-red-50' : 'text-gray-700';
-                const icon = u.locked 
-                    ? `<div class="relative"><svg class="w-5 h-5 text-gray-500" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd" /></svg><div class="absolute -bottom-1 -right-1 bg-white rounded-full"><svg class="w-3 h-3 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="4" d="M6 18L18 6M6 6l12 12"></path></svg></div></div>`
-                    : `<svg class="w-5 h-5 text-gray-500" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd" /></svg>`;
-
-                row.className = `grid grid-cols-3 p-2 border-b border-gray-100 hover:bg-blue-50 cursor-pointer items-center text-xs md:text-sm ${lockedClass}`;
-                row.innerHTML = `
-                    <div class="flex items-center gap-2">
-                        ${icon}
-                        <span>${u.name}</span>
-                    </div>
-                    <div>${u.type}</div>
-                    <div>${u.desc}</div>
-                `;
-
-                // Click Action
-                row.onclick = () => {
-                    // Highlight logic
-                    document.querySelectorAll('#user-list > div').forEach(d => d.classList.remove('win32-selection'));
-                    row.classList.add('win32-selection');
-                    
-                    if (u.locked) {
-                        openResetModal(u.name);
-                    }
-                };
-
-                list.appendChild(row);
-            });
-        }
-
-        // --- MODAL LOGIC ---
-        function openResetModal(name) {
-            currentLockedUser = name;
-            document.getElementById('modal-username').innerText = name;
-            document.getElementById('reset-modal').classList.remove('hidden');
-        }
-
-        function closeModal() {
-            document.getElementById('reset-modal').classList.add('hidden');
-        }
-
-        function performReset() {
-            const unlockChecked = document.getElementById('unlock-check').checked;
-            
-            if (unlockChecked) {
-                // Update data logic
-                for (let key in users) {
-                    users[key].forEach(u => {
-                        if (u.name === currentLockedUser) {
-                            u.locked = false; // Unlock in data
-                        }
-                    });
-                }
-                
-                closeModal();
-                
-                // Refresh list
-                const currentDept = document.getElementById('current-path').innerText.split('/').pop().trim().toLowerCase().replace('_dept','').replace('_eng','');
-                // Simple hack to refresh view, assuming we know where we are. Better to just reload last dept.
-                // For simplicity, we just reload the view we are likely in.
-                // Actually, let's just trigger a click on 'Civil' if it was Rajesh
-                if (currentLockedUser === 'Rajesh Kumar') loadUsers('civil'); 
-
-                // Show Success
-                const toast = document.getElementById('toast');
-                toast.innerText = `Account unlocked & Password reset for ${currentLockedUser}`;
-                toast.style.opacity = '1';
-                setTimeout(() => { toast.style.opacity = '0'; }, 3000);
-            } else {
-                alert("Please check 'Unlock the user's account' to fix the issue!");
-            }
-        }
-
-        // Init
-        // Auto open root
-        toggleTree('root');
-    </script>
+      });
+    });
+  }
+  
+  // YouTube links for AD learning
+  const kevtechAd = document.getElementById('kevtechAdLink');
+  const jobskill = document.getElementById('jobskillshareLink');
+  if (kevtechAd) {
+    kevtechAd.href = "https://www.youtube.com/results?search_query=Kevtech+IT+Support+Active+Directory+Helpdesk";
+    kevtechAd.setAttribute('title', 'Kevtech AD for Helpdesk');
+  }
+  if (jobskill) {
+    jobskill.href = "https://www.youtube.com/results?search_query=Jobskillshare+Active+Directory+Password+Reset+Unlock";
+    jobskill.setAttribute('title', 'Jobskillshare AD reset walkthrough');
+  }
+  
+  console.log("%c🏢 Level 3: Active Directory Loaded | Unlock, Reset, OUs", "color: #2c6e9e; font-size: 13px; font-weight: bold;");
+  console.log("💡 Golden rule: Always force password change at next logon after reset!");
+  
+  // Additional style for consistency
+  const styleExtra = document.createElement('style');
+  styleExtra.textContent = `
+    .quiz-question .fas.fa-chevron-down { transition: transform 0.25s ease; }
+    .quiz-answer { transition: max-height 0.35s cubic-bezier(0.2, 0.9, 0.4, 1.1), padding 0.2s; }
+    .concept-card, .unlock-steps { transition: all 0.2s; }
+  `;
+  document.head.appendChild(styleExtra);
+</script>
 </body>
 </html>
+```

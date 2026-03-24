@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Resident Engineer Portal - IRICEN</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+        body { font-family: 'Inter', sans-serif; }
+        .bg-pattern {
+            background-color: #0f172a;
+            background-image: radial-gradient(rgba(255, 255, 255, 0.1) 1px, transparent 1px);
+            background-size: 20px 20px;
+        }
+    </style>
+</head>
+<body class="bg-slate-50 min-h-screen flex flex-col">
+
+    <!-- Header / Hero Section -->
+    <header class="bg-pattern text-white py-12 px-6 shadow-lg border-b-4 border-blue-500">
+        <div class="max-w-5xl mx-auto flex flex-col md:flex-row items-center justify-between gap-6">
+            <div>
+                <div class="flex items-center gap-3 mb-2">
+                    <span class="bg-blue-600 text-white text-xs font-bold px-2 py-1 rounded uppercase tracking-wider">IRICEN IT Support</span>
+                </div>
+                <h1 class="text-3xl md:text-4xl font-extrabold tracking-tight">Resident Engineer Portal</h1>
+                <p class="text-slate-300 mt-2 text-lg max-w-xl">Your interactive training environment. Master the hardware, network, and systems you will support daily.</p>
+            </div>
+            <div class="hidden md:block">
+                <svg class="w-24 h-24 text-blue-500 opacity-80" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path></svg>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content Grid -->
+    <main class="flex-1 max-w-5xl mx-auto w-full p-6 py-10">
+        
+        <div class="mb-8 border-b border-slate-200 pb-2">
+            <h2 class="text-xl font-bold text-slate-800">Training Modules</h2>
+            <p class="text-slate-500 text-sm">Select a module below to launch the simulator. Complete them in order.</p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+
+            <a href="level7_admin_ops.html" class="group bg-white rounded-xl border border-slate-200 p-6 shadow-sm hover:shadow-xl hover:border-slate-400 transition-all duration-300 flex flex-col relative overflow-hidden">
+    <div class="absolute top-0 left-0 w-full h-1 bg-slate-200 group-hover:bg-slate-700 transition-colors"></div>
+    
+    <div class="absolute top-0 left-0 w-1 h-full bg-slate-400 group-hover:bg-slate-800 transition-colors"></div>
+
+    <div class="flex items-start justify-between mb-4">
+        <div class="bg-slate-100 p-3 rounded-xl text-slate-600 group-hover:bg-slate-800 group-hover:text-white transition-all duration-300 shadow-inner">
+            <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04m18.618 0c-.051 3.17-1.154 6.315-3.145 8.944a11.983 11.983 0 01-5.618 4.016m-8.618-4.016A11.955 11.955 0 012.382 6.44m0 0A11.954 11.954 0 000 12c0 5.42 3.587 10.14 8.618 11.662m4.764-1.338L12 21.056"></path>
+            </svg>
+        </div>
+        <div class="flex flex-col items-end">
+            <span class="text-[10px] font-bold text-slate-400 bg-slate-100 px-2 py-1 rounded-md uppercase tracking-tighter mb-1">Security Ops</span>
+            <span class="text-xs font-extrabold text-amber-600 bg-amber-50 px-2 py-0.5 rounded border border-amber-100">Level 7</span>
+        </div>
+    </div>
+
+    <h3 class="text-lg font-bold text-slate-800 mb-1 group-hover:text-slate-900 transition-colors">Remote Support & UAC</h3>
+    <p class="text-sm text-slate-500 mb-5 flex-1 leading-relaxed">
+        Master the <span class="text-slate-700 font-medium">Principle of Least Privilege</span>. Learn to manage UAC prompts and perform remote desktop etiquette.
+    </p>
+
+    <div class="flex items-center justify-between mt-auto pt-4 border-t border-slate-50">
+        <div class="flex -space-x-2">
+            <div class="w-6 h-6 rounded-full bg-slate-200 border-2 border-white flex items-center justify-center" title="Remote Desktop">
+                <i class="fas fa-desktop text-[10px] text-slate-600"></i>
+            </div>
+            <div class="w-6 h-6 rounded-full bg-slate-200 border-2 border-white flex items-center justify-center" title="Admin Shield">
+                <i class="fas fa-shield-alt text-[10px] text-slate-600"></i>
+            </div>
+        </div>
+        <div class="text-sm font-bold text-slate-800 flex items-center gap-1 group-hover:gap-2 transition-all">
+            Launch Terminal <svg class="w-4 h-4 text-amber-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"></path></svg>
+        </div>
+    </div>
+</a>
+
+            
+           
+
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-slate-900 py-6 text-center text-slate-500 text-xs">
+        
+        <a href="RE03.html" class="text-2xl md:text-3xl font-extrabold tracking-tight">Next</a>
+        <br>
+        <a href="RE01.html" class="text-2xl md:text-3xl font-extrabold tracking-tight">Previous</a>
+    </footer>
+
+</body>
+</html>

@@ -1,360 +1,501 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Router Config Simulator - Level 5</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap');
-        body { font-family: 'Roboto', sans-serif; background-color: #f4f6f8; }
-        
-        .router-header { background: linear-gradient(90deg, #1e3a8a, #3b82f6); }
-        .nav-item.active { background-color: #e0e7ff; color: #1e40af; border-left: 4px solid #1e40af; font-weight: 700; }
-        .nav-item { border-left: 4px solid transparent; cursor: pointer; transition: all 0.2s; }
-        .nav-item:hover:not(.active) { background-color: #f1f5f9; }
-        
-        /* Loading Bar */
-        @keyframes fillBar { 0% { width: 0%; } 100% { width: 100%; } }
-        .animate-fill { animation: fillBar 3s ease-in-out forwards; }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+  <title>Level 5: Wi-Fi & Access Point Configuration | Interactive Textbook</title>
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,600;14..32,700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <!-- Font Awesome 6 -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <!-- Animate.css -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      background: #f4f7fc;
+      font-family: 'Inter', sans-serif;
+      color: #0a2a3b;
+      line-height: 1.5;
+      scroll-behavior: smooth;
+    }
+
+    .textbook-container {
+      max-width: 1280px;
+      margin: 0 auto;
+      padding: 2rem 1.5rem 4rem;
+    }
+
+    /* Hero */
+    .hero {
+      background: linear-gradient(135deg, #1f5e3a 0%, #2d7a4a 100%);
+      border-radius: 2rem;
+      padding: 2rem 2rem 2rem 2.5rem;
+      margin-bottom: 2.5rem;
+      color: white;
+      box-shadow: 0 20px 35px -12px rgba(0,0,0,0.25);
+      position: relative;
+      overflow: hidden;
+    }
+    .hero::after {
+      content: "📶📡";
+      font-size: 10rem;
+      opacity: 0.08;
+      position: absolute;
+      bottom: -1.5rem;
+      right: -0.2rem;
+      pointer-events: none;
+    }
+    .hero-badge {
+      background: #3e9f66;
+      display: inline-block;
+      padding: 0.25rem 1rem;
+      border-radius: 40px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      margin-bottom: 1rem;
+    }
+    .hero h1 {
+      font-size: 2.7rem;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      margin-bottom: 0.5rem;
+    }
+    .hero p {
+      font-size: 1.2rem;
+      opacity: 0.9;
+      max-width: 70%;
+    }
+    @media (max-width: 700px) {
+      .hero p { max-width: 100%; }
+      .hero h1 { font-size: 2rem; }
+      .hero { padding: 1.5rem; }
+    }
+
+    /* Cards */
+    .section-card {
+      background: white;
+      border-radius: 1.75rem;
+      padding: 1.8rem 2rem;
+      margin-bottom: 2rem;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.03), 0 2px 4px rgba(0,0,0,0.05);
+      border: 1px solid #e0ede8;
+      transition: box-shadow 0.2s;
+    }
+    .section-card:hover {
+      box-shadow: 0 20px 30px -12px rgba(0,0,0,0.1);
+    }
+    .section-title {
+      font-size: 1.7rem;
+      font-weight: 700;
+      margin-bottom: 1.2rem;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      border-left: 5px solid #2d7a4a;
+      padding-left: 1rem;
+    }
+    .section-title i {
+      color: #2d7a4a;
+      font-size: 1.6rem;
+    }
+
+    /* Gateway terminal simulation */
+    .gateway-card {
+      background: #0f2a2a;
+      color: #c0f2e0;
+      border-radius: 1.2rem;
+      padding: 1.2rem 1.5rem;
+      font-family: 'JetBrains Mono', monospace;
+      margin: 1rem 0;
+    }
+    .step-browser {
+      background: #f0f6fa;
+      border-radius: 1rem;
+      padding: 0.8rem 1.2rem;
+      margin: 0.8rem 0;
+      border: 1px solid #cde0dc;
+    }
+    .security-badge {
+      display: inline-block;
+      padding: 0.3rem 0.9rem;
+      border-radius: 30px;
+      font-size: 0.75rem;
+      font-weight: 700;
+      margin: 0.2rem 0.3rem;
+    }
+    .wpa2 { background: #c8f0e0; color: #1a5e3a; border-left: 4px solid #2d7a4a; }
+    .wep { background: #ffe0cc; color: #b45f2b; border-left: 4px solid #e68a2e; }
+    .open { background: #ffe0e0; color: #b33; border-left: 4px solid #d9534f; }
+    .two-columns {
+      display: flex;
+      gap: 2rem;
+      flex-wrap: wrap;
+      margin: 1rem 0;
+    }
+    .freq-card {
+      flex: 1;
+      background: #fafefe;
+      border-radius: 1.25rem;
+      padding: 1.2rem 1.4rem;
+      border: 1px solid #d4e2e0;
+      transition: transform 0.2s;
+      text-align: center;
+    }
+    .freq-card:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 8px 18px rgba(0,0,0,0.08);
+    }
+    .btn-primary {
+      background: #2d7a4a;
+      color: white;
+      border: none;
+      padding: 0.7rem 1.4rem;
+      border-radius: 2rem;
+      font-weight: 600;
+      font-size: 0.9rem;
+      cursor: pointer;
+      transition: 0.2s;
+    }
+    .btn-primary:hover {
+      background: #1f5e3a;
+      transform: scale(0.98);
+    }
+    .quiz-area {
+      background: linear-gradient(120deg, #f1f9f4, #eaf5ef);
+      border-radius: 1.5rem;
+      padding: 1.8rem;
+    }
+    .quiz-question {
+      background: white;
+      border-radius: 1rem;
+      padding: 1rem 1.2rem;
+      margin-bottom: 1rem;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+      cursor: pointer;
+      border: 1px solid #cde0db;
+      transition: all 0.2s;
+    }
+    .quiz-question:hover {
+      border-color: #2d7a4a;
+      background: #ffffff;
+    }
+    .quiz-q-text {
+      font-weight: 700;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .quiz-answer {
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.4s ease-out;
+      background: #f5fbf8;
+      border-radius: 0.8rem;
+      margin-top: 0.5rem;
+      padding: 0 0.8rem;
+    }
+    .quiz-answer.show {
+      max-height: 240px;
+      padding: 0.8rem;
+      margin-top: 0.8rem;
+    }
+    .yt-card {
+      background: #f1f5f9;
+      border-radius: 1rem;
+      padding: 0.7rem 1.2rem;
+      display: inline-flex;
+      align-items: center;
+      gap: 12px;
+      text-decoration: none;
+      color: #1e4663;
+      font-weight: 500;
+      transition: all 0.2s;
+      border: 1px solid #cbdde6;
+      margin-right: 1rem;
+      margin-bottom: 0.5rem;
+    }
+    .yt-card i {
+      font-size: 1.5rem;
+      color: #ff0000;
+    }
+    .yt-card:hover {
+      background: #ffffff;
+      border-color: #2d7a4a;
+      box-shadow: 0 5px 12px rgba(0,0,0,0.05);
+    }
+    footer {
+      text-align: center;
+      margin-top: 2rem;
+      color: #4b6a5c;
+      font-size: 0.85rem;
+    }
+    hr {
+      margin: 1rem 0;
+      border-color: #d4e2dc;
+    }
+    code, .cmd {
+      background: #eef2f0;
+      padding: 0.2rem 0.5rem;
+      border-radius: 8px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.85rem;
+    }
+    .info-tip {
+      background: #e1f3ea;
+      border-left: 5px solid #2d7a4a;
+      padding: 0.8rem 1rem;
+      border-radius: 0.8rem;
+      margin: 1rem 0;
+    }
+    @media (max-width: 680px) {
+      .textbook-container { padding: 1rem; }
+      .section-card { padding: 1.2rem; }
+    }
+  </style>
 </head>
-<body class="h-screen flex items-center justify-center p-4">
+<body>
+<div class="textbook-container">
+  <div class="hero animate__animated animate__fadeInUp">
+    <div class="hero-badge"><i class="fas fa-wifi"></i> Level 5 · Wireless Mastery</div>
+    <h1>Wi-Fi & Access Point Configuration</h1>
+    <p>Secure the airwaves: log into the brain, set SSID, choose WPA2, and master 2.4GHz vs 5GHz.</p>
+  </div>
 
-    <!-- LOGIN SCREEN -->
-    <div id="login-screen" class="w-full max-w-sm bg-white rounded-lg shadow-2xl overflow-hidden z-50 absolute">
-        <div class="router-header p-6 text-center text-white">
-            <h1 class="text-2xl font-bold">NetConfig Pro</h1>
-            <p class="text-sm opacity-80">Router Management Utility</p>
-        </div>
-        <div class="p-6 space-y-4">
-            <div id="login-error" class="hidden bg-red-50 text-red-600 text-xs p-2 rounded border border-red-200 text-center">
-                Invalid Username or Password.
-            </div>
-            <p class="text-xs text-gray-500 text-center mb-4">Please enter default factory credentials to continue.</p>
-            <div>
-                <label class="block text-sm text-gray-700 mb-1">Username</label>
-                <input type="text" id="login-user" class="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500" value="admin">
-            </div>
-            <div>
-                <label class="block text-sm text-gray-700 mb-1">Password</label>
-                <input type="password" id="login-pass" class="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500">
-            </div>
-            <button onclick="attemptLogin()" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded transition mt-2">
-                Login
-            </button>
-        </div>
+  <!-- PART 1: Getting Inside the Brain (Default Gateway) -->
+  <div class="section-card animate__animated animate__fadeInUp">
+    <div class="section-title">
+      <i class="fas fa-microchip"></i>
+      <span>Part 1: Getting Inside the Brain (The Default Gateway)</span>
     </div>
-
-    <!-- ROUTER INTERFACE (Hidden initially) -->
-    <div id="router-ui" class="hidden w-full max-w-5xl h-[80vh] bg-white rounded-lg shadow-2xl overflow-hidden flex flex-col relative opacity-0 transition-opacity duration-500">
-        
-        <!-- Header -->
-        <header class="router-header px-6 py-4 flex justify-between items-center text-white shrink-0">
-            <div class="flex items-center gap-2">
-                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.111 16.404a5.5 5.5 0 017.778 0M12 20h.01m-7.08-7.071c3.904-3.905 10.236-3.906 14.142 0M1.394 9.393c5.857-5.857 15.355-5.857 21.213 0"></path></svg>
-                <span class="font-bold text-lg tracking-wide">NetConfig Pro AP-1200</span>
-            </div>
-            <div class="flex items-center gap-4 text-sm">
-                <span class="text-blue-200">Firmware: V1.4.2</span>
-                <button onclick="location.reload()" class="bg-blue-800 hover:bg-blue-900 px-3 py-1 rounded border border-blue-700 transition">Logout</button>
-            </div>
-        </header>
-
-        <!-- Main Body -->
-        <div class="flex flex-1 overflow-hidden">
-            
-            <!-- Sidebar -->
-            <aside class="w-64 bg-gray-50 border-r border-gray-200 flex flex-col shrink-0">
-                <div class="py-2">
-                    <div onclick="switchTab('status')" id="nav-status" class="nav-item active px-6 py-3 text-sm text-gray-700 flex items-center gap-3">
-                        <svg class="w-5 h-5 opacity-70" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-                        System Status
-                    </div>
-                    <div onclick="switchTab('wireless')" id="nav-wireless" class="nav-item px-6 py-3 text-sm text-gray-700 flex items-center gap-3">
-                        <svg class="w-5 h-5 opacity-70" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.111 16.404a5.5 5.5 0 017.778 0M12 20h.01m-7.08-7.071c3.904-3.905 10.236-3.906 14.142 0M1.394 9.393c5.857-5.857 15.355-5.857 21.213 0"></path></svg>
-                        Wireless Settings
-                    </div>
-                    <div class="nav-item px-6 py-3 text-sm text-gray-400 flex items-center gap-3 cursor-not-allowed">
-                        <svg class="w-5 h-5 opacity-70" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9"></path></svg>
-                        Network (WAN/LAN)
-                    </div>
-                    <div class="nav-item px-6 py-3 text-sm text-gray-400 flex items-center gap-3 cursor-not-allowed">
-                        <svg class="w-5 h-5 opacity-70" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg>
-                        Security & Firewall
-                    </div>
-                </div>
-            </aside>
-
-            <!-- Content Area -->
-            <main class="flex-1 bg-white p-8 overflow-y-auto">
-                
-                <!-- VIEW 1: Status -->
-                <div id="view-status">
-                    <h2 class="text-2xl font-bold text-gray-800 border-b border-gray-200 pb-2 mb-6">Device Status</h2>
-                    
-                    <div class="grid grid-cols-2 gap-6">
-                        <div class="bg-gray-50 p-4 border border-gray-200 rounded">
-                            <h3 class="font-bold text-gray-700 mb-3 text-sm uppercase">Device Information</h3>
-                            <div class="space-y-2 text-sm">
-                                <div class="flex justify-between"><span class="text-gray-500">Uptime:</span> <span class="font-mono">0 days, 00:05:23</span></div>
-                                <div class="flex justify-between"><span class="text-gray-500">Hardware Version:</span> <span>v2.0</span></div>
-                                <div class="flex justify-between"><span class="text-gray-500">MAC Address:</span> <span class="font-mono text-gray-700">A4:2B:C5:99:E1:00</span></div>
-                            </div>
-                        </div>
-
-                        <div class="bg-red-50 p-4 border border-red-200 rounded" id="status-wireless-card">
-                            <h3 class="font-bold text-red-700 mb-3 text-sm uppercase flex items-center gap-2">
-                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
-                                Wireless State (Insecure)
-                            </h3>
-                            <div class="space-y-2 text-sm">
-                                <div class="flex justify-between"><span class="text-gray-600">SSID:</span> <span class="font-bold text-gray-800" id="stat-ssid">WLAN_DEFAULT</span></div>
-                                <div class="flex justify-between"><span class="text-gray-600">Security:</span> <span class="font-bold text-red-600" id="stat-sec">Open (None)</span></div>
-                                <div class="flex justify-between"><span class="text-gray-600">Status:</span> <span class="text-green-600 font-bold">Broadcasting</span></div>
-                            </div>
-                            <div class="mt-4 text-xs text-red-600 bg-red-100 p-2 rounded border border-red-200">
-                                <strong>Warning:</strong> The network is currently open. Anyone can connect. Please configure security settings immediately.
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- VIEW 2: Wireless Settings -->
-                <div id="view-wireless" class="hidden">
-                    <h2 class="text-2xl font-bold text-gray-800 border-b border-gray-200 pb-2 mb-6">Wireless Network Setup</h2>
-                    
-                    <div id="setup-form" class="max-w-xl space-y-6">
-                        
-                        <!-- Basic Setup -->
-                        <div class="bg-gray-50 p-5 border border-gray-200 rounded shadow-sm">
-                            <h3 class="font-bold text-gray-800 mb-4 border-b border-gray-200 pb-2">Basic Wireless Settings</h3>
-                            <div class="space-y-4">
-                                <div class="flex items-center">
-                                    <label class="w-1/3 text-sm font-medium text-gray-700">Wireless Radio:</label>
-                                    <div class="w-2/3">
-                                        <select class="border border-gray-300 rounded px-2 py-1 w-32 bg-white text-sm">
-                                            <option>Enable</option>
-                                            <option>Disable</option>
-                                        </select>
-                                    </div>
-                                </div>
-                                <div class="flex items-center">
-                                    <label class="w-1/3 text-sm font-medium text-gray-700">Network Name (SSID):</label>
-                                    <div class="w-2/3">
-                                        <input type="text" id="in-ssid" value="WLAN_DEFAULT" class="border border-gray-300 rounded px-3 py-1.5 w-full text-sm focus:border-blue-500 focus:outline-none">
-                                        <p class="text-[10px] text-gray-500 mt-1">This is the name clients will see when scanning for Wi-Fi.</p>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Security Setup -->
-                        <div class="bg-gray-50 p-5 border border-gray-200 rounded shadow-sm">
-                            <h3 class="font-bold text-gray-800 mb-4 border-b border-gray-200 pb-2">Wireless Security</h3>
-                            <div class="space-y-4">
-                                <div class="flex items-center">
-                                    <label class="w-1/3 text-sm font-medium text-gray-700">Security Mode:</label>
-                                    <div class="w-2/3">
-                                        <select id="in-sec" class="border border-gray-300 rounded px-2 py-1 w-full bg-white text-sm focus:border-blue-500 focus:outline-none" onchange="togglePasswordBox()">
-                                            <option value="none">Disable Security (Open)</option>
-                                            <option value="wep">WEP (Insecure)</option>
-                                            <option value="wpa">WPA-PSK</option>
-                                            <option value="wpa2">WPA2-PSK (Recommended)</option>
-                                        </select>
-                                    </div>
-                                </div>
-                                
-                                <div id="password-group" class="hidden items-center transition-all">
-                                    <label class="w-1/3 text-sm font-medium text-gray-700">Wi-Fi Password:</label>
-                                    <div class="w-2/3">
-                                        <input type="text" id="in-pass" class="border border-gray-300 rounded px-3 py-1.5 w-full text-sm focus:border-blue-500 focus:outline-none" placeholder="Enter new password">
-                                        <p class="text-[10px] text-gray-500 mt-1">Must be at least 8 characters.</p>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="pt-4 flex justify-end gap-3 border-t border-gray-200">
-                            <div id="error-msg" class="text-red-500 text-sm font-bold flex-1 hidden"></div>
-                            <button class="px-4 py-2 bg-gray-200 text-gray-700 rounded hover:bg-gray-300 text-sm transition font-medium">Cancel</button>
-                            <button onclick="saveSettings()" class="px-6 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 text-sm transition font-bold shadow">Apply / Save</button>
-                        </div>
-
-                    </div>
-                </div>
-
-            </main>
-        </div>
-
-        <!-- Rebooting Overlay -->
-        <div id="reboot-overlay" class="hidden absolute inset-0 bg-white/90 z-40 flex flex-col items-center justify-center backdrop-blur-sm">
-            <h2 class="text-2xl font-bold text-gray-800 mb-2">Rebooting Device...</h2>
-            <p class="text-gray-500 mb-8">Applying new wireless settings.</p>
-            
-            <div class="w-64 h-3 bg-gray-200 rounded-full overflow-hidden">
-                <div id="progress-bar" class="h-full bg-blue-600 w-0"></div>
-            </div>
-            
-            <p id="reboot-pct" class="mt-2 text-sm font-bold text-blue-600">0%</p>
-        </div>
-
+    <p>Out of the box, a new Access Point is "dumb" — open, insecure network. Your job: log in and secure it.</p>
+    <div class="step-browser">
+      <i class="fas fa-chrome"></i> <strong>How to log in (via web browser):</strong>
+      <ol style="margin-left: 1.5rem; margin-top: 0.5rem;">
+        <li>Connect laptop to router (Ethernet is best for setup).</li>
+        <li>Open Command Prompt → <code>ipconfig</code> → find <strong>Default Gateway</strong> (e.g., 192.168.1.1).</li>
+        <li>Type that IP into Chrome address bar → press Enter.</li>
+      </ol>
     </div>
-
-    <!-- Task Panel (The Mission) -->
-    <div class="absolute bottom-4 right-4 bg-yellow-50 border border-yellow-300 rounded shadow-lg p-4 w-72 z-50">
-        <h3 class="font-bold text-yellow-800 border-b border-yellow-200 pb-1 mb-2">Mission: Class 3 Setup</h3>
-        <ul class="text-xs text-yellow-900 space-y-1.5 list-disc pl-4">
-            <li>Log in: <span class="font-mono font-bold">admin</span> / <span class="font-mono font-bold">admin</span></li>
-            <li>Set SSID: <span class="font-mono font-bold">IRICEN_Classroom3</span></li>
-            <li>Set Security: <span class="font-mono font-bold">WPA2-PSK</span></li>
-            <li>Set Pass: <span class="font-mono font-bold">Pune@2026</span></li>
-        </ul>
+    <div class="gateway-card">
+      <i class="fas fa-terminal"></i> C:\> ipconfig<br>
+      Default Gateway . . . . . : <span style="color:#8efcba;">192.168.1.1</span><br>
+      <i class="fas fa-arrow-right"></i> Navigate to http://192.168.1.1 → admin login page.
     </div>
+    <div class="info-tip">
+      <i class="fas fa-sticky-note"></i> <strong>Factory default credentials:</strong> Sticker under device — typically <code>admin / admin</code> or <code>admin / password</code>. <span class="security-badge open">⚠️ CHANGE IMMEDIATELY!</span>
+    </div>
+  </div>
 
-    <!-- Success Modal -->
-    <div id="success-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black/60">
-        <div class="bg-white p-8 rounded-xl shadow-2xl text-center max-w-sm transform transition-all animate-[scaleIn_0.3s_ease-out]">
-            <div class="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                <svg class="w-8 h-8 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path></svg>
-            </div>
-            <h2 class="text-2xl font-bold text-gray-800 mb-2">Setup Complete!</h2>
-            <p class="text-sm text-gray-600 mb-6">You successfully secured the Access Point. Devices can now securely connect to <strong class="text-blue-600">IRICEN_Classroom3</strong>.</p>
-            <button onclick="location.reload()" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-6 rounded-full transition shadow-md">Complete Module</button>
+  <!-- PART 2: SSID & Security Protocols -->
+  <div class="section-card animate__animated animate__fadeInUp">
+    <div class="section-title">
+      <i class="fas fa-shield-alt"></i>
+      <span>Part 2: The Two Golden Settings (SSID & Security)</span>
+    </div>
+    <div class="two-columns">
+      <div class="freq-card">
+        <i class="fas fa-tag" style="font-size: 2rem; color:#2d7a4a;"></i>
+        <h3>SSID</h3>
+        <p><strong>Service Set Identifier</strong> = the Wi-Fi network name broadcasted to devices.</p>
+        <div class="cmd" style="background:#eaf3ef;">📱 IRICEN_Classroom3</div>
+        <p class="info-tip" style="margin-top: 0.5rem;">✅ Clear, location-specific naming avoids confusion.</p>
+      </div>
+      <div class="freq-card">
+        <i class="fas fa-lock" style="font-size: 2rem; color:#2d7a4a;"></i>
+        <h3>Security Protocol (Critical!)</h3>
+        <div><span class="security-badge wep">WEP ❌ obsolete</span> <span class="security-badge">WPA ❌ outdated</span></div>
+        <div><span class="security-badge wpa2">✅ WPA2-PSK (AES) — current global standard</span></div>
+        <div><span class="security-badge">WPA3 — newest (modern routers)</span></div>
+        <p>Choose <strong>WPA2-PSK</strong> → enter strong password (e.g., <code>Pune@2026</code>) → Apply → router reboots.</p>
+      </div>
+    </div>
+    <div class="info-tip">
+      <i class="fas fa-user-secret"></i> <strong>Resident Engineer paycheck moment:</strong> Never leave network "Open". WPA2 encrypts all traffic, keeps parking lot hackers out.
+    </div>
+  </div>
+
+  <!-- PART 3: The Bonus IT Secret (2.4GHz vs 5GHz) -->
+  <div class="section-card animate__animated animate__fadeInUp">
+    <div class="section-title">
+      <i class="fas fa-chart-line"></i>
+      <span>Part 3: 2.4GHz vs 5GHz — Dual-Band Wisdom</span>
+    </div>
+    <div class="two-columns">
+      <div class="freq-card">
+        <i class="fas fa-tachometer-alt" style="font-size: 2rem;"></i>
+        <h3>📡 2.4 GHz</h3>
+        <p><i class="fas fa-arrow-left"></i> <strong>Long range</strong> — travels far through walls & concrete.<br>
+        <i class="fas fa-turtle"></i> Slower speeds, more interference.<br>
+        <span class="cmd">Ideal for coverage across building</span></p>
+      </div>
+      <div class="freq-card">
+        <i class="fas fa-bolt" style="font-size: 2rem;"></i>
+        <h3>⚡ 5 GHz</h3>
+        <p><i class="fas fa-fighter-jet"></i> <strong>Extremely fast</strong> — low latency, high throughput.<br>
+        <i class="fas fa-mountain"></i> Short range, struggles with thick walls.<br>
+        <span class="cmd">Best in same room as AP</span></p>
+      </div>
+    </div>
+    <div class="gateway-card" style="background:#e7f3ed; color:#0a2a2a;">
+      <i class="fas fa-lightbulb"></i> <strong>Pro Strategy:</strong> Modern routers broadcast both. Connect stationary devices to 5GHz for speed; mobile devices walking far use 2.4GHz for stability.
+    </div>
+  </div>
+
+  <!-- WHERE TO LEARN MORE -->
+  <div class="section-card">
+    <div class="section-title">
+      <i class="fab fa-youtube"></i>
+      <span>Learn More: Wi-Fi Deep Dive</span>
+    </div>
+    <div>
+      <a href="#" id="netchuckWifi" class="yt-card" target="_blank"><i class="fab fa-youtube"></i> NetworkChuck · Wi-Fi explained (coffee analogies)</a>
+      <a href="#" id="powercertFreq" class="yt-card" target="_blank"><i class="fab fa-youtube"></i> PowerCert · 2.4GHz vs 5GHz animation</a>
+    </div>
+    <div style="background:#eef2f0; border-radius: 1rem; padding: 1rem; margin-top: 1rem;">
+      <i class="fas fa-hand-sparkles"></i> <strong>Hands-On Practice:</strong> Find your home router's Default Gateway, type IP in browser, and <strong>just look</strong> at the login screen. Don't change settings without admin password — but explore the interface! Also check your phone's Wi-Fi settings to see which band you're on.
+    </div>
+  </div>
+
+  <!-- INTERACTIVE QUIZ: LEVEL 5 -->
+  <div class="section-card quiz-area">
+    <div class="section-title" style="border-left-color: #e68a2e;">
+      <i class="fas fa-brain"></i>
+      <span>Quick Quiz: Level 5 (Wi-Fi Configuration)</span>
+    </div>
+    <p><strong>Test your wireless expertise.</strong> Click any question to reveal the answer.</p>
+    
+    <div id="quizLevel5">
+      <!-- Q1: Default Gateway -->
+      <div class="quiz-question" data-answer="The Default Gateway line in ipconfig output shows the router's IP address (e.g., 192.168.1.1).">
+        <div class="quiz-q-text">
+          <span><i class="far fa-question-circle"></i> <strong>Q1:</strong> You run `ipconfig` to log into a new router. Which line tells you the router's IP address?</span>
+          <i class="fas fa-chevron-down"></i>
         </div>
+        <div class="quiz-answer">
+          <p><i class="fas fa-check-circle" style="color:#2e7d32;"></i> <strong>Answer:</strong> The <strong>Default Gateway</strong> line. That's the router's brain address.</p>
+        </div>
+      </div>
+      <!-- Q2: SSID meaning -->
+      <div class="quiz-question" data-answer="Service Set Identifier — simply the Wi-Fi network name that appears on devices when scanning.">
+        <div class="quiz-q-text">
+          <span><i class="far fa-question-circle"></i> <strong>Q2:</strong> What does SSID stand for, and what does it mean in plain English?</span>
+          <i class="fas fa-chevron-down"></i>
+        </div>
+        <div class="quiz-answer">
+          <p><i class="fas fa-check-circle" style="color:#2e7d32;"></i> <strong>Answer:</strong> Service Set Identifier = the Wi-Fi network name broadcasted to users.</p>
+        </div>
+      </div>
+      <!-- Q3: Security protocol -->
+      <div class="quiz-question" data-answer="WPA2-PSK (AES) — current standard; WPA3 if hardware supports it.">
+        <div class="quiz-q-text">
+          <span><i class="far fa-question-circle"></i> <strong>Q3:</strong> Which security protocol should you choose to ensure encrypted, safe Wi-Fi in a classroom?</span>
+          <i class="fas fa-chevron-down"></i>
+        </div>
+        <div class="quiz-answer">
+          <p><i class="fas fa-check-circle" style="color:#2e7d32;"></i> <strong>Answer:</strong> WPA2-PSK (AES) — the global standard. WPA3 for newer gear.</p>
+        </div>
+      </div>
+      <!-- Q4: 5GHz dropping issue -->
+      <div class="quiz-question" data-answer="Connect to the 2.4GHz network instead. 5GHz is fast but has shorter range and poor wall penetration.">
+        <div class="quiz-q-text">
+          <span><i class="far fa-question-circle"></i> <strong>Q4:</strong> Instructor's Wi-Fi keeps dropping when walking down the hall on 5GHz. What do you advise?</span>
+          <i class="fas fa-chevron-down"></i>
+        </div>
+        <div class="quiz-answer">
+          <p><i class="fas fa-check-circle" style="color:#2e7d32;"></i> <strong>Answer:</strong> Switch to 2.4GHz — longer range, better wall penetration, more stable while moving.</p>
+        </div>
+      </div>
+      <!-- Q5: First step after login -->
+      <div class="quiz-question" data-answer="Immediately change the router's admin password from the factory default (admin/admin).">
+        <div class="quiz-q-text">
+          <span><i class="far fa-question-circle"></i> <strong>Q5:</strong> Very first thing after logging into new router with default admin/admin?</span>
+          <i class="fas fa-chevron-down"></i>
+        </div>
+        <div class="quiz-answer">
+          <p><i class="fas fa-check-circle" style="color:#2e7d32;"></i> <strong>Answer:</strong> Change the admin password! Factory defaults are a huge security risk — anyone on the network could hijack the router.</p>
+        </div>
+      </div>
     </div>
+    <div style="margin-top: 1.5rem; display: flex; justify-content: flex-end;">
+      <button id="resetQuizBtn5" class="btn-primary"><i class="fas fa-sync-alt"></i> Collapse All Answers</button>
+    </div>
+    <hr>
+    <p><i class="fas fa-check-double"></i> <strong>Level 5 Complete:</strong> You now know how to log into routers, set SSID, enforce WPA2, and leverage dual-band wisdom. Next level: advanced wireless troubleshooting & site surveys.</p>
+  </div>
+  <footer>
+    <i class="fas fa-wifi"></i> Level 5: Wi-Fi & AP — Default Gateway, WPA2-PSK, 2.4GHz for range, 5GHz for speed.
+  </footer>
+</div>
 
-    <script>
-        // -- LOGIN LOGIC --
-        function attemptLogin() {
-            const user = document.getElementById('login-user').value;
-            const pass = document.getElementById('login-pass').value;
-            const err = document.getElementById('login-error');
-
-            if (user === 'admin' && pass === 'admin') {
-                document.getElementById('login-screen').classList.add('hidden');
-                const ui = document.getElementById('router-ui');
-                ui.classList.remove('hidden');
-                
-                // Fade in effect
-                setTimeout(() => {
-                    ui.classList.remove('opacity-0');
-                    ui.classList.add('opacity-100');
-                }, 50);
-            } else {
-                err.classList.remove('hidden');
-            }
+<script>
+  // Accordion quiz for Level 5
+  const quizLevel5Items = document.querySelectorAll('#quizLevel5 .quiz-question');
+  
+  function toggleAnswerWifi(questionDiv) {
+    const answerDiv = questionDiv.querySelector('.quiz-answer');
+    if (!answerDiv) return;
+    answerDiv.classList.toggle('show');
+    const icon = questionDiv.querySelector('.fas.fa-chevron-down');
+    if (icon) {
+      if (answerDiv.classList.contains('show')) {
+        icon.style.transform = 'rotate(180deg)';
+      } else {
+        icon.style.transform = 'rotate(0deg)';
+      }
+    }
+  }
+  
+  quizLevel5Items.forEach(q => {
+    q.addEventListener('click', (e) => {
+      e.stopPropagation();
+      toggleAnswerWifi(q);
+    });
+    const icon = q.querySelector('.fas.fa-chevron-down');
+    if (icon) icon.style.transition = 'transform 0.2s';
+  });
+  
+  const resetBtn5 = document.getElementById('resetQuizBtn5');
+  if (resetBtn5) {
+    resetBtn5.addEventListener('click', () => {
+      quizLevel5Items.forEach(q => {
+        const ansDiv = q.querySelector('.quiz-answer');
+        if (ansDiv && ansDiv.classList.contains('show')) {
+          ansDiv.classList.remove('show');
+          const icon = q.querySelector('.fas.fa-chevron-down');
+          if (icon) icon.style.transform = 'rotate(0deg)';
         }
-
-        // Allow 'Enter' key to login
-        document.getElementById('login-pass').addEventListener('keypress', function (e) {
-            if (e.key === 'Enter') attemptLogin();
-        });
-
-        // -- NAVIGATION LOGIC --
-        function switchTab(tab) {
-            // Update Menu
-            document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
-            document.getElementById(`nav-${tab}`).classList.add('active');
-
-            // Update View
-            document.getElementById('view-status').classList.add('hidden');
-            document.getElementById('view-wireless').classList.add('hidden');
-            document.getElementById(`view-${tab}`).classList.remove('hidden');
-        }
-
-        // -- UI LOGIC --
-        function togglePasswordBox() {
-            const secMode = document.getElementById('in-sec').value;
-            const passGroup = document.getElementById('password-group');
-            
-            if (secMode === 'wpa' || secMode === 'wpa2') {
-                passGroup.classList.remove('hidden');
-                passGroup.classList.add('flex');
-            } else {
-                passGroup.classList.add('hidden');
-                passGroup.classList.remove('flex');
-            }
-        }
-
-        // -- VALIDATION & SAVE LOGIC --
-        function saveSettings() {
-            const ssid = document.getElementById('in-ssid').value.trim();
-            const secMode = document.getElementById('in-sec').value;
-            const pass = document.getElementById('in-pass').value;
-            const errMsg = document.getElementById('error-msg');
-            
-            errMsg.classList.add('hidden');
-
-            // Mission Validations
-            if (ssid !== 'IRICEN_Classroom3') {
-                showError("Mission Failed: SSID must be exactly 'IRICEN_Classroom3'");
-                return;
-            }
-            if (secMode !== 'wpa2') {
-                showError("Mission Failed: Security mode must be WPA2-PSK");
-                return;
-            }
-            if (pass !== 'Pune@2026') {
-                showError("Mission Failed: Password must be 'Pune@2026'");
-                return;
-            }
-
-            // If success, trigger reboot animation
-            startReboot();
-        }
-
-        function showError(msg) {
-            const errMsg = document.getElementById('error-msg');
-            errMsg.innerText = msg;
-            errMsg.classList.remove('hidden');
-            errMsg.classList.add('animate-pulse');
-            setTimeout(() => errMsg.classList.remove('animate-pulse'), 1000);
-        }
-
-        function startReboot() {
-            const overlay = document.getElementById('reboot-overlay');
-            const bar = document.getElementById('progress-bar');
-            const pct = document.getElementById('reboot-pct');
-            
-            overlay.classList.remove('hidden');
-            bar.classList.add('animate-fill');
-
-            let progress = 0;
-            const interval = setInterval(() => {
-                progress += Math.floor(Math.random() * 5) + 1;
-                if (progress >= 100) {
-                    progress = 100;
-                    clearInterval(interval);
-                    setTimeout(showSuccess, 500); // show success after bar finishes
-                }
-                pct.innerText = progress + '%';
-            }, 100);
-        }
-
-        function showSuccess() {
-            document.getElementById('reboot-overlay').classList.add('hidden');
-            document.getElementById('success-modal').classList.remove('hidden');
-            
-            // Update Status Screen silently in background
-            document.getElementById('stat-ssid').innerText = "IRICEN_Classroom3";
-            document.getElementById('stat-sec').innerText = "WPA2-PSK";
-            document.getElementById('stat-sec').className = "font-bold text-green-600";
-            
-            const card = document.getElementById('status-wireless-card');
-            card.className = "bg-green-50 p-4 border border-green-200 rounded";
-            card.innerHTML = `
-                <h3 class="font-bold text-green-700 mb-3 text-sm uppercase flex items-center gap-2">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
-                    Wireless State (Secured)
-                </h3>
-                <div class="space-y-2 text-sm">
-                    <div class="flex justify-between"><span class="text-gray-600">SSID:</span> <span class="font-bold text-gray-800">IRICEN_Classroom3</span></div>
-                    <div class="flex justify-between"><span class="text-gray-600">Security:</span> <span class="font-bold text-green-600">WPA2-PSK</span></div>
-                    <div class="flex justify-between"><span class="text-gray-600">Status:</span> <span class="text-green-600 font-bold">Broadcasting</span></div>
-                </div>
-            `;
-        }
-    </script>
+      });
+    });
+  }
+  
+  // YouTube Links
+  const netchuck = document.getElementById('netchuckWifi');
+  const powercert = document.getElementById('powercertFreq');
+  if (netchuck) {
+    netchuck.href = "https://www.youtube.com/results?search_query=NetworkChuck+Wi-Fi+explained";
+    netchuck.setAttribute('title', 'NetworkChuck Wi-Fi analogies');
+  }
+  if (powercert) {
+    powercert.href = "https://www.youtube.com/results?search_query=PowerCert+2.4GHz+vs+5GHz+Wi-Fi";
+    powercert.setAttribute('title', 'PowerCert frequency comparison');
+  }
+  
+  console.log("%c📶 Level 5: Wi-Fi & AP Configuration Loaded | WPA2, Default Gateway, Dual-Band", "color: #2d7a4a; font-size: 13px; font-weight: bold;");
+  console.log("💡 Golden Rule: Change default admin password, use WPA2-PSK, name SSID clearly.");
+  
+  const extraStyle = document.createElement('style');
+  extraStyle.textContent = `
+    .quiz-question .fas.fa-chevron-down { transition: transform 0.25s ease; }
+    .quiz-answer { transition: max-height 0.35s cubic-bezier(0.2, 0.9, 0.4, 1.1), padding 0.2s; }
+    .freq-card, .step-browser { transition: all 0.2s; }
+  `;
+  document.head.appendChild(extraStyle);
+</script>
 </body>
 </html>

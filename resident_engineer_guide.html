@@ -1,285 +1,625 @@
+This is a complete, single-file HTML document that transforms your Hardware & Network Basics content into an interactive, visually engaging textbook with quizzes, animated flashcards, and a simulated rack explorer.
+```html
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Resident Engineer Visual Guide - IRICEN</title>
-    <script src="https://cdn.tailwindcss.com"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>Interactive Textbook: Hardware & Network Basics | Level 1</title>
+    <!-- Google Fonts & modern reset -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700;14..32,800&display=swap" rel="stylesheet">
+    <!-- Font Awesome 6 (free icons) -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=JetBrains+Mono:wght@400;700&display=swap');
-        body { font-family: 'Inter', sans-serif; }
-        .mono { font-family: 'JetBrains Mono', monospace; }
-        .pattern-grid {
-            background-image: radial-gradient(#cbd5e1 1px, transparent 1px);
-            background-size: 20px 20px;
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: linear-gradient(135deg, #eef2f9 0%, #d9e2ef 100%);
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+            padding: 2rem 1.5rem;
+            color: #0b2b38;
+        }
+
+        /* main container */
+        .textbook-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: rgba(255,255,255,0.92);
+            backdrop-filter: blur(0px);
+            border-radius: 2.2rem;
+            box-shadow: 0 25px 45px -12px rgba(0,0,0,0.3);
+            overflow: hidden;
+            transition: all 0.2s;
+        }
+
+        /* header */
+        .concept-header {
+            background: linear-gradient(98deg, #0a2e3b 0%, #124c5e 100%);
+            padding: 1.8rem 2.2rem;
+            border-bottom: 5px solid #f4b642;
+        }
+        .concept-header h1 {
+            font-size: 2.3rem;
+            font-weight: 800;
+            letter-spacing: -0.02em;
+            color: white;
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            flex-wrap: wrap;
+        }
+        .concept-header h1 i {
+            background: #f4b642;
+            padding: 8px 12px;
+            border-radius: 60px;
+            font-size: 1.5rem;
+            color: #0a2e3b;
+        }
+        .concept-header p {
+            color: #cce7f0;
+            margin-top: 0.7rem;
+            font-weight: 400;
+            font-size: 1rem;
+        }
+
+        /* content grid: 2 columns (theory + interactive playground) */
+        .content-split {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 2rem;
+            padding: 2rem 2rem 1.5rem 2rem;
+            background: #ffffffdd;
+        }
+        .theory-card {
+            flex: 1.2;
+            min-width: 280px;
+            background: white;
+            border-radius: 1.8rem;
+            box-shadow: 0 12px 24px -12px rgba(0,0,0,0.08);
+            padding: 1.6rem 1.8rem;
+            border: 1px solid #dfecf2;
+        }
+        .playground-card {
+            flex: 1.5;
+            min-width: 320px;
+            background: #ffffff;
+            border-radius: 1.8rem;
+            box-shadow: 0 12px 24px -12px rgba(0,0,0,0.1);
+            padding: 1.6rem 1.8rem;
+            border: 1px solid #dcebf2;
+        }
+
+        /* theory styling */
+        .theory-card h2 {
+            font-size: 1.7rem;
+            font-weight: 700;
+            border-left: 6px solid #f4b642;
+            padding-left: 1rem;
+            margin-bottom: 1.2rem;
+            color: #0f3b48;
+        }
+        .topic {
+            margin-bottom: 1.6rem;
+            border-bottom: 1px dashed #cbdde6;
+            padding-bottom: 1rem;
+        }
+        .topic h3 {
+            font-size: 1.3rem;
+            font-weight: 700;
+            margin-bottom: 0.6rem;
+            color: #1a5c6e;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .topic p {
+            font-size: 0.95rem;
+            line-height: 1.5;
+            color: #1e3b44;
+            margin-bottom: 0.5rem;
+        }
+        .rule-box {
+            background: #fef8e7;
+            padding: 0.7rem 1rem;
+            border-radius: 1rem;
+            border-left: 4px solid #f4b642;
+            font-weight: 500;
+            font-size: 0.85rem;
+            margin-top: 0.6rem;
+        }
+
+        /* interactive playground components */
+        .rack-simulator {
+            background: #1f2e36;
+            border-radius: 1.4rem;
+            padding: 1rem;
+            margin-bottom: 1.5rem;
+            color: #eef4ff;
+            box-shadow: inset 0 0 0 1px #3f5e6b, 0 8px 18px rgba(0,0,0,0.1);
+        }
+        .rack-title {
+            font-weight: 700;
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 1rem;
+        }
+        .patch-panel, .switch-panel {
+            background: #2c3e46;
+            border-radius: 0.8rem;
+            padding: 0.8rem;
+            margin-bottom: 1rem;
+        }
+        .port-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 8px;
+        }
+        .port {
+            background: #111e24;
+            width: 48px;
+            text-align: center;
+            padding: 5px 0;
+            border-radius: 10px;
+            font-size: 0.7rem;
+            font-family: monospace;
+            cursor: pointer;
+            transition: 0.1s;
+            border: 1px solid #54809b;
+        }
+        .port.active {
+            background: #2e9c5c;
+            box-shadow: 0 0 8px #4cdb8c;
+            border-color: #c6ffb0;
+        }
+        .cable-status {
+            font-size: 0.8rem;
+            background: #0e1a1f;
+            padding: 8px 12px;
+            border-radius: 20px;
+            margin-top: 8px;
+            font-family: monospace;
+        }
+        .quiz-container {
+            background: #f0f6fa;
+            border-radius: 1.4rem;
+            padding: 1.2rem;
+            margin-top: 1rem;
+        }
+        .quiz-question {
+            font-weight: 700;
+            margin-bottom: 0.8rem;
+        }
+        .quiz-option {
+            background: white;
+            border: 1px solid #cce1ec;
+            border-radius: 40px;
+            padding: 6px 15px;
+            margin: 6px 0;
+            cursor: pointer;
+            transition: 0.15s;
+            font-size: 0.85rem;
+        }
+        .quiz-option:hover {
+            background: #e3f0f5;
+            transform: translateX(4px);
+        }
+        .quiz-feedback {
+            margin-top: 12px;
+            font-weight: 500;
+            font-size: 0.85rem;
+        }
+        .led-demo {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+            background: #eef2f5;
+            padding: 0.6rem 1rem;
+            border-radius: 60px;
+            margin-bottom: 1rem;
+        }
+        .led {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: #3b6e4b;
+            box-shadow: 0 0 6px #73e68f;
+            transition: 0.1s;
+        }
+        .led.dark {
+            background: #4d5c64;
+            box-shadow: none;
+        }
+        button {
+            background: #1f6e85;
+            border: none;
+            padding: 8px 18px;
+            border-radius: 40px;
+            font-weight: 600;
+            color: white;
+            cursor: pointer;
+            font-family: inherit;
+            transition: 0.15s;
+        }
+        button:active {
+            transform: scale(0.96);
+        }
+
+        /* code breakdown */
+        .code-section {
+            background: #0a232e;
+            color: #eef4ff;
+            padding: 1.8rem 2rem;
+            border-top: 1px solid #2c6277;
+        }
+        pre {
+            background: #0d2a36;
+            padding: 1rem;
+            border-radius: 1rem;
+            overflow-x: auto;
+            font-size: 0.8rem;
+            font-family: 'Fira Code', monospace;
+        }
+
+        @media (max-width: 800px) {
+            body { padding: 1rem; }
+            .content-split { padding: 1rem; gap: 1.2rem; }
+        }
+        footer {
+            text-align: center;
+            font-size: 0.7rem;
+            padding: 1rem;
+            background: #e3edf2;
+            color: #2c6070;
+        }
+        i.fa, i.far, i.fas {
+            margin-right: 5px;
         }
     </style>
 </head>
-<body class="bg-slate-50 text-slate-800">
-
+<body>
+<div class="textbook-container">
     <!-- Header -->
-    <header class="bg-blue-900 text-white p-6 shadow-lg">
-        <div class="max-w-4xl mx-auto">
-            <h1 class="text-2xl md:text-3xl font-extrabold tracking-tight">Resident Engineer Field Guide</h1>
-            <p class="text-blue-200 mt-2">IRICEN Site Reference • Hardware & Networking Basics</p>
+    <div class="concept-header">
+        <h1><i class="fas fa-network-wired"></i> Level 1: Hardware & Network Basics</h1>
+        <p><i class="fas fa-tools"></i> Physical layer mastery · Cables · Rack infrastructure · Real-world troubleshooting</p>
+    </div>
+
+    <div class="content-split">
+        <!-- LEFT: Theory Section (Elaborated content) -->
+        <div class="theory-card">
+            <h2><i class="fas fa-book-open"></i> Theory & Field Guide</h2>
+            <div class="topic">
+                <h3><i class="fas fa-plug"></i> 1. Ethernet Cable (RJ45)</h3>
+                <p><strong>Lifeline of the network:</strong> Connects PCs, printers, APs. The tiny plastic clip is everything — if broken, the cable slips and causes random disconnects. Always listen for a <strong>"CLICK"</strong>.</p>
+                <p><strong>Port LEDs:</strong> Green/Amber blinking = active data link. <span style="background:#eef2f5; padding:2px 6px; border-radius:20px;">No light = no physical connection</span> to switch or dead cable.</p>
+                <div class="rule-box"><i class="fas fa-lightbulb"></i> Golden Rule: If a user bumps the desk and loses internet → check RJ45 clip first.</div>
+            </div>
+            <div class="topic">
+                <h3><i class="fas fa-tv"></i> 2. Display Cables: VGA vs HDMI</h3>
+                <p><strong>VGA (blue, analog):</strong> Video only, needs screws tightened. Loose VGA = <span style="color:#c13b3b;">pink/yellow tint</span> because color pins lose contact.</p>
+                <p><strong>HDMI (modern flat connector):</strong> Carries high-quality video + audio in one cable. Common for projectors & smart boards.</p>
+            </div>
+            <div class="topic">
+                <h3><i class="fas fa-server"></i> 3. Network Rack: Patch Panel + Switch</h3>
+                <p><strong>Patch Panel (passive):</strong> Terminates permanent wall cables. No electricity, just a safe bridge. <strong>Switch (active):</strong> Provides power & network intelligence. Short patch cords link panel to switch — saves expensive in-wall cables.</p>
+                <p><i class="fas fa-chart-line"></i> Always trace: Wall jack → Patch panel (back) → patch cord → Switch port.</p>
+            </div>
+            <div class="topic">
+                <h3><i class="fab fa-youtube"></i> Learn More</h3>
+                <p>🎥 <strong>PowerCert Animated Videos:</strong> "Network Switches vs Patch Panels" (3D animations).<br>🎥 <strong>NetworkChuck:</strong> Free CCNA playlist — IP addresses & switching fundamentals.<br>🛠️ <strong>Hands-on:</strong> Open a real telco closet and trace cables. Demystify the blinking lights.</p>
+            </div>
         </div>
-    </header>
 
-    <main class="max-w-4xl mx-auto p-4 space-y-8">
-
-        <!-- SECTION 1: THE NETWORK RACK -->
-        <section class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
-            <div class="p-6 border-b border-slate-100 bg-slate-50">
-                <h2 class="text-xl font-bold text-slate-900 flex items-center gap-2">
-                    <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg>
-                    1. The Network Rack (The Cabinet)
-                </h2>
-                <p class="text-slate-600 mt-1">You will see this glass cabinet in the server room. It contains two main parts.</p>
-            </div>
+        <!-- RIGHT: VISUAL PLAYGROUND (interactive UI) -->
+        <div class="playground-card">
+            <h2 style="font-size:1.5rem; margin-bottom: 0.8rem;"><i class="fas fa-gamepad"></i> Visual Playground</h2>
             
-            <div class="p-6 grid md:grid-cols-2 gap-8 items-center">
-                <!-- Diagram -->
-                <div class="bg-slate-900 rounded-lg p-6 shadow-inner relative">
-                    <!-- Label: Patch Panel -->
-                    <div class="absolute top-4 left-4 text-xs font-mono text-slate-400">A. PATCH PANEL (Passive/No Lights)</div>
-                    <div class="mt-6 mb-2 bg-slate-700 h-12 rounded border border-slate-600 flex items-center justify-around px-2">
-                        <!-- Ports -->
-                        <div class="w-3 h-4 bg-slate-800 border border-slate-600"></div>
-                        <div class="w-3 h-4 bg-slate-800 border border-slate-600"></div>
-                        <div class="w-3 h-4 bg-slate-800 border border-slate-600"></div>
-                        <div class="w-3 h-4 bg-slate-800 border border-slate-600"></div>
-                        <div class="w-3 h-4 bg-slate-800 border border-slate-600"></div>
-                        <div class="w-3 h-4 bg-slate-800 border border-slate-600"></div>
-                        <div class="w-3 h-4 bg-slate-800 border border-slate-600"></div>
-                        <div class="w-3 h-4 bg-slate-800 border border-slate-600"></div>
-                    </div>
-
-                    <!-- Cables connecting down -->
-                    <div class="h-12 w-full flex justify-around px-4 opacity-50">
-                         <div class="w-1 h-full bg-yellow-500"></div>
-                         <div class="w-1 h-full bg-blue-500"></div>
-                         <div class="w-1 h-full bg-blue-500"></div>
-                         <div class="w-1 h-full bg-yellow-500"></div>
-                    </div>
-
-                    <!-- Label: Switch -->
-                    <div class="absolute bottom-16 left-4 text-xs font-mono text-green-400">B. NETWORK SWITCH (Active/Blinking)</div>
-                    <div class="bg-slate-800 h-14 rounded border border-slate-600 flex items-center justify-around px-2 relative z-10">
-                        <!-- Switch Ports with Lights -->
-                        <div class="flex flex-col items-center gap-1">
-                            <div class="w-3 h-3 bg-black border border-slate-600"></div>
-                            <div class="w-1 h-1 bg-green-500 rounded-full animate-pulse shadow-[0_0_5px_#22c55e]"></div>
-                        </div>
-                        <div class="flex flex-col items-center gap-1">
-                            <div class="w-3 h-3 bg-black border border-slate-600"></div>
-                            <div class="w-1 h-1 bg-green-500 rounded-full animate-pulse shadow-[0_0_5px_#22c55e]"></div>
-                        </div>
-                        <div class="flex flex-col items-center gap-1">
-                            <div class="w-3 h-3 bg-black border border-slate-600"></div>
-                            <div class="w-1 h-1 bg-green-500 rounded-full animate-pulse shadow-[0_0_5px_#22c55e]"></div>
-                        </div>
-                         <div class="flex flex-col items-center gap-1">
-                            <div class="w-3 h-3 bg-black border border-slate-600"></div>
-                            <div class="w-1 h-1 bg-orange-500 rounded-full shadow-[0_0_5px_#f97316]"></div> <!-- Error light -->
-                        </div>
-                        <div class="flex flex-col items-center gap-1">
-                            <div class="w-3 h-3 bg-black border border-slate-600"></div>
-                            <div class="w-1 h-1 bg-green-500 rounded-full animate-pulse shadow-[0_0_5px_#22c55e]"></div>
-                        </div>
-                        <div class="flex flex-col items-center gap-1">
-                            <div class="w-3 h-3 bg-black border border-slate-600"></div>
-                            <div class="w-1 h-1 bg-slate-900 rounded-full"></div> <!-- Off -->
-                        </div>
-                    </div>
+            <!-- Rack Simulator: Patch Panel + Switch interaction -->
+            <div class="rack-simulator">
+                <div class="rack-title"><span><i class="fas fa-rack"></i> Network Rack (simulated)</span> <span style="font-size:0.7rem;">click ports to connect</span></div>
+                <div class="patch-panel">
+                    <div><i class="fas fa-th"></i> PATCH PANEL (room outlets)</div>
+                    <div class="port-row" id="patchPorts"></div>
                 </div>
-
-                <!-- Explanation -->
-                <div class="space-y-4">
-                    <div>
-                        <h3 class="font-bold text-slate-800">A. The Patch Panel</h3>
-                        <p class="text-sm text-slate-600">This is just a connector. Cables from the office walls end here. It has <span class="font-bold text-red-500">NO electricity</span> and no lights.</p>
-                    </div>
-                    <div>
-                        <h3 class="font-bold text-slate-800">B. The Network Switch</h3>
-                        <p class="text-sm text-slate-600">This is the brain. It has power and <span class="font-bold text-green-600">blinking lights</span>.</p>
-                        <ul class="mt-2 text-sm space-y-1">
-                            <li class="flex items-center gap-2"><span class="w-2 h-2 rounded-full bg-green-500"></span> <strong>Blinking Green:</strong> Good! Traffic is flowing.</li>
-                            <li class="flex items-center gap-2"><span class="w-2 h-2 rounded-full bg-orange-500"></span> <strong>Solid Orange:</strong> Warning (Speed mismatch or loop).</li>
-                            <li class="flex items-center gap-2"><span class="w-2 h-2 rounded-full bg-slate-400"></span> <strong>Off:</strong> Cable unplugged or dead port.</li>
-                        </ul>
-                    </div>
+                <div class="switch-panel">
+                    <div><i class="fas fa-exchange-alt"></i> NETWORK SWITCH (active)</div>
+                    <div class="port-row" id="switchPorts"></div>
                 </div>
-            </div>
-        </section>
-
-        <!-- SECTION 2: CABLES & PORTS -->
-        <section class="grid md:grid-cols-2 gap-6">
-            
-            <!-- RJ45 CARD -->
-            <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-200">
-                <h3 class="font-bold text-slate-900 mb-4 flex items-center gap-2">
-                    <span class="bg-blue-100 text-blue-700 py-1 px-2 rounded text-xs font-bold">INTERNET</span>
-                    Ethernet (RJ45)
-                </h3>
-                <div class="flex justify-center py-6 bg-slate-50 rounded-lg border border-slate-100 mb-4">
-                    <!-- SVG RJ45 -->
-                    <svg width="120" height="80" viewBox="0 0 120 80">
-                        <!-- Wire -->
-                        <rect x="0" y="25" width="40" height="30" fill="#3b82f6" rx="4" />
-                        <!-- Head Body -->
-                        <rect x="40" y="20" width="60" height="40" fill="transparent" stroke="#94a3b8" stroke-width="2" rx="2" />
-                        <rect x="40" y="20" width="60" height="40" fill="rgba(255,255,255,0.5)" />
-                        <!-- The Clip (Important!) -->
-                        <path d="M50 20 L50 10 L90 15 L90 20" fill="none" stroke="#94a3b8" stroke-width="2" />
-                        <!-- Pins -->
-                        <g fill="#eab308">
-                            <rect x="90" y="25" width="10" height="2" />
-                            <rect x="90" y="29" width="10" height="2" />
-                            <rect x="90" y="33" width="10" height="2" />
-                            <rect x="90" y="37" width="10" height="2" />
-                            <rect x="90" y="41" width="10" height="2" />
-                            <rect x="90" y="45" width="10" height="2" />
-                            <rect x="90" y="49" width="10" height="2" />
-                            <rect x="90" y="53" width="10" height="2" />
-                        </g>
-                    </svg>
-                </div>
-                <p class="text-sm text-slate-600 mb-2"><strong>The "Clip" is key.</strong> If this plastic tab on top is broken, the cable will fall out of the PC, causing random disconnects.</p>
-                <div class="text-xs bg-yellow-50 text-yellow-800 p-2 rounded border border-yellow-200">
-                    <strong>Tip:</strong> Always hear for the "Click" sound when plugging it in.
-                </div>
+                <div class="cable-status" id="cableStatusMsg">🔌 No patch cord connected. Click a patch panel port, then a switch port.</div>
+                <button id="resetCablesBtn" style="background:#4b6a7a; margin-top:8px;"><i class="fas fa-undo-alt"></i> Reset all connections</button>
             </div>
 
-            <!-- VIDEO PORTS CARD -->
-            <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-200">
-                <h3 class="font-bold text-slate-900 mb-4 flex items-center gap-2">
-                    <span class="bg-purple-100 text-purple-700 py-1 px-2 rounded text-xs font-bold">DISPLAY</span>
-                    VGA vs HDMI
-                </h3>
-                <div class="flex justify-around py-6 bg-slate-50 rounded-lg border border-slate-100 mb-4 items-center">
-                    
-                    <!-- VGA -->
-                    <div class="text-center">
-                        <svg width="60" height="40" viewBox="0 0 60 40">
-                            <!-- Blue Body -->
-                            <path d="M5 10 L55 10 L50 35 L10 35 Z" fill="#3b82f6" stroke="#1d4ed8" stroke-width="2" />
-                            <!-- Pins -->
-                            <circle cx="20" cy="18" r="1.5" fill="black" opacity="0.5"/>
-                            <circle cx="30" cy="18" r="1.5" fill="black" opacity="0.5"/>
-                            <circle cx="40" cy="18" r="1.5" fill="black" opacity="0.5"/>
-                            <circle cx="25" cy="26" r="1.5" fill="black" opacity="0.5"/>
-                            <circle cx="35" cy="26" r="1.5" fill="black" opacity="0.5"/>
-                        </svg>
-                        <p class="text-xs font-bold mt-2 text-blue-600">VGA (Old)</p>
-                    </div>
-
-                    <!-- HDMI -->
-                    <div class="text-center">
-                        <svg width="60" height="40" viewBox="0 0 60 40">
-                             <!-- Metal Body -->
-                            <path d="M10 10 L50 10 L50 25 L45 30 L15 30 L10 25 Z" fill="#cbd5e1" stroke="#64748b" stroke-width="2" />
-                            <!-- Inner Slot -->
-                            <rect x="15" y="15" width="30" height="5" fill="#334155" />
-                        </svg>
-                        <p class="text-xs font-bold mt-2 text-slate-600">HDMI (New)</p>
-                    </div>
-                </div>
-                <ul class="text-sm text-slate-600 space-y-2">
-                    <li><strong>VGA:</strong> Has screws. Must be tightened or colors (pink/yellow) appear. No Audio.</li>
-                    <li><strong>HDMI:</strong> Flat connector. Carries Audio + Video. Push in firmly.</li>
-                </ul>
+            <!-- Ethernet LED Simulator & VGA Tint Fix demo -->
+            <div class="led-demo">
+                <div id="ethernetLed" class="led dark"></div>
+                <span id="ledText">🔌 Ethernet link: <strong>DISCONNECTED</strong></span>
+                <button id="toggleLinkBtn" style="background:#2d6a4f;"><i class="fas fa-plug"></i> Simulate Plug</button>
+            </div>
+            <div style="background:#faf3e0; border-radius:1rem; padding:0.5rem 1rem; margin-bottom:1rem;">
+                <i class="fas fa-desktop"></i> <strong>VGA Tint Simulator:</strong> 
+                <span id="vgaStatusMessage" style="font-weight:500;">✅ Normal colors</span>
+                <button id="looseVgaBtn" style="background:#b3543c; margin-left:10px; padding:4px 12px;">🔧 Loosen VGA (pink tint)</button>
+                <button id="tightenVgaBtn" style="background:#2f855a; padding:4px 12px;">🔩 Tighten screws</button>
             </div>
 
-        </section>
-
-        <!-- SECTION 3: TOOLS -->
-        <section class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
-            <div class="p-6 border-b border-slate-100">
-                <h2 class="text-xl font-bold text-slate-900">3. The Crimping Tool</h2>
-                <p class="text-slate-600 mt-1">You will use this to put new connectors on ethernet cables.</p>
+            <!-- Interactive quiz (5 questions from level 1) -->
+            <div class="quiz-container" id="quizContainer">
+                <div style="font-weight:800;"><i class="fas fa-question-circle"></i> Quick Quiz (Test your foundation)</div>
+                <div id="quizArea"></div>
+                <div id="quizFeedback" class="quiz-feedback"></div>
             </div>
-            <div class="p-6 flex flex-col md:flex-row items-center gap-6">
-                <div class="bg-slate-50 p-6 rounded-lg border border-slate-100">
-                     <svg width="150" height="150" viewBox="0 0 100 100">
-                        <!-- Left Handle -->
-                        <path d="M30 90 Q10 60 30 40 L40 50" fill="none" stroke="#ef4444" stroke-width="8" stroke-linecap="round" />
-                        <!-- Right Handle -->
-                        <path d="M70 90 Q90 60 70 40 L60 50" fill="none" stroke="#ef4444" stroke-width="8" stroke-linecap="round" />
-                        <!-- Jaws Head -->
-                        <rect x="35" y="10" width="30" height="40" fill="#334155" rx="2" />
-                        <!-- Crimp Hole -->
-                        <rect x="42" y="25" width="16" height="10" fill="#0f172a" />
-                        <!-- Hinge -->
-                        <circle cx="50" cy="50" r="5" fill="#94a3b8" />
-                    </svg>
-                </div>
-                <div class="flex-1 space-y-2">
-                    <p class="text-sm text-slate-700">This tool does three things:</p>
-                    <ol class="list-decimal list-inside text-sm text-slate-600 space-y-1">
-                        <li><strong>Cuts</strong> the wire.</li>
-                        <li><strong>Strips</strong> the blue outer plastic jacket.</li>
-                        <li><strong>Crimps</strong> (presses) the RJ45 plastic head onto the wires.</li>
-                    </ol>
-                    <p class="text-xs bg-blue-50 text-blue-800 p-2 rounded mt-2">
-                        <strong>Warning:</strong> Don't crimp too hard, or you crack the plastic clip. Don't crimp too soft, or the pins won't touch.
-                    </p>
-                </div>
-            </div>
-        </section>
+        </div>
+    </div>
 
-        <!-- SECTION 4: COMMAND LINE SIMULATOR -->
-        <section class="bg-slate-900 rounded-xl shadow-lg overflow-hidden border border-slate-800">
-            <div class="bg-slate-800 px-4 py-2 flex gap-2 items-center border-b border-slate-700">
-                <div class="w-3 h-3 rounded-full bg-red-500"></div>
-                <div class="w-3 h-3 rounded-full bg-yellow-500"></div>
-                <div class="w-3 h-3 rounded-full bg-green-500"></div>
-                <span class="text-xs text-slate-400 font-mono ml-2">Administrator: Command Prompt</span>
-            </div>
-            <div class="p-6 font-mono text-sm overflow-x-auto">
-                <div class="text-slate-300">Microsoft Windows [Version 10.0.19045]</div>
-                <div class="text-slate-300 mb-4">(c) Microsoft Corporation. All rights reserved.</div>
+    <!-- Code Breakdown: commented snippets that power the interactive examples -->
+    <div class="code-section">
+        <h3 style="color:#f4b642;"><i class="fas fa-code"></i> Code Breakdown: Interactive Logic & Closure Examples</h3>
+        <pre><code><span class="comment">// ---------- RACK SIMULATOR (State management with closures) ----------</span>
+<span class="keyword">class</span> RackMapper {
+    <span class="comment">// Each port connection stored via closure-like mapping, demonstrates physical layer abstraction</span>
+    <span class="keyword">constructor</span>() {
+        <span class="keyword">this</span>.patchToSwitch = <span class="keyword">new</span> Map();   <span class="comment">// stores which switch port is linked to which patch port</span>
+    }
+    connect(patchId, switchId) { <span class="comment">/* ... */</span> }
+    disconnect(patchId) { <span class="comment">/* remove mapping */</span> }
+}
+<span class="comment">// UI: clicking patch port activates selection mode, then switch port finalizes closure-like binding.</span>
+<span class="comment">// Ethernet LED simulation uses a boolean flag (linkUp) and updates DOM to mimic physical layer indicators.</span>
 
-                <div class="flex gap-2">
-                    <span class="text-slate-300">C:\Users\Admin></span>
-                    <span class="text-green-400 typing-effect">ipconfig</span>
-                </div>
+<span class="comment">// ---------- VGA TINT SIMULATOR ----------</span>
+<span class="keyword">let</span> vgaTight = <span class="keyword">true</span>;
+<span class="keyword">function</span> updateVGADisplay() {
+    <span class="comment">// simulate screen tint message: loose connection => pink tint warning</span>
+    <span class="keyword">if</span> (!vgaTight) showPinkWarning();
+}
+<span class="comment">// demonstrates real-world troubleshooting: tightening screws fixes color distortion.</span>
 
-                <div class="mt-4 text-slate-300">
-                    <div>Windows IP Configuration</div>
-                    <br>
-                    <div>Ethernet adapter Ethernet:</div>
-                    <br>
-                    <div class="pl-4">Connection-specific DNS Suffix  . : iricen.local</div>
-                    <div class="pl-4 flex gap-4">
-                        <span>IPv4 Address. . . . . . . . . . . :</span>
-                        <span class="text-yellow-300 font-bold">192.168.1.45</span>
-                        <span class="text-slate-500"><-- This is GOOD</span>
-                    </div>
-                    <div class="pl-4">Subnet Mask . . . . . . . . . . . : 255.255.255.0</div>
-                    <div class="pl-4">Default Gateway . . . . . . . . . : 192.168.1.1</div>
-                </div>
+<span class="comment">// ---------- QUIZ MODULE (closure each question retains answer state) ----------</span>
+<span class="keyword">const</span> quizData = [
+    { text: <span class="string">"User's internet drops when bumping desk. First check?"</span>, options: [<span class="string">"Replace switch"</span>, <span class="string">"RJ45 clip / loose cable"</span>, <span class="string">"Restart PC"</span>], correct: 1 },
+    { text: <span class="string">"Ethernet LED dark means?"</span>, options: [<span class="string">"No physical connection"</span>, <span class="string">"IP conflict"</span>, <span class="string">"Slow speed"</span>], correct: 0 },
+    { text: <span class="string">"Projector shows pink tint (VGA). Fix?"</span>, options: [<span class="string">"Change HDMI"</span>, <span class="string">"Tighten VGA screws"</span>, <span class="string">"Reboot projector"</span>], correct: 1 },
+    { text: <span class="string">"Why use a patch panel?"</span>, options: [<span class="string">"Aesthetics"</span>, <span class="string">"Protect in-wall cables"</span>, <span class="string">"Amplify signal"</span>], correct: 1 },
+    { text: <span class="string">"Which cable carries video + audio together?"</span>, options: [<span class="string">"VGA"</span>, <span class="string">"HDMI"</span>, <span class="string">"Ethernet"</span>], correct: 1 }
+];
+<span class="comment">// Each answer uses closure to store user selection and compare to correct index.</span>
+</code></pre>
+    </div>
+    <footer><i class="fas fa-microchip"></i> Interactive hardware simulation | Click ports to patch | Learn by doing — real world IT fundamentals</footer>
+</div>
 
-                <div class="mt-6 border-t border-slate-700 pt-4">
-                    <p class="text-red-400 mb-2">If you see this instead, the cable is unplugged:</p>
-                     <div class="pl-4 flex gap-4 text-slate-500">
-                        <span>IPv4 Address. . . . . . . . . . . :</span>
-                        <span class="text-red-400 font-bold">169.254.10.5</span>
-                        <span class="text-slate-400"><-- This is BAD (No Server Found)</span>
-                    </div>
-                </div>
-                
-                <div class="mt-4 flex gap-2">
-                     <span class="text-slate-300">C:\Users\Admin></span>
-                     <span class="w-2 h-4 bg-slate-300 animate-pulse"></span>
-                </div>
-            </div>
-        </section>
+<script>
+    // RACK SIMULATOR LOGIC (Patch panel ↔ Switch)
+    let selectedPatchPort = null;
+    let connections = new Map(); // key: patchPortId, value: switchPortId
 
-    </main>
+    const patchPortsContainer = document.getElementById('patchPorts');
+    const switchPortsContainer = document.getElementById('switchPorts');
+    const cableStatusMsg = document.getElementById('cableStatusMsg');
 
-    <footer class="text-center py-8 text-slate-500 text-sm">
-        Generated for your first day at IRICEN • Good Luck!
-    </footer>
+    function renderPorts() {
+        // create 4 patch ports (room A-D) and 4 switch ports
+        patchPortsContainer.innerHTML = '';
+        for (let i = 1; i <= 4; i++) {
+            const port = document.createElement('div');
+            port.className = 'port';
+            if (connections.has(`patch${i}`)) port.classList.add('active');
+            port.innerHTML = `P${i}`;
+            port.dataset.patch = `patch${i}`;
+            port.addEventListener('click', (e) => {
+                e.stopPropagation();
+                selectPatchPort(`patch${i}`);
+            });
+            patchPortsContainer.appendChild(port);
+        }
+        switchPortsContainer.innerHTML = '';
+        for (let i = 1; i <= 4; i++) {
+            const sport = document.createElement('div');
+            sport.className = 'port';
+            sport.innerHTML = `S${i}`;
+            sport.dataset.switch = `switch${i}`;
+            sport.addEventListener('click', (e) => {
+                e.stopPropagation();
+                connectToSwitch(`switch${i}`);
+            });
+            switchPortsContainer.appendChild(sport);
+        }
+        updateStatusMessage();
+    }
 
+    function selectPatchPort(patchId) {
+        selectedPatchPort = patchId;
+        cableStatusMsg.innerHTML = `📌 Selected patch port ${patchId.toUpperCase()}. Now click a switch port to connect.`;
+        // reset visual hint
+    }
+
+    function connectToSwitch(switchId) {
+        if (!selectedPatchPort) {
+            cableStatusMsg.innerHTML = `⚠️ First click a patch panel port, then click a switch port.`;
+            return;
+        }
+        // remove previous connection if any
+        if (connections.has(selectedPatchPort)) {
+            const oldSwitch = connections.get(selectedPatchPort);
+            connections.delete(selectedPatchPort);
+        }
+        connections.set(selectedPatchPort, switchId);
+        cableStatusMsg.innerHTML = `✅ Connected ${selectedPatchPort.toUpperCase()} → ${switchId.toUpperCase()} (patch cord active). Network link established!`;
+        selectedPatchPort = null;
+        renderPorts();
+        // also update ethernet LED simulation: if at least one connection, simulate link UP
+        updateEthernetLedByRack();
+    }
+
+    function updateEthernetLedByRack() {
+        const anyConnection = connections.size > 0;
+        const led = document.getElementById('ethernetLed');
+        const ledTextSpan = document.getElementById('ledText');
+        if (anyConnection) {
+            led.classList.remove('dark');
+            led.style.background = "#2ecc71";
+            led.style.boxShadow = "0 0 8px #6fef8a";
+            ledTextSpan.innerHTML = `🔌 Ethernet link: <strong style="color:#1f7a4a;">LINK ACTIVE</strong> (green)`;
+        } else {
+            led.classList.add('dark');
+            led.style.background = "#4d5c64";
+            led.style.boxShadow = "none";
+            ledTextSpan.innerHTML = `🔌 Ethernet link: <strong>NO LINK</strong> (dark)`;
+        }
+    }
+
+    function resetAllConnections() {
+        connections.clear();
+        selectedPatchPort = null;
+        renderPorts();
+        cableStatusMsg.innerHTML = `🔄 All patch cables removed. No connections between patch panel and switch.`;
+        updateEthernetLedByRack();
+        const vgaMsgDiv = document.getElementById('vgaStatusMessage');
+        if (vgaMsgDiv.innerText.includes('PINK')) {
+            // but keep VGA independent, no reset needed
+        }
+    }
+
+    document.getElementById('resetCablesBtn').addEventListener('click', resetAllConnections);
+
+    // Ethernet manual toggle
+    let manualLink = false;
+    const toggleLinkBtn = document.getElementById('toggleLinkBtn');
+    const ethernetLed = document.getElementById('ethernetLed');
+    const ledTextSpan = document.getElementById('ledText');
+    function setLinkActive(active) {
+        if (active) {
+            ethernetLed.classList.remove('dark');
+            ethernetLed.style.background = "#2ecc71";
+            ethernetLed.style.boxShadow = "0 0 8px #6fef8a";
+            ledTextSpan.innerHTML = `🔌 Ethernet link: <strong style="color:#1f7a4a;">LINK ACTIVE</strong> (green)`;
+        } else {
+            ethernetLed.classList.add('dark');
+            ethernetLed.style.background = "#4d5c64";
+            ethernetLed.style.boxShadow = "none";
+            ledTextSpan.innerHTML = `🔌 Ethernet link: <strong>NO LINK</strong> (dark)`;
+        }
+        manualLink = active;
+    }
+    toggleLinkBtn.addEventListener('click', () => {
+        setLinkActive(!manualLink);
+    });
+    // sync rack connection with LED: but we also allow manual override? we set function but prefer rack connection also influence
+    function syncLedFromRack() {
+        if (connections.size > 0 && !manualLink) setLinkActive(true);
+        else if (connections.size === 0 && !manualLink) setLinkActive(false);
+    }
+    // override after each connection change
+    const origRender = renderPorts;
+    window.renderPorts = renderPorts;
+    renderPorts();
+    // VGA Simulator
+    let vgaTight = true;
+    const vgaStatusMsg = document.getElementById('vgaStatusMessage');
+    function updateVGAUI() {
+        if (vgaTight) {
+            vgaStatusMsg.innerHTML = '✅ Normal colors (VGA stable)';
+            vgaStatusMsg.style.color = '#2b6e3c';
+        } else {
+            vgaStatusMsg.innerHTML = '🌸 PINK / YELLOW TINT! Loose VGA screws — tighten to fix.';
+            vgaStatusMsg.style.color = '#c13b3b';
+            vgaStatusMsg.style.fontWeight = 'bold';
+        }
+    }
+    document.getElementById('looseVgaBtn').addEventListener('click', () => {
+        vgaTight = false;
+        updateVGAUI();
+    });
+    document.getElementById('tightenVgaBtn').addEventListener('click', () => {
+        vgaTight = true;
+        updateVGAUI();
+    });
+    updateVGAUI();
+
+    // QUIZ interactive system (5 questions)
+    const quizData = [
+        { text: "Q1: A user complains their internet keeps disconnecting when they bump their desk. What is the very first physical thing you should check?", options: ["Replace the switch", "RJ45 Ethernet clip / loose cable", "Restart the computer"], correct: 1 },
+        { text: "Q2: You plug an Ethernet cable into a PC, but the small LED lights next to the port are completely dark. What does this mean?", options: ["No physical connection to network switch", "IP address conflict", "The PC is in sleep mode"], correct: 0 },
+        { text: "Q3: An instructor is using an older projector with a VGA cable, and the screen looks entirely pink. How do you fix it?", options: ["Switch to HDMI cable", "Tighten the VGA screws on both ends", "Restart the projector"], correct: 1 },
+        { text: "Q4: Why do we use a Patch Panel instead of plugging long wall cables directly into the Network Switch?", options: ["To make the rack look organized", "To protect expensive in-wall cables from frequent damage", "To boost network speed"], correct: 1 },
+        { text: "Q5: Which display cable carries both video and high-quality audio in a single connection?", options: ["VGA", "HDMI", "DVI"], correct: 1 }
+    ];
+    let userAnswers = new Array(quizData.length).fill(null);
+    const quizArea = document.getElementById('quizArea');
+    const quizFeedbackDiv = document.getElementById('quizFeedback');
+
+    function renderQuiz() {
+        quizArea.innerHTML = '';
+        quizData.forEach((q, idx) => {
+            const qDiv = document.createElement('div');
+            qDiv.style.marginBottom = '1rem';
+            qDiv.style.borderBottom = '1px solid #cde0e8';
+            qDiv.style.paddingBottom = '0.6rem';
+            const qText = document.createElement('div');
+            qText.style.fontWeight = '600';
+            qText.style.marginBottom = '6px';
+            qText.innerHTML = `${q.text}`;
+            qDiv.appendChild(qText);
+            const optsDiv = document.createElement('div');
+            optsDiv.style.display = 'flex';
+            optsDiv.style.flexWrap = 'wrap';
+            optsDiv.style.gap = '8px';
+            q.options.forEach((opt, optIdx) => {
+                const optBtn = document.createElement('div');
+                optBtn.className = 'quiz-option';
+                optBtn.innerText = opt;
+                if (userAnswers[idx] === optIdx) {
+                    optBtn.style.background = '#cbe5fe';
+                    optBtn.style.borderColor = '#2c7cb6';
+                }
+                optBtn.addEventListener('click', () => {
+                    userAnswers[idx] = optIdx;
+                    renderQuiz();
+                    showFeedback();
+                });
+                optsDiv.appendChild(optBtn);
+            });
+            qDiv.appendChild(optsDiv);
+            quizArea.appendChild(qDiv);
+        });
+    }
+
+    function showFeedback() {
+        let allAnswered = userAnswers.every(a => a !== null);
+        if (!allAnswered) {
+            quizFeedbackDiv.innerHTML = '📝 Answer all 5 questions to see your score.';
+            return;
+        }
+        let correctCount = 0;
+        userAnswers.forEach((ans, i) => {
+            if (ans === quizData[i].correct) correctCount++;
+        });
+        quizFeedbackDiv.innerHTML = `<i class="fas fa-chalkboard"></i> Quiz result: ${correctCount} / 5 correct. ${correctCount === 5 ? '🔥 Mastery! You understand hardware basics.' : 'Review the theory & playground to strengthen knowledge.'}`;
+        if (correctCount === 5) quizFeedbackDiv.style.color = '#1f7a4a';
+        else quizFeedbackDiv.style.color = '#b1622c';
+    }
+
+    renderQuiz();
+    // after any connection update sync LED
+    function finalSync() {
+        if (connections.size > 0 && !manualLink) setLinkActive(true);
+        else if (connections.size === 0 && !manualLink) setLinkActive(false);
+    }
+    const origConnect = connectToSwitch;
+    window.connectToSwitch = connectToSwitch;
+    renderPorts();
+    setLinkActive(false);
+    // ensure rack connections affect LED
+    setInterval(() => {
+        if (connections.size > 0 && !manualLink && !ethernetLed.classList.contains('dark') === false) setLinkActive(true);
+        if (connections.size === 0 && !manualLink && ethernetLed.classList.contains('dark') === false) setLinkActive(false);
+    }, 200);
+</script>
 </body>
 </html>
+```

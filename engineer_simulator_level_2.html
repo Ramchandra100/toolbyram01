@@ -1,353 +1,497 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Resident Engineer Simulator - Level 2</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=JetBrains+Mono:wght@400;700&display=swap');
-        body { font-family: 'Inter', sans-serif; }
-        .mono { font-family: 'JetBrains Mono', monospace; }
-        
-        /* Custom Animations */
-        @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
-        .cursor-blink { animation: blink 1s infinite; }
-        
-        .interactive-hover:hover { transform: scale(1.02); transition: transform 0.2s; cursor: pointer; }
-        .interactive-hover:active { transform: scale(0.95); }
-        
-        /* CRT Screen Effect for CMD */
-        .crt {
-            background-color: #0c0c0c;
-            color: #ccc;
-            border: 2px solid #333;
-            box-shadow: inset 0 0 20px rgba(0,0,0,0.8);
-        }
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+  <title>Level 2: System Troubleshooting | Network CMD & Printers | Interactive Textbook</title>
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,600;14..32,700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <!-- Font Awesome 6 -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <!-- Animate.css -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
 
-        /* Prevent iOS zoom on inputs */
-        input, select, textarea {
-            font-size: 16px; 
-        }
-    </style>
+    body {
+      background: #f0f4f8;
+      font-family: 'Inter', sans-serif;
+      color: #0a1c2f;
+      line-height: 1.5;
+      scroll-behavior: smooth;
+    }
+
+    .textbook-container {
+      max-width: 1280px;
+      margin: 0 auto;
+      padding: 2rem 1.5rem 4rem;
+    }
+
+    /* Hero */
+    .hero {
+      background: linear-gradient(135deg, #0b2b3b 0%, #1e4a6b 100%);
+      border-radius: 2rem;
+      padding: 2rem 2rem 2rem 2.5rem;
+      margin-bottom: 2.5rem;
+      color: white;
+      box-shadow: 0 20px 35px -12px rgba(0,0,0,0.25);
+      position: relative;
+      overflow: hidden;
+    }
+    .hero::after {
+      content: "💻⚙️";
+      font-size: 10rem;
+      opacity: 0.08;
+      position: absolute;
+      bottom: -1.5rem;
+      right: -0.5rem;
+      pointer-events: none;
+    }
+    .hero-badge {
+      background: #2c7da0;
+      display: inline-block;
+      padding: 0.25rem 1rem;
+      border-radius: 40px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      letter-spacing: 0.3px;
+      margin-bottom: 1rem;
+    }
+    .hero h1 {
+      font-size: 2.7rem;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      margin-bottom: 0.5rem;
+    }
+    .hero p {
+      font-size: 1.2rem;
+      opacity: 0.9;
+      max-width: 70%;
+    }
+    @media (max-width: 700px) {
+      .hero p { max-width: 100%; }
+      .hero h1 { font-size: 2rem; }
+      .hero { padding: 1.5rem; }
+    }
+
+    /* Cards */
+    .section-card {
+      background: white;
+      border-radius: 1.75rem;
+      padding: 1.8rem 2rem;
+      margin-bottom: 2rem;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.03), 0 2px 4px rgba(0,0,0,0.05);
+      border: 1px solid #e2edf2;
+      transition: box-shadow 0.2s;
+    }
+    .section-card:hover {
+      box-shadow: 0 20px 30px -12px rgba(0,0,0,0.1);
+    }
+    .section-title {
+      font-size: 1.7rem;
+      font-weight: 700;
+      margin-bottom: 1.2rem;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      border-left: 5px solid #2c7da0;
+      padding-left: 1rem;
+    }
+    .section-title i {
+      color: #2c7da0;
+      font-size: 1.6rem;
+    }
+    .two-columns {
+      display: flex;
+      gap: 2rem;
+      flex-wrap: wrap;
+      margin: 1rem 0;
+    }
+    .cmd-block {
+      flex: 1;
+      background: #fafeff;
+      border-radius: 1.25rem;
+      padding: 1.3rem 1.5rem;
+      border: 1px solid #cbdde6;
+      transition: transform 0.2s;
+    }
+    .cmd-block:hover {
+      transform: translateY(-3px);
+      background: #ffffff;
+      box-shadow: 0 10px 20px -8px rgba(0,0,0,0.08);
+    }
+    .cmd-label {
+      font-family: 'JetBrains Mono', monospace;
+      background: #1e2a36;
+      color: #bbe1f0;
+      display: inline-block;
+      padding: 0.2rem 0.8rem;
+      border-radius: 30px;
+      font-size: 0.85rem;
+      margin-bottom: 0.8rem;
+    }
+    .ip-badge {
+      background: #eef2fa;
+      font-family: monospace;
+      padding: 0.25rem 0.8rem;
+      border-radius: 20px;
+      display: inline-block;
+      font-weight: 600;
+    }
+    .good-ip { background: #dff0e4; color: #1e6f3f; border-left: 3px solid #2e9c5a; }
+    .bad-ip { background: #ffe8e6; color: #b13e3e; border-left: 3px solid #e07c5c; }
+    .terminal-sim {
+      background: #0f1a24;
+      border-radius: 1rem;
+      padding: 1rem 1.2rem;
+      color: #cde5f5;
+      font-family: 'JetBrains Mono', monospace;
+      margin: 1rem 0;
+    }
+    .printer-spooler {
+      background: #fef9e8;
+      border-left: 6px solid #e68a2e;
+      padding: 1rem 1.4rem;
+      border-radius: 1rem;
+      margin: 1.2rem 0;
+    }
+    .shortcut {
+      background: #eef2ff;
+      font-family: monospace;
+      padding: 0.2rem 0.6rem;
+      border-radius: 8px;
+      font-weight: 600;
+    }
+    .btn-primary {
+      background: #2c7da0;
+      color: white;
+      border: none;
+      padding: 0.7rem 1.4rem;
+      border-radius: 2rem;
+      font-weight: 600;
+      font-size: 0.9rem;
+      cursor: pointer;
+      transition: 0.2s;
+    }
+    .btn-primary:hover {
+      background: #1f5e7e;
+      transform: scale(0.98);
+    }
+    .quiz-area {
+      background: linear-gradient(120deg, #f2f7fc, #eaf3fa);
+      border-radius: 1.5rem;
+      padding: 1.8rem;
+    }
+    .quiz-question {
+      background: white;
+      border-radius: 1rem;
+      padding: 1rem 1.2rem;
+      margin-bottom: 1rem;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+      cursor: pointer;
+      border: 1px solid #cfdfe8;
+      transition: all 0.2s;
+    }
+    .quiz-question:hover {
+      border-color: #2c7da0;
+      background: #ffffff;
+    }
+    .quiz-q-text {
+      font-weight: 700;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .quiz-answer {
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.4s ease-out;
+      background: #f5f9fe;
+      border-radius: 0.8rem;
+      margin-top: 0.5rem;
+      padding: 0 0.8rem;
+    }
+    .quiz-answer.show {
+      max-height: 220px;
+      padding: 0.8rem;
+      margin-top: 0.8rem;
+    }
+    .yt-card {
+      background: #f1f5f9;
+      border-radius: 1rem;
+      padding: 0.7rem 1.2rem;
+      display: inline-flex;
+      align-items: center;
+      gap: 12px;
+      text-decoration: none;
+      color: #1e4663;
+      font-weight: 500;
+      transition: all 0.2s;
+      border: 1px solid #cbdde6;
+      margin-right: 1rem;
+      margin-bottom: 0.5rem;
+    }
+    .yt-card i {
+      font-size: 1.5rem;
+      color: #ff0000;
+    }
+    .yt-card:hover {
+      background: #ffffff;
+      border-color: #2c7da0;
+      box-shadow: 0 5px 12px rgba(0,0,0,0.05);
+    }
+    footer {
+      text-align: center;
+      margin-top: 2rem;
+      color: #4b6a7c;
+      font-size: 0.85rem;
+    }
+    hr {
+      margin: 1rem 0;
+      border-color: #d4e2ec;
+    }
+    .light-badge {
+      background: #e3f0f7;
+      border-radius: 30px;
+      padding: 0.2rem 0.9rem;
+      font-size: 0.75rem;
+      font-weight: 600;
+    }
+    @media (max-width: 680px) {
+      .textbook-container { padding: 1rem; }
+      .section-card { padding: 1.2rem; }
+    }
+  </style>
 </head>
-<!-- Body: Min-height for mobile scrolling, Fixed height for desktop app-feel -->
-<body class="bg-slate-100 min-h-screen md:h-screen flex flex-col md:overflow-hidden">
+<body>
+<div class="textbook-container">
+  <div class="hero animate__animated animate__fadeInUp">
+    <div class="hero-badge"><i class="fas fa-terminal"></i> Level 2 · Network & Printer Troubleshooting</div>
+    <h1>System Troubleshooting (CMD & Printers)</h1>
+    <p>Master the essential Windows commands & the infamous print spooler. From IP detective work to clearing digital traffic jams.</p>
+  </div>
 
-    <!-- Navbar -->
-    <nav class="bg-slate-900 text-white p-3 md:p-4 shadow-md z-10 shrink-0">
-        <div class="max-w-6xl mx-auto flex justify-between items-center">
-            <div>
-                <h1 class="text-lg md:text-xl font-bold flex items-center gap-2">
-                    <svg class="w-5 h-5 md:w-6 md:h-6 text-yellow-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"></path></svg>
-                    <span class="hidden sm:inline">Resident Engineer | </span> Lvl 2
-                </h1>
-            </div>
-            <div class="text-[10px] md:text-xs bg-slate-800 px-2 md:px-3 py-1 rounded border border-slate-700">
-                Task: Complete both
-            </div>
-        </div>
-    </nav>
-
-    <!-- Main Workspace -->
-    <!-- Mobile: Flex-col (stacks). Desktop: Flex-row (side-by-side). -->
-    <div class="flex-1 flex flex-col md:flex-row max-w-7xl mx-auto w-full p-2 md:p-4 gap-3 md:gap-4 overflow-y-auto md:overflow-hidden">
-
-        <!-- Sidebar (Menu) -->
-        <!-- Mobile: Grid (2 cols). Desktop: Vertical Stack (w-64). -->
-        <div class="w-full md:w-64 grid grid-cols-2 md:flex md:flex-col gap-2 shrink-0">
-            <button onclick="switchTab('printer')" id="btn-printer" class="p-3 md:p-4 bg-white rounded-lg shadow-sm border border-slate-200 text-left hover:bg-blue-50 active:bg-blue-100 transition active-tab ring-2 ring-blue-500 touch-manipulation">
-                <div class="font-bold text-slate-800 text-sm md:text-base flex items-center gap-2">
-                    <svg class="w-5 h-5 text-blue-600 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"></path></svg>
-                    Printer Fix
-                </div>
-                <p class="text-xs text-slate-500 mt-1 hidden sm:block">Status: <span id="printer-status-text" class="text-red-500 font-bold">Stuck</span></p>
-            </button>
-
-            <button onclick="switchTab('network')" id="btn-network" class="p-3 md:p-4 bg-white rounded-lg shadow-sm border border-slate-200 text-left hover:bg-blue-50 active:bg-blue-100 transition touch-manipulation">
-                <div class="font-bold text-slate-800 text-sm md:text-base flex items-center gap-2">
-                    <svg class="w-5 h-5 text-green-600 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path></svg>
-                    Network Fix
-                </div>
-                <p class="text-xs text-slate-500 mt-1 hidden sm:block">Status: <span id="network-status-text" class="text-red-500 font-bold">Offline</span></p>
-            </button>
-        </div>
-
-        <!-- Center Stage (Interactive Area) -->
-        <div class="flex-1 bg-white rounded-xl shadow-lg border border-slate-200 relative overflow-hidden flex flex-col min-h-[500px] md:min-h-0">
-            
-            <!-- SCENARIO 1: PRINTER -->
-            <div id="view-printer" class="h-full flex flex-col">
-                <div class="bg-blue-50 p-3 md:p-4 border-b border-blue-100 shrink-0">
-                    <h2 class="font-bold text-blue-900 text-sm md:text-base">Scenario: "The printer isn't printing!"</h2>
-                    <p class="text-xs md:text-sm text-blue-700">User sent a file. Printer is ON.</p>
-                </div>
-                
-                <div class="flex-1 p-4 md:p-8 flex flex-col items-center justify-center relative bg-slate-50 overflow-y-auto">
-                    <!-- Interactive Printer SVG -->
-                    <div class="relative group scale-90 md:scale-100 mb-6">
-                        <!-- Paper Feed -->
-                        <div id="paper-feed" class="absolute -top-10 left-1/2 -translate-x-1/2 w-32 h-20 bg-white border border-slate-300 shadow-sm transition-transform duration-500"></div>
-                        
-                        <!-- Printer Body -->
-                        <div class="w-64 h-40 bg-slate-200 rounded-lg border-2 border-slate-400 relative z-10 shadow-xl flex flex-col items-center justify-center">
-                            <!-- Screen -->
-                            <div class="w-32 h-12 bg-green-900 rounded border border-slate-500 flex items-center justify-center mb-4">
-                                <span id="printer-screen" class="font-mono text-green-400 text-xs">PROCESSING...</span>
-                            </div>
-                            <!-- Output Tray -->
-                            <div class="w-48 h-2 bg-slate-400 rounded-full"></div>
-                        </div>
-
-                        <!-- Clickable Cable -->
-                        <div onclick="fixPrinter('cable')" class="absolute top-1/2 -right-16 md:-right-16 -right-4 cursor-pointer interactive-hover active:scale-95 p-2 bg-white/80 rounded border border-slate-300 shadow-sm text-xs text-slate-600 select-none">
-                             🔌 Cable
-                        </div>
-                    </div>
-
-                    <!-- Windows Dialogue Box Simulation -->
-                    <div class="w-full max-w-md bg-white border border-slate-300 shadow-2xl rounded-sm">
-                        <div class="bg-slate-100 p-2 border-b border-slate-300 flex justify-between items-center">
-                            <span class="text-xs font-bold text-slate-700">Services (Local)</span>
-                            <div class="w-3 h-3 bg-red-400 rounded-full"></div>
-                        </div>
-                        <div class="p-3 md:p-4 space-y-3">
-                            <div class="text-xs md:text-sm text-slate-600 mb-2">Often, the "Print Spooler" freezes. Restarting it fixes 90% of issues.</div>
-                            <div class="flex items-center justify-between p-2 bg-blue-50 border border-blue-100 rounded">
-                                <div class="flex items-center gap-2">
-                                    <svg class="w-4 h-4 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
-                                    <span class="text-xs md:text-sm font-bold">Print Spooler</span>
-                                </div>
-                                <span class="text-[10px] md:text-xs text-green-600 font-bold">Running</span>
-                            </div>
-                            <button onclick="fixPrinter('spooler')" id="btn-restart-spooler" class="w-full py-3 md:py-2 bg-slate-200 hover:bg-slate-300 active:bg-slate-400 rounded text-slate-800 text-sm font-bold border border-slate-300 transition touch-manipulation">
-                                Right Click > Restart Service
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- SCENARIO 2: NETWORK -->
-            <div id="view-network" class="h-full hidden flex-col">
-                <div class="bg-slate-800 p-3 md:p-4 border-b border-slate-700 shrink-0">
-                    <h2 class="font-bold text-white text-sm md:text-base">Scenario: "No Internet Access"</h2>
-                    <p class="text-xs md:text-sm text-slate-400">Yellow triangle icon. Can't open Google.</p>
-                </div>
-
-                <div class="flex-1 bg-slate-900 p-4 font-mono text-xs md:text-sm overflow-y-auto">
-                    <!-- Fake Desktop Taskbar -->
-                    <div class="flex justify-end mb-4">
-                        <div class="bg-slate-700 px-3 py-1 rounded flex items-center gap-2 text-yellow-500 animate-pulse" title="No Internet Access">
-                            <svg class="w-4 h-4 md:w-5 md:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
-                            <span>No Internet</span>
-                        </div>
-                    </div>
-
-                    <!-- Interactive CMD -->
-                    <div class="crt p-3 md:p-4 rounded min-h-[250px] md:min-h-[300px] mb-4" onclick="document.getElementById('cmd-input').focus()">
-                        <div class="mb-2 text-slate-400">Microsoft Windows [Version 10.0.19045]</div>
-                        <div class="mb-4 text-slate-400">(c) Microsoft Corporation. All rights reserved.</div>
-
-                        <!-- Output Area -->
-                        <div id="cmd-history" class="break-words whitespace-pre-wrap"></div>
-
-                        <!-- Input Line -->
-                        <div class="flex items-center">
-                            <span class="mr-2 text-slate-400 shrink-0">C:\Users></span>
-                            <input type="text" id="cmd-input" class="bg-transparent border-none outline-none text-green-400 w-full font-mono text-base md:text-sm py-2 md:py-0" autocomplete="off" placeholder="Type here...">
-                        </div>
-                    </div>
-
-                    <!-- Hint Buttons -->
-                    <div class="grid grid-cols-3 gap-2">
-                        <button onclick="runCmd('ipconfig')" class="px-2 py-3 md:py-2 bg-slate-700 hover:bg-slate-600 active:bg-slate-500 text-white text-[10px] md:text-xs rounded border border-slate-600 transition touch-manipulation">
-                            1. Check IP<br><span class="opacity-50">(ipconfig)</span>
-                        </button>
-                        <button onclick="runCmd('ping 8.8.8.8')" class="px-2 py-3 md:py-2 bg-slate-700 hover:bg-slate-600 active:bg-slate-500 text-white text-[10px] md:text-xs rounded border border-slate-600 transition touch-manipulation">
-                            2. Test Google<br><span class="opacity-50">(ping)</span>
-                        </button>
-                        <button onclick="runCmd('ipconfig /renew')" class="px-2 py-3 md:py-2 bg-blue-700 hover:bg-blue-600 active:bg-blue-500 text-white text-[10px] md:text-xs rounded border border-blue-600 transition font-bold touch-manipulation">
-                            3. Fix IP<br><span class="opacity-50">(renew)</span>
-                        </button>
-                    </div>
-                </div>
-            </div>
-
-        </div>
-
-        <!-- Right Panel: The Knowledge Base -->
-        <!-- Mobile: Stacks at bottom. Desktop: Side panel (w-80). -->
-        <div class="w-full md:w-80 bg-yellow-50 rounded-xl border border-yellow-200 shadow-sm p-4 md:p-6 shrink-0 md:overflow-y-auto">
-            <h3 class="font-bold text-yellow-800 text-base md:text-lg mb-2 md:mb-4 flex items-center gap-2">
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path></svg>
-                Engineer's Notebook
-            </h3>
-            
-            <div id="notebook-content" class="text-xs md:text-sm text-yellow-900 space-y-3">
-                <p><strong>Welcome to Level 2.</strong><br>Select a module to start.</p>
-                <p class="opacity-70">As a Resident Engineer, you don't just click buttons; you need to know <em>why</em> you are clicking them.</p>
-            </div>
-        </div>
-
+  <!-- PART 1: NETWORK COMMANDS -->
+  <div class="section-card animate__animated animate__fadeInUp">
+    <div class="section-title">
+      <i class="fas fa-code"></i>
+      <span>Part 1: The Network Commands (CMD)</span>
     </div>
+    <p>When a user says "the internet is down", it could be a building outage or just their PC. CMD reveals the truth.</p>
+    
+    <div class="two-columns">
+      <div class="cmd-block">
+        <div class="cmd-label"><i class="fas fa-network-wired"></i> ipconfig · Identity</div>
+        <p>Type <code class="shortcut" style="background:#e9ecef;">ipconfig</code> → look for <strong>IPv4 Address</strong>.</p>
+        <div class="ip-badge good-ip"><i class="fas fa-check-circle"></i> Good IP: 192.168.x.x or 10.x.x.x → talking to server.</div>
+        <div class="ip-badge bad-ip" style="margin-top: 8px;"><i class="fas fa-exclamation-triangle"></i> Bad IP (APIPA): 169.254.x.x → cable plugged but server ignoring / broken.</div>
+        <div class="terminal-sim">
+          <i class="fas fa-dollar-sign"></i> ipconfig<br>
+          IPv4 Address . . . . : <span style="color:#6abf69;">192.168.1.45</span><br>
+          (or 169.254.12.34 → no DHCP)
+        </div>
+      </div>
+      <div class="cmd-block">
+        <div class="cmd-label"><i class="fas fa-globe"></i> ping & renew</div>
+        <p><code class="shortcut">ping 8.8.8.8</code> → <i class="fas fa-reply-all"></i> <strong>Reply from ...</strong> = internet works.<br> <span style="color:#c0392b;">Request timed out</span> = internet down.</p>
+        <p><strong>The Fix:</strong> <code class="shortcut">ipconfig /renew</code> forces PC to request a fresh IP from DHCP server.</p>
+        <div class="terminal-sim">
+          > ping 8.8.8.8<br>
+          Reply from 8.8.8.8: bytes=32 time=14ms TTL=117<br>
+          > ipconfig /renew<br>
+          Successfully renewed IP.
+        </div>
+      </div>
+    </div>
+    <div class="golden-rule" style="background:#e7f1f7; border-left:5px solid #2c7da0; padding:1rem; border-radius:1rem; margin-top:0.5rem;">
+      <i class="fas fa-lightbulb"></i> <strong>Quick workflow:</strong> ipconfig → check IP. If 169.254 → physical/switch issue. If correct IP but no ping → check gateway or outside network.
+    </div>
+  </div>
 
-    <script>
-        // --- LOGIC ---
+  <!-- PART 2: PRINTER TRAFFIC JAM (Print Spooler) -->
+  <div class="section-card animate__animated animate__fadeInUp">
+    <div class="section-title">
+      <i class="fas fa-print"></i>
+      <span>Part 2: The Printer "Traffic Jam"</span>
+    </div>
+    <p>Printers freeze often. The physical printer may be fine, but the Windows software managing it has crashed.</p>
+    <div class="printer-spooler">
+      <i class="fas fa-traffic-light" style="font-size: 1.8rem; float: right; opacity: 0.5;"></i>
+      <h3 style="display: flex; gap: 10px;"><i class="fas fa-exchange-alt"></i> Print Spooler = Traffic Cop</h3>
+      <p>Holds print jobs in memory, feeds printer page by page. If a file corrupts → spooler freezes → new jobs pile up.</p>
+      <p><strong>⚡ The Fix (No reinstall needed):</strong><br>
+      Press <span class="shortcut"><i class="fab fa-windows"></i> + R</span>, type <code class="shortcut">services.msc</code>, find <strong>Print Spooler</strong>, right-click → <strong>Restart</strong>. This clears the digital jam instantly.</p>
+      <div style="background:#e9ecef; border-radius: 12px; padding: 0.5rem 1rem; margin-top: 10px;">
+        <i class="fas fa-check-circle" style="color:#2e7d32;"></i> Pro Tip: You can also clear the queue via <code>printmanagement.msc</code> or simply restart spooler.
+      </div>
+    </div>
+    <div class="two-columns" style="margin-top: 0.5rem;">
+      <div><i class="fas fa-ban"></i> <strong>Symptom:</strong> Printer silent, jobs stuck in queue, no error lights.</div>
+      <div><i class="fas fa-wrench"></i> <strong>Action:</strong> Restart Print Spooler service → prints start flowing.</div>
+    </div>
+  </div>
 
-        const notebook = document.getElementById('notebook-content');
-        const printerScreen = document.getElementById('printer-screen');
-        const cmdHistory = document.getElementById('cmd-history');
-        const cmdInput = document.getElementById('cmd-input');
+  <!-- WHERE TO LEARN MORE + HANDS-ON -->
+  <div class="section-card">
+    <div class="section-title">
+      <i class="fab fa-youtube"></i>
+      <span>Learn More & Practice</span>
+    </div>
+    <p>Blend video lessons with real command-line exploration.</p>
+    <div>
+      <a href="#" id="kevtechLink" class="yt-card" target="_blank"><i class="fab fa-youtube"></i> Kevtech IT Support (Helpdesk CMD & Print Spooler)</a>
+      <a href="#" id="danscoursesLink" class="yt-card" target="_blank"><i class="fab fa-youtube"></i> Danscourses · DHCP & APIPA deep dive</a>
+    </div>
+    <div style="background:#eef2fa; border-radius: 1.2rem; padding: 1rem; margin-top: 1rem;">
+      <i class="fas fa-keyboard"></i> <strong>Hands-On Practice:</strong><br>
+      ✅ Press <span class="shortcut">Win + R</span> → <code class="shortcut">cmd</code> → type <code>ipconfig /all</code>. Spot your DHCP server and IP.<br>
+      ✅ Open <code class="shortcut">services.msc</code> → scroll to <strong>Print Spooler</strong>. Right-click → Properties. Familiarize with the service.<br>
+      ✅ Simulate: run <code>ping 8.8.8.8 -n 2</code> to test your own internet health.
+    </div>
+  </div>
 
-        // State
-        let printerFixed = false;
-        let networkFixed = false;
+  <!-- INTERACTIVE QUIZ: LEVEL 2 -->
+  <div class="section-card quiz-area">
+    <div class="section-title" style="border-left-color: #e68a2e;">
+      <i class="fas fa-brain"></i>
+      <span>Quick Quiz: Level 2</span>
+    </div>
+    <p><strong>Test your troubleshooting instincts.</strong> Click any question to reveal the answer.</p>
+    
+    <div id="quizLevel2">
+      <!-- Q1 -->
+      <div class="quiz-question" data-answer="The PC cannot reach the DHCP server to get a valid IP address. The network connection is failing (bad switch, server, or port).">
+        <div class="quiz-q-text">
+          <span><i class="far fa-question-circle"></i> <strong>Q1:</strong> A user has no internet. `ipconfig` shows IPv4 `169.254.10.45`. What does this tell you?</span>
+          <i class="fas fa-chevron-down"></i>
+        </div>
+        <div class="quiz-answer">
+          <p><i class="fas fa-check-circle" style="color:#2e7d32;"></i> <strong>Answer:</strong> APIPA address: PC cannot reach DHCP server → no valid IP. Check physical link, switch, or DHCP service.</p>
+        </div>
+      </div>
+      <!-- Q2 -->
+      <div class="quiz-question" data-answer="Open `services.msc` and restart the Print Spooler service to clear the stuck print queue.">
+        <div class="quiz-q-text">
+          <span><i class="far fa-question-circle"></i> <strong>Q2:</strong> Printer is silent with paper/ink/no error lights, but 5 jobs stuck. First software step?</span>
+          <i class="fas fa-chevron-down"></i>
+        </div>
+        <div class="quiz-answer">
+          <p><i class="fas fa-check-circle" style="color:#2e7d32;"></i> <strong>Answer:</strong> Restart the Print Spooler service via `services.msc` → instantly clears stuck queue.</p>
+        </div>
+      </div>
+      <!-- Q3 -->
+      <div class="quiz-question" data-answer="`ipconfig /renew` forces the computer to request a new IP address from the DHCP server.">
+        <div class="quiz-q-text">
+          <span><i class="far fa-question-circle"></i> <strong>Q3:</strong> What command forces Windows to request a brand new IP address from the network?</span>
+          <i class="fas fa-chevron-down"></i>
+        </div>
+        <div class="quiz-answer">
+          <p><i class="fas fa-check-circle" style="color:#2e7d32;"></i> <strong>Answer:</strong> `ipconfig /renew` (often preceded by `ipconfig /release` to fully refresh).</p>
+        </div>
+      </div>
+      <!-- Q4 -->
+      <div class="quiz-question" data-answer="`ping 8.8.8.8` — pinging Google’s public DNS is the standard test for outside internet connectivity.">
+        <div class="quiz-q-text">
+          <span><i class="far fa-question-circle"></i> <strong>Q4:</strong> Fastest command to check if a PC has a live connection to the outside internet?</span>
+          <i class="fas fa-chevron-down"></i>
+        </div>
+        <div class="quiz-answer">
+          <p><i class="fas fa-check-circle" style="color:#2e7d32;"></i> <strong>Answer:</strong> `ping 8.8.8.8`. Reply = internet works; timeout = no external connectivity.</p>
+        </div>
+      </div>
+      <!-- Q5: DHCP vs Static -->
+      <div class="quiz-question" data-answer="Dynamic IP (DHCP) is automatically assigned by server and may change. Static IP is manually configured, never changes — used for printers/servers.">
+        <div class="quiz-q-text">
+          <span><i class="far fa-question-circle"></i> <strong>Q5:</strong> Difference between Dynamic IP (DHCP) and Static IP?</span>
+          <i class="fas fa-chevron-down"></i>
+        </div>
+        <div class="quiz-answer">
+          <p><i class="fas fa-check-circle" style="color:#2e7d32;"></i> <strong>Answer:</strong> DHCP = auto-assigned, can change over time (laptops). Static = manually set, never changes (printers, servers).</p>
+        </div>
+      </div>
+    </div>
+    <div style="margin-top: 1.5rem; display: flex; justify-content: flex-end;">
+      <button id="resetQuizBtn2" class="btn-primary"><i class="fas fa-sync-alt"></i> Collapse All Answers</button>
+    </div>
+    <hr>
+    <p><i class="fas fa-chalkboard-user"></i> <strong>Ready for more?</strong> Level 2 builds the core for helpdesk & resident engineer tasks. Master CMD and the spooler, and you'll solve 80% of daily tickets.</p>
+  </div>
+  <footer>
+    <i class="fas fa-terminal"></i> Level 2: System Troubleshooting | Always check ipconfig first, then restart the spooler.
+  </footer>
+</div>
 
-        // Content Data
-        const explanationData = {
-            printer: `
-                <h4 class="font-bold mb-2">The "Print Spooler"</h4>
-                <p class="mb-2">Think of the Spooler as a waiter in a restaurant. It takes orders (prints) from the PC and sends them to the chef (Printer).</p>
-                <p class="mb-2">Sometimes, the waiter gets overwhelmed and freezes. Even if the printer is fine, nothing prints.</p>
-                <p class="bg-white p-2 rounded border border-yellow-200"><strong>The Fix:</strong> Restarting the "Print Spooler" service clears the memory and wakes up the system. It works 90% of the time.</p>
-            `,
-            network: `
-                <h4 class="font-bold mb-2">DHCP vs Static IP</h4>
-                <p class="mb-2"><strong>DHCP:</strong> The server automatically gives an IP to the PC. (Like a hotel assigning you a room number).</p>
-                <p class="mb-2"><strong>Static IP:</strong> You manually type the IP. Used for Servers/Printers so they don't change.</p>
-                <p class="bg-white p-2 rounded border border-yellow-200 mt-2"><strong>Troubleshooting:</strong> <br><code>ipconfig /renew</code> forces the PC to ask the server for a fresh IP address. It fixes "conflicts".</p>
-            `
-        };
-
-        function switchTab(tab) {
-            // UI Switch
-            document.getElementById('view-printer').classList.add('hidden');
-            document.getElementById('view-network').classList.add('hidden');
-            document.getElementById('btn-printer').classList.remove('ring-2', 'ring-blue-500');
-            document.getElementById('btn-network').classList.remove('ring-2', 'ring-blue-500');
-
-            document.getElementById(`view-${tab}`).classList.remove('hidden');
-            document.getElementById(`view-${tab}`).classList.add('flex'); // restore flex
-            document.getElementById(`btn-${tab}`).classList.add('ring-2', 'ring-blue-500');
-
-            // Notebook Update
-            notebook.innerHTML = explanationData[tab];
+<script>
+  // Accordion quiz functionality
+  const quizItems = document.querySelectorAll('#quizLevel2 .quiz-question');
+  
+  function toggleAnswer(questionDiv) {
+    const answerDiv = questionDiv.querySelector('.quiz-answer');
+    if (!answerDiv) return;
+    answerDiv.classList.toggle('show');
+    const icon = questionDiv.querySelector('.fas.fa-chevron-down');
+    if (icon) {
+      if (answerDiv.classList.contains('show')) {
+        icon.style.transform = 'rotate(180deg)';
+      } else {
+        icon.style.transform = 'rotate(0deg)';
+      }
+    }
+  }
+  
+  quizItems.forEach(q => {
+    q.addEventListener('click', (e) => {
+      e.stopPropagation();
+      toggleAnswer(q);
+    });
+    const icon = q.querySelector('.fas.fa-chevron-down');
+    if (icon) icon.style.transition = 'transform 0.2s';
+  });
+  
+  const resetBtn2 = document.getElementById('resetQuizBtn2');
+  if (resetBtn2) {
+    resetBtn2.addEventListener('click', () => {
+      quizItems.forEach(q => {
+        const ansDiv = q.querySelector('.quiz-answer');
+        if (ansDiv && ansDiv.classList.contains('show')) {
+          ansDiv.classList.remove('show');
+          const icon = q.querySelector('.fas.fa-chevron-down');
+          if (icon) icon.style.transform = 'rotate(0deg)';
         }
-
-        // --- PRINTER LOGIC ---
-        function fixPrinter(action) {
-            if (action === 'cable') {
-                alert("You checked the cable. It is plugged in firmly. That wasn't the issue.");
-            } else if (action === 'spooler') {
-                const btn = document.getElementById('btn-restart-spooler');
-                btn.innerText = "Stopping Service...";
-                btn.disabled = true;
-                
-                setTimeout(() => {
-                    btn.innerText = "Starting Service...";
-                    setTimeout(() => {
-                        btn.innerText = "Running";
-                        btn.classList.add('bg-green-200', 'text-green-800');
-                        
-                        // Success Effect
-                        printerScreen.innerText = "PRINTING...";
-                        printerScreen.classList.remove('text-green-400');
-                        printerScreen.classList.add('text-white', 'bg-green-600');
-                        
-                        // Animate Paper
-                        const paper = document.getElementById('paper-feed');
-                        paper.style.transform = "translate(-50%, 150px)";
-                        
-                        document.getElementById('printer-status-text').innerText = "Fixed!";
-                        document.getElementById('printer-status-text').classList.replace('text-red-500', 'text-green-600');
-                        
-                        printerFixed = true;
-                    }, 1500);
-                }, 1500);
-            }
-        }
-
-        // --- NETWORK LOGIC ---
-        cmdInput.addEventListener("keypress", function(event) {
-            if (event.key === "Enter") {
-                event.preventDefault();
-                runCmd(cmdInput.value);
-                cmdInput.value = "";
-            }
-        });
-
-        function runCmd(command) {
-            const cleanCmd = command.trim().toLowerCase();
-            
-            // Add user command to history
-            const line = document.createElement('div');
-            line.innerHTML = `<span class="text-slate-500">C:\\Users></span> ${command}`;
-            cmdHistory.appendChild(line);
-
-            // Response Logic
-            let response = "";
-            
-            if (cleanCmd === 'ipconfig') {
-                if (!networkFixed) {
-                    response = `
-                        <div>Ethernet adapter Ethernet:</div>
-                        <div class="pl-4">Connection-specific DNS Suffix  . : </div>
-                        <div class="pl-4 text-red-400">IPv4 Address. . . . . . . . . . . : 169.254.12.44</div>
-                        <div class="pl-4">Subnet Mask . . . . . . . . . . . : 255.255.0.0</div>
-                        <div class="text-slate-500 mt-2">// NOTE: 169.254... means the PC cannot find the DHCP Server.</div>
-                    `;
-                } else {
-                    response = `
-                        <div>Ethernet adapter Ethernet:</div>
-                        <div class="pl-4">DNS Suffix  . : iricen.local</div>
-                        <div class="pl-4 text-green-400">IPv4 Address. . . . . : 192.168.1.105</div>
-                        <div class="pl-4">Subnet Mask . . . . . : 255.255.255.0</div>
-                    `;
-                }
-            } 
-            else if (cleanCmd.includes('ping')) {
-                if (!networkFixed) {
-                    response = `
-                        <div>Pinging 8.8.8.8 with 32 bytes of data:</div>
-                        <div class="text-red-400">Request timed out.</div>
-                        <div class="text-red-400">Request timed out.</div>
-                        <div>Packets: Sent = 2, Received = 0, Lost = 2 (100% loss)</div>
-                    `;
-                } else {
-                    response = `
-                        <div>Pinging 8.8.8.8 with 32 bytes of data:</div>
-                        <div class="text-green-400">Reply from 8.8.8.8: bytes=32 time=14ms TTL=116</div>
-                        <div class="text-green-400">Reply from 8.8.8.8: bytes=32 time=15ms TTL=116</div>
-                        <div>Packets: Sent = 2, Received = 2, Lost = 0 (0% loss)</div>
-                    `;
-                }
-            } 
-            else if (cleanCmd === 'ipconfig /renew') {
-                response = `
-                    <div>Windows IP Configuration</div>
-                    <div class="text-yellow-400">Renewing...</div>
-                    <div class="text-green-400">Success!</div>
-                `;
-                networkFixed = true;
-                document.getElementById('network-status-text').innerText = "Online";
-                document.getElementById('network-status-text').classList.replace('text-red-500', 'text-green-600');
-            } 
-            else {
-                response = `<div class="text-red-400">'${command}' is not recognized.</div>`;
-            }
-
-            const responseDiv = document.createElement('div');
-            responseDiv.className = "mb-4 mt-1";
-            responseDiv.innerHTML = response;
-            cmdHistory.appendChild(responseDiv);
-            
-            // Auto scroll to bottom
-            cmdHistory.parentElement.scrollTop = cmdHistory.parentElement.scrollHeight;
-        }
-
-        // Init
-        switchTab('printer');
-    </script>
+      });
+    });
+  }
+  
+  // Set YouTube links (real useful search/playlists)
+  const kevLink = document.getElementById('kevtechLink');
+  const dansLink = document.getElementById('danscoursesLink');
+  if (kevLink) {
+    kevLink.href = "https://www.youtube.com/results?search_query=Kevtech+IT+Support+print+spooler+cmd";
+    kevLink.setAttribute('title', 'Kevtech IT Support - Real helpdesk scenarios');
+  }
+  if (dansLink) {
+    dansLink.href = "https://www.youtube.com/results?search_query=Danscourses+DHCP+APIPA";
+    dansLink.setAttribute('title', 'Danscourses explains DHCP & APIPA');
+  }
+  
+  // extra: add live interactive simulation tip: if user clicks terminal examples? Not needed but cool.
+  console.log("%c🖨️ Level 2 Loaded: ipconfig, ping, Print Spooler", "color: #2c7da0; font-size: 13px; font-weight: bold;");
+  console.log("💡 Try: Win+R → services.msc → Print Spooler → Restart (simulate troubleshooting)");
+  
+  // add dynamic class for styling shortcuts
+  const style = document.createElement('style');
+  style.textContent = `
+    .quiz-question .fas.fa-chevron-down { transition: transform 0.25s ease; }
+    .quiz-answer { transition: max-height 0.35s cubic-bezier(0.2, 0.9, 0.4, 1.1), padding 0.2s; }
+    .shortcut { background: #eef2fa; padding: 0.15rem 0.5rem; border-radius: 8px; font-family: monospace; font-weight: 600; }
+    code { background: #eef2fa; padding: 0.15rem 0.4rem; border-radius: 6px; font-size: 0.9em; }
+    .golden-rule { background: #eef2fa; }
+  `;
+  document.head.appendChild(style);
+</script>
 </body>
 </html>
